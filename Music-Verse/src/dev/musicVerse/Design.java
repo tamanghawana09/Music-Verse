@@ -1,24 +1,24 @@
 package dev.musicVerse;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.AbstractBorder;
-import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 
-public class Design extends JFrame{
+public class Design extends JFrame {
     private static  final Container container = new Container();
     private static final JPanel panel = new JPanel();
 
    private Point mousePressLocation;
-    JPanel imgpnl = new JPanel(){
-        protected void paintComponent(Graphics g){
-            super.paintComponent(g);
-            Image image = new ImageIcon(this.getClass().getResource("Images/edge.jpg")).getImage();
-            g.drawImage(image,0,500,this.getWidth(),this.getHeight(),this);
-        }
-    };
+//    JPanel imgpnl = new JPanel(){
+//        protected void paintComponent(Graphics g){
+//            super.paintComponent(g);
+//            Image image = new ImageIcon(this.getClass().getResource("Images/edge.jpg")).getImage();
+//            g.drawImage(image,0,500,this.getWidth(),this.getHeight(),this);
+//        }
+//    };
     public Design(){
         //Colors and Fonts properties
         Color backgroundColor = Color.decode("#00000");
@@ -140,8 +140,6 @@ public class Design extends JFrame{
         RoundedPanel userPnl = new RoundedPanel(10);
         userPnl.setBackground(userPnlColor);
         userPnl.setBounds(0,0,180,45);
-        //userPnl.setLayout(new FlowLayout(FlowLayout.LEFT));
-//        container.add(userPnl);
         //User Image Panel
         RoundedPanel userimgPnl = new RoundedPanel(10);
         userimgPnl.setBackground(whiteColor);
@@ -150,8 +148,31 @@ public class Design extends JFrame{
         layeredPane.add(userimgPnl,Integer.valueOf(2));
         container.add(layeredPane);
 
+        JButton button = new JButton(){
+            protected void paintComponent(Graphics g){
+                Image image = new ImageIcon(this.getClass().getResource("/Images/exit.png")).getImage();
+                g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
 
-//        ImageIcon imageIcon = new ImageIcon("edge.jpg");
+        };
+        container.setLayout(null);
+        button.setBorderPainted(false);
+        button.setBounds(1255,5,20,20);
+        container.add(button);
+        button.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent event){
+                if(event.getSource() == button){
+                    System.exit(0);
+                }
+            }
+        });
+
+
+
+
+
+//        ImageIcon imageIcon = new ImageIcon("/Images/edge.jpg");
 //        JLabel imageLabel = new JLabel(imageIcon);
 //        imageLabel.setBounds(0,700,this.getWidth(),this.getHeight());
 //        container.add(imageLabel);
