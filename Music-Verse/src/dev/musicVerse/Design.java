@@ -11,7 +11,7 @@ public class Design extends JFrame{
     private static  final Container container = new Container();
     private static final JPanel panel = new JPanel();
 
-//    private Point mousePressLocation;
+   private Point mousePressLocation;
     JPanel imgpnl = new JPanel(){
         protected void paintComponent(Graphics g){
             super.paintComponent(g);
@@ -25,6 +25,7 @@ public class Design extends JFrame{
         Color panelColor = Color.decode("#1b2223");
         Color greenColor = Color.decode("#0EF6CC");
         Color whiteColor = Color.decode("#F4FEFD");
+        Color userPnlColor = Color.decode("#3A4F50");
         //Font fontLabel = new Font("Tahoma",Font.PLAIN,20);
         Font font = new Font("Tahoma",Font.PLAIN,20);
 
@@ -133,6 +134,22 @@ public class Design extends JFrame{
         });
         container.add(playlistlbl);
 
+        //User Name Panel
+        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setBounds(1000,20,200,45);
+        RoundedPanel userPnl = new RoundedPanel(10);
+        userPnl.setBackground(userPnlColor);
+        userPnl.setBounds(0,0,180,45);
+        //userPnl.setLayout(new FlowLayout(FlowLayout.LEFT));
+//        container.add(userPnl);
+        //User Image Panel
+        RoundedPanel userimgPnl = new RoundedPanel(10);
+        userimgPnl.setBackground(whiteColor);
+        userimgPnl.setBounds(0,0,55,45);
+        layeredPane.add(userPnl,Integer.valueOf(1));
+        layeredPane.add(userimgPnl,Integer.valueOf(2));
+        container.add(layeredPane);
+
 
 //        ImageIcon imageIcon = new ImageIcon("edge.jpg");
 //        JLabel imageLabel = new JLabel(imageIcon);
@@ -146,24 +163,24 @@ public class Design extends JFrame{
 
 
         //Add mouse listener to handle dragging (moving) the frame
-//        addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mousePressed(MouseEvent e){
-//                mousePressLocation = e.getPoint();
-//            }
-//            @Override
-//            public void mouseReleased(MouseEvent e){
-//                mousePressLocation = null;
-//            }
-//        });
-//        addMouseMotionListener(new MouseMotionAdapter() {
-//            @Override
-//            public void mouseDragged(MouseEvent e){
-//                Point p = e.getPoint();
-//                Point location = getLocation();
-//                setLocation(location.x + (p.x - mousePressLocation.x),location.y +(p.y - mousePressLocation.y));
-//            }
-//        });
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e){
+                mousePressLocation = e.getPoint();
+            }
+            @Override
+            public void mouseReleased(MouseEvent e){
+                mousePressLocation = null;
+            }
+        });
+        addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e){
+                Point p = e.getPoint();
+                Point location = getLocation();
+                setLocation(location.x + (p.x - mousePressLocation.x),location.y +(p.y - mousePressLocation.y));
+            }
+        });
 
 
 
