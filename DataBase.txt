@@ -1,0 +1,120 @@
+DataBase-Tables: 
+
+Users: 
+
+UserID (Primary Key) 
+
+Username 
+
+Password (hashed and salted) 
+
+Email 
+
+Registration Date 
+
+Profile Picture (file path or reference) 
+
+ 
+
+
+Songs: 
+
+SongID (Primary Key) 
+
+Title 
+
+Artist 
+
+Album 
+
+GenreId
+
+Duration (in seconds) 
+
+File Path (if storing on the server) 
+
+Release Year 
+
+Lyrics (if wanted) 
+
+ 
+
+
+User_Activity: 
+
+UserID (Foreign Key referencing Users) 
+
+SongID (Foreign Key referencing Songs) 
+
+Playback Count 
+
+Total Listening Time 
+
+ 
+
+Genres: 
+
+GenreID (Primary Key) 
+
+Name 
+
+ 
+
+
+Song_Genres (Many-to-Many relationship between Songs and Genres): 
+
+SongID (Foreign Key referencing Songs) 
+
+GenreID (Foreign Key referencing Genres) 
+
+ 
+
+
+Artists: 
+
+ArtistID (Primary Key) 
+
+Name 
+
+Biography 
+
+Image (file path or reference) 
+
+ 
+
+
+Song_Artists (Many-to-Many relationship between Songs and Artists): 
+
+SongID (Foreign Key referencing Songs) 
+
+ArtistID (Foreign Key referencing Artists) 
+
+ 
+
+
+Lyrics: 
+
+SongID (Primary Key, Foreign Key referencing Songs) 
+
+Lyrics Text 
+
+
+ 
+
+User_Playlists (Many-to-Many relationship between Users and Playlists): 
+
+UserID (Foreign Key referencing Users) 
+
+PlaylistID (Foreign Key referencing Playlists) 
+
+ 
+
+
+
+Playlist_Songs (Many-to-Many relationship between Playlists and Songs): 
+
+PlaylistID (Foreign Key referencing Playlists) 
+
+SongID (Foreign Key referencing Songs) 
+
+Position (to maintain the order of songs in a playlist) 
