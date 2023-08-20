@@ -10,6 +10,8 @@ import java.awt.geom.RoundRectangle2D;
 public class Logout extends JFrame {
     Container container = new Container();
     public Logout(){
+        //properties
+        Font font = new Font("Tahoma",Font.BOLD,15);
         Color backgroundColor = Color.decode("#00000");
         Color pnlColor = Color.decode("#2B2B2B");
         Color greenColor = Color.decode("#0EF6CC");
@@ -27,17 +29,39 @@ public class Logout extends JFrame {
         setSize(680,545);
         setBackground(backgroundColor);
         setLocation(450,100);
+        setContentPane(container);
 
-        RoundedButton logBtn=  new RoundedButton("Naah, Just Kidding !");
+        JButton logBtn=  new JButton("Naah, Just Kidding !");
+        logBtn.setFont(font);
+        logBtn.setForeground(Color.BLACK);
         logBtn.setBackground(pnlColor);
         logBtn.setBorder(customBorder);
         logBtn.setBounds(185,320,320,50);
         container.add(logBtn);
 
-        RoundedButton logBtn2=  new RoundedButton("Yes, Log me out !");
+        JButton logBtn2=  new JButton("Yes, Log me out !");
+        logBtn2.setFont(font);
+        logBtn2.setForeground(Color.BLACK);
         logBtn2.setBackground(greenColor);
+        logBtn2.setBorderPainted(false);
         logBtn2.setBounds(185,390,320,50);
         container.add(logBtn2);
+        logBtn2.addMouseListener(new MouseAdapter(){
+            public void mouseClicked(MouseEvent event){
+                if(event.getSource() == logBtn2){
+                    System.exit(0);
+                }
+            }
+        });
+        JPanel imgpnl = new JPanel(){
+            protected void paintComponent(Graphics imgG){
+                Image image = new ImageIcon(this.getClass().getResource("/Images/logout.png")).getImage();
+                imgG.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
+
+        };
+        imgpnl.setBounds(220,90,260,180);
+        container.add(imgpnl);
 
         //logout panel
         RoundedPanel pnl = new RoundedPanel(20);
@@ -45,17 +69,6 @@ public class Logout extends JFrame {
         pnl.setSize(520,420);
         pnl.setLocation(85,65);
         container.add(pnl);
-
-        //logout image
-//        JPanel imgpnl = new JPanel(){
-//            protected void paintComponent(Graphics imgG){
-//                Image image = new ImageIcon(this.getClass().getResource("/Images/logout.png")).getImage();
-//                imgG.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
-//            }
-//
-//        };
-//        imgpnl.setBounds(0,0,400,300);
-//        pnl.add(imgpnl);
 
         // exit button
         JButton button = new JButton(){
@@ -78,10 +91,8 @@ public class Logout extends JFrame {
         });
 
 
-
-        setContentPane(container);
         setVisible(true);
-        setLayout(null);
+        setLayout(new BorderLayout());
     }
 
 }
