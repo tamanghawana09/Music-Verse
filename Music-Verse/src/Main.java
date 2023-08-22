@@ -3,6 +3,7 @@ import dev.musicVerse.Logout;
 
 public class Main {
     public static void main(String[] args) {
-        Logout lg = new Logout();
+        Design dg = new Design();
+        dg.setVisible(true);
     }
 }
