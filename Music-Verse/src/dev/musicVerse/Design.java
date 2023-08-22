@@ -1,8 +1,7 @@
 package dev.musicVerse;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-
+import javax.swing.text.FlowView;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
@@ -26,7 +25,7 @@ public class Design extends JFrame {
         Color greenColor = Color.decode("#0EF6CC");
         Color whiteColor = Color.decode("#F4FEFD");
         Color userPnlColor = Color.decode("#3A4F50");
-        //Font fontLabel = new Font("Tahoma",Font.PLAIN,20);
+        Font pnlfont = new Font("Tahoma",Font.PLAIN,25);
         Font font = new Font("Tahoma",Font.PLAIN,20);
 
         //frame properties
@@ -41,6 +40,7 @@ public class Design extends JFrame {
         setSize(1280,800);
         setBackground(backgroundColor);
         setLocation(120,10);
+
         //left panel
         panel.setBounds(0,0,250,800);
         panel.setBackground(panelColor);
@@ -52,27 +52,94 @@ public class Design extends JFrame {
         artistPnl.setLayout(new FlowLayout(FlowLayout.LEFT));
         artistPnl.setBackground(panelColor);
 
-        JLabel artistlbl = new JLabel();
-        artistlbl.setText("Top Artists");
-        artistlbl.setFont(font);
-        artistlbl.setForeground(whiteColor);
-        artistPnl.add(artistlbl);
+        JLabel artistLbl = new JLabel();
+        artistLbl.setText("Top Artists");
+        artistLbl.setFont(pnlfont);
+        artistLbl.setForeground(whiteColor);
+        artistPnl.add(artistLbl);
         container.add(artistPnl);
 
-        //Player panel in dashboard
+        //Player panel  components in dashboard
+        RoundedPanel playPnl = new RoundedPanel(10);
+        playPnl.setBackground(whiteColor);
+        playPnl.setBounds(905,700,360,90);
+        container.add(playPnl);
+
         RoundedPanel playerPnl = new RoundedPanel(10);
         playerPnl.setBounds(905,370,360,420);
         playerPnl.setLayout(new FlowLayout(FlowLayout.LEFT));
         playerPnl.setBackground(panelColor);
 
-        JLabel playerlbl = new JLabel();
-        playerlbl.setText("Player");
-        playerlbl.setFont(font);
-        playerlbl.setForeground(whiteColor);
-        playerPnl.add(playerlbl);
+        JLabel playerLbl = new JLabel();
+        playerLbl.setText("Player");
+        playerLbl.setFont(pnlfont);
+        playerLbl.setForeground(whiteColor);
+        playerPnl.add(playerLbl);
         container.add(playerPnl);
 
-        //Genres panel in dashboard
+        //Genres panel components in dashboard
+
+        //Dance Beats Button
+        Font genreFont = new Font("Tahoma", Font.PLAIN,15);
+        RoundedButton dbBtn = new RoundedButton("Dance Beats",20);
+        dbBtn.setFont(genreFont);
+        Color dbColor = Color.decode("#476A8A");
+        dbBtn.setBackground(dbColor);
+        dbBtn.setForeground(whiteColor);
+        dbBtn.setBorderPainted(false);
+        dbBtn.setBounds(280,555,100,70);
+        container.add(dbBtn);
+
+        //Electro Pop Button
+        RoundedButton elecBtn = new RoundedButton("Electro Pop",20);
+        elecBtn.setFont(genreFont);
+        Color elecColor = Color.decode("#A69984");
+        elecBtn.setForeground(whiteColor);
+        elecBtn.setBackground(elecColor);
+        elecBtn.setBorderPainted(false);
+        elecBtn.setBounds(390,555,140,70);
+        container.add(elecBtn);
+
+        //Alternative Indie Button
+        RoundedButton alterBtn = new RoundedButton("Alternative Indie",20);
+        alterBtn.setFont(genreFont);
+        Color alterColor = Color.decode("#A24C34");
+        alterBtn.setForeground(whiteColor);
+        alterBtn.setBackground(alterColor);
+        alterBtn.setBorderPainted(false);
+        alterBtn.setBounds(280,635,160,70);
+        container.add(alterBtn);
+
+        //Hip Hop Button
+        RoundedButton hhBtn = new RoundedButton("Hip Hop",20);
+        hhBtn.setFont(genreFont);
+        Color hhColor = Color.decode("#0D4045");
+        hhBtn.setForeground(whiteColor);
+        hhBtn.setBackground(hhColor);
+        hhBtn.setBorderPainted(false);
+        hhBtn.setBounds(450,635,80,70);
+        container.add(hhBtn);
+
+        //Classical Period Button
+        RoundedButton cpBtn = new RoundedButton("Classical Period",20);
+        cpBtn.setFont(genreFont);
+        Color cpColor = Color.decode("#A67894");
+        cpBtn.setForeground(whiteColor);
+        cpBtn.setBackground(cpColor);
+        cpBtn.setBorderPainted(false);
+        cpBtn.setBounds(280,715,120,65);
+        container.add(cpBtn);
+
+        //Hip Hop Rap Button
+        RoundedButton hhrapBtn = new RoundedButton("Hip Hop Rap",20);
+        hhrapBtn.setFont(genreFont);
+        Color hhrapColor = Color.decode("#5547A5");
+        hhrapBtn.setForeground(whiteColor);
+        hhrapBtn.setBackground(hhrapColor);
+        hhrapBtn.setBorderPainted(false);
+        hhrapBtn.setBounds(410,715,120,65);
+        container.add(hhrapBtn);
+        
         RoundedPanel genrePnl = new RoundedPanel(10);
         genrePnl.setBounds(265,510,280,280);
         genrePnl.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -80,7 +147,7 @@ public class Design extends JFrame {
 
         JLabel genrelbl = new JLabel();
         genrelbl.setText("Genres");
-        genrelbl.setFont(font);
+        genrelbl.setFont(pnlfont);
         genrelbl.setForeground(whiteColor);
         genrePnl.add(genrelbl);
         container.add(genrePnl);
@@ -93,7 +160,7 @@ public class Design extends JFrame {
 
         JLabel chartlbl = new JLabel();
         chartlbl.setText("Top Charts");
-        chartlbl.setFont(font);
+        chartlbl.setFont(pnlfont);
         chartlbl.setForeground(whiteColor);
         chartPnl.add(chartlbl);
         container.add(chartPnl);
@@ -107,12 +174,12 @@ public class Design extends JFrame {
         musiclbl.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                musiclbl.setForeground(greenColor);
+                musiclbl.setText("<html><u><font color='#0EF6CC'>Music</font></u></html>");
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                musiclbl.setForeground(whiteColor);
+                musiclbl.setText("<html><font color='#F4FEFD'>Music</font></html>");
             }
         });
         container.add(musiclbl);
@@ -125,12 +192,14 @@ public class Design extends JFrame {
         playlistlbl.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                playlistlbl.setForeground(greenColor);
+
+                playlistlbl.setText("<html><u><font color='#0EF6CC'>Playlist</font></u></html>");
             }
             @Override
             public void mouseExited(MouseEvent e) {
-                playlistlbl.setForeground(whiteColor);
+                playlistlbl.setText("<html><font color='#F4FEFD'>Playlist</font></html>");
             }
+
         });
         container.add(playlistlbl);
 
@@ -148,7 +217,7 @@ public class Design extends JFrame {
         layeredPane.add(userimgPnl,Integer.valueOf(2));
         container.add(layeredPane);
 
-        JButton button = new JButton(){
+        JButton exitbtn = new JButton(){
             protected void paintComponent(Graphics g){
                 Image image = new ImageIcon(this.getClass().getResource("/Images/exit.png")).getImage();
                 g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
@@ -156,31 +225,17 @@ public class Design extends JFrame {
 
         };
         container.setLayout(null);
-        button.setBorderPainted(false);
-        button.setBounds(1255,5,20,20);
-        container.add(button);
-        button.addMouseListener(new MouseAdapter(){
+        exitbtn.setBorderPainted(false);
+        exitbtn.setBounds(1255,5,20,20);
+        container.add(exitbtn);
+        exitbtn.addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent event){
-                if(event.getSource() == button){
                     System.exit(0);
-                }
             }
         });
 
 
-
-
-
-//        ImageIcon imageIcon = new ImageIcon("/Images/edge.jpg");
-//        JLabel imageLabel = new JLabel(imageIcon);
-//        imageLabel.setBounds(0,700,this.getWidth(),this.getHeight());
-//        container.add(imageLabel);
-
-//        imgpnl.setBackground(Color.WHITE);
-//        imgpnl.setBorder(new EmptyBorder(5,5,5,5));
-//        imgpnl.setLayout(null);
-//        container.add(imgpnl);
 
 
         //Add mouse listener to handle dragging (moving) the frame
@@ -204,13 +259,6 @@ public class Design extends JFrame {
         });
 
 
-
-
-        //Image
-//        imgpnl.setBackground(Color.WHITE);
-//        imgpnl.setBorder(new EmptyBorder(5,5,5,5));
-//        imgpnl.setLayout(null);
-//        container.add(imgpnl);
         setLocationRelativeTo(null);
         setLayout(null);
         setContentPane(container);
