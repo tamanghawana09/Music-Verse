@@ -1,8 +1,8 @@
 import dev.musicVerse.Design;
+import dev.musicVerse.Logout;
 
 public class Main {
     public static void main(String[] args) {
-        Design design = new Design();
-        design.setVisible(true);
+        Logout lg = new Logout();
     }
 }
