@@ -1,0 +1,72 @@
+Database SQL QUERY:
+
+Songs TABLE:
+CREATE TABLE Songs (
+    SongID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Title VARCHAR2(255),
+    Artist VARCHAR2(255),
+    Album VARCHAR2(255),
+    GenreId INT,
+    Duration INT,
+    FilePath VARCHAR2(255),
+    ReleaseYear INT,
+    Lyrics CLOB
+);
+
+
+"D:\JAVA-Project\Music-App\Music\Jeremy Zucker - comethru.wav" => Indie Pop
+"D:\JAVA-Project\Music-App\Music\KSI - Holiday.wav"  => pop
+"D:\JAVA-Project\Music-App\Music\Post Malone_ Swae Lee - Sunflower.wav"  => Hip hop
+"D:\JAVA-Project\Music-App\Music\The Weeknd_ Playboi Carti _ Madonna - Popular.wav"  => R&B
+"D:\JAVA-Project\Music-App\Music\Until I Found You (Em Beihold).wav"  => Random
+
+
+
+Genre : pop => 4
+	R&B => 2
+	Indie Pop => 3
+	Hip Hio => 1
+	Unknown => 5
+
+
+
+
+
+CREATE TABLE Songs (
+    SongID INT AUTO_INCREMENT PRIMARY KEY,
+    Title VARCHAR(255),
+    Artist VARCHAR(255),
+    Album VARCHAR(255),
+    GenreId INT,
+    Duration INT,
+    FilePath VARCHAR(255),
+    ReleaseYear INT,
+    Lyrics TEXT
+);
+
+
+SELECT * FROM Songs;
+
+INSERT INTO Songs (Title, Artist, Album, GenreId, Duration, FilePath, ReleaseYear, Lyrics)
+VALUES ('Popular', 'The Weeknd, Playboi Carti, Madonna', 'Dawn FM', 2, 242, 'D:\JAVA-Project\Music-App\Music\The Weeknd_ Playboi Carti _ Madonna - Popular.wav', 2022, 'Lyrics for Popular...');
+
+
+
+INSERT INTO Songs (Title, Artist, Album, GenreId, Duration, FilePath, ReleaseYear, Lyrics)
+VALUES ('Until I Found You', 'Em Beihold', 'Single', 5, 180, 'D:\JAVA-Project\Music-App\Music\Until I Found You (Em Beihold).wav', 2021, 'Lyrics for Until I Found You...');
+
+
+INSERT INTO Songs (Title, Artist, Album, GenreId, Duration, FilePath, ReleaseYear, Lyrics)
+VALUES ('Holiday', 'KSI', 'All Over The Place', 3, 210, 'D:\JAVA-Project\Music-App\Music\KSI - Holiday.wav', 2021, 'Lyrics for Holiday...');
+
+
+
+INSERT INTO Songs (Title, Artist, Album, GenreId, Duration, FilePath, ReleaseYear, Lyrics)
+VALUES ('comethru', 'Jeremy Zucker', 'love is not dying', 3, 190, 'D:\JAVA-Project\Music-App\Music\Jeremy Zucker - comethru.wav', 2020, 'Lyrics for comethru...');
+
+
+
+INSERT INTO Songs (Title, Artist, Album, GenreId, Duration, FilePath, ReleaseYear, Lyrics)
+VALUES ('Sunflower', 'Post Malone, Swae Lee', 'Spider-Man: Into the Spider-Verse (Soundtrack)', 1, 158, 'D:\JAVA-Project\Music-App\Music\Post Malone_ Swae Lee - Sunflower.wav', 2018, 'Lyrics for Sunflower...');
+
+
