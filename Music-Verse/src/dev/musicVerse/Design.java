@@ -60,6 +60,56 @@ public class Design extends JFrame {
         container.add(artistPnl);
 
         //Player panel  components in dashboard
+
+        //play Button
+        JButton playBtn = new JButton(){
+            protected void paintComponent(Graphics g){
+                Image image = new ImageIcon(this.getClass().getResource("/Images/playButton.png")).getImage();
+                g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
+
+        };
+        container.setLayout(null);
+        playBtn.setBorderPainted(false);
+        playBtn.setBounds(1070,727,35,35);
+        container.add(playBtn);
+//        playBtn.addMouseListener(new MouseAdapter(){
+//            @Override
+//            public void mouseClicked(MouseEvent event){
+//
+//            }
+//        });
+
+        //Shuffle Button
+        JButton shuffleBtn = new JButton(){
+            protected void paintComponent(Graphics g){
+                Image image = new ImageIcon(this.getClass().getResource("/Images/shuffle.png")).getImage();
+                g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        container.setLayout(null);
+        shuffleBtn.setBorderPainted(false);
+        shuffleBtn.setBounds(1210,737,20,20);
+        container.add(shuffleBtn);
+
+        //Loop Button
+        JButton loopBtn = new JButton(){
+            protected void paintComponent(Graphics g){
+                Image image = new ImageIcon(this.getClass().getResource("/Images/loop.png")).getImage();
+                g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        container.setLayout(null);
+        loopBtn.setBorderPainted(false);
+        loopBtn.setBounds(930,737,20,20);
+        container.add(loopBtn);
+
+
+        RoundedPanel play = new RoundedPanel(10);
+        play.setBackground(panelColor);
+        play.setBounds(1040,710,90,70);
+        container.add(play);
+
         RoundedPanel playPnl = new RoundedPanel(10);
         playPnl.setBackground(whiteColor);
         playPnl.setBounds(905,700,360,90);
@@ -217,7 +267,7 @@ public class Design extends JFrame {
         layeredPane.add(userimgPnl,Integer.valueOf(2));
         container.add(layeredPane);
 
-        JButton exitbtn = new JButton(){
+        JButton exitBtn = new JButton(){
             protected void paintComponent(Graphics g){
                 Image image = new ImageIcon(this.getClass().getResource("/Images/exit.png")).getImage();
                 g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
@@ -225,10 +275,10 @@ public class Design extends JFrame {
 
         };
         container.setLayout(null);
-        exitbtn.setBorderPainted(false);
-        exitbtn.setBounds(1255,5,20,20);
-        container.add(exitbtn);
-        exitbtn.addMouseListener(new MouseAdapter(){
+        exitBtn.setBorderPainted(false);
+        exitBtn.setBounds(1255,5,20,20);
+        container.add(exitBtn);
+        exitBtn.addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent event){
                     System.exit(0);
