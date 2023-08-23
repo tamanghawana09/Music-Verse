@@ -84,7 +84,142 @@ public class Design extends JFrame {
 
 
 
-        //left panel
+        //left panel components
+        JLabel nameLbl = new JLabel("Music-Verse");
+        nameLbl.setBounds(90,15,150,30);
+        nameLbl.setFont(new Font("Tahoma",Font.PLAIN,25));
+        nameLbl.setForeground(greenColor);
+        container.add(nameLbl);
+
+        JPanel designPnl = new JPanel();
+        designPnl.setBounds(0,60,250,2);
+        designPnl.setBackground(greenColor);
+        container.add(designPnl);
+
+        //Menu label
+        JLabel menuLbl = new JLabel("MENU");
+        menuLbl.setForeground(userPnlColor);
+        menuLbl.setBounds(50,80,150,30);
+        menuLbl.setFont(new Font("Tahoma",Font.PLAIN,25));
+        container.add(menuLbl);
+
+        JLabel explore = new JLabel("Explore");
+        explore.setForeground(whiteColor);
+        explore.setBounds(100,125,150,30);
+        explore.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(explore);
+
+        JLabel genres = new JLabel("Genres");
+        genres.setForeground(whiteColor);
+        genres.setBounds(100,165,150,30);
+        genres.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(genres);
+
+        JLabel albums = new JLabel("Albums");
+        albums.setForeground(whiteColor);
+        albums.setBounds(100,200,150,30);
+        albums.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(albums);
+
+        JLabel artists = new JLabel("Artists");
+        artists.setForeground(whiteColor);
+        artists.setBounds(100,235,150,30);
+        artists.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(artists);
+
+        //Library
+        JLabel library = new JLabel("LIBRARY");
+        library.setForeground(userPnlColor);
+        library.setBounds(50,280,150,30);
+        library.setFont(new Font("Tahoma",Font.PLAIN,25));
+        container.add(library);
+
+        JLabel recent = new JLabel("Recent");
+        recent.setForeground(whiteColor);
+        recent.setBounds(100,325,150,30);
+        recent.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(recent);
+
+        JLabel fav = new JLabel("Favorites");
+        fav.setForeground(whiteColor);
+        fav.setBounds(100,360,150,30);
+        fav.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(fav);
+
+        JLabel local = new JLabel("Local");
+        local.setForeground(whiteColor);
+        local.setBounds(100,395,150,30);
+        local.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(local);
+
+        //Playlist
+        JLabel playlist = new JLabel("PLAYLIST");
+        playlist.setForeground(userPnlColor);
+        playlist.setBounds(50,440,150,30);
+        playlist.setFont(new Font("Tahoma",Font.PLAIN,25));
+        container.add(playlist);
+
+        JLabel newplaylist = new JLabel("New PlayList");
+        newplaylist.setForeground(whiteColor);
+        newplaylist.setBounds(100,475,150,30);
+        newplaylist.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(newplaylist);
+
+        JLabel createplaylist = new JLabel("Create PlayList");
+        createplaylist.setForeground(whiteColor);
+        createplaylist.setBounds(100,510,150,30);
+        createplaylist.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(createplaylist);
+
+
+        //music device panel
+//        JPanel img = new JPanel() {
+//            @Override
+//            protected void paintComponent(Graphics g) {
+//
+//                ImageIcon imageIcon = new ImageIcon("/Images/music.png");
+//                Image image = imageIcon.getImage();
+//                g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+//
+//            }
+//        };
+//        img.setLayout(null);
+//        img.setOpaque(false);
+//        img.setBounds(35,670,55,60);
+//        container.add(img);
+
+        JLabel backlbl = new JLabel("playing on device");
+        backlbl.setForeground(whiteColor);
+        backlbl.setFont(new Font("Tahoma",Font.PLAIN,15));
+        backlbl.setBounds(90,737,150,30);
+        container.add(backlbl);
+
+        JLabel frontlbl = new JLabel();
+        frontlbl.setText("<html>Enjoy <br> Music</html>");
+        frontlbl.setForeground(whiteColor);
+        frontlbl.setFont(new Font("Tahoma",Font.PLAIN,20));
+        frontlbl.setBounds(140,670,150,50);
+        container.add(frontlbl);
+
+        RoundedPanel imgpnl = new RoundedPanel(20);
+        imgpnl.setBounds(30,660,80,70);
+        imgpnl.setBackground(whiteColor);
+        imgpnl.setBorder(null);
+        container.add(imgpnl);
+
+        RoundedPanel frontpnl = new RoundedPanel(20);
+        frontpnl.setBounds(20,650,210,90);
+        frontpnl.setBackground(userPnlColor);
+        frontpnl.setBorder(null);
+        container.add(frontpnl);
+
+
+        RoundedPanel backpnl = new RoundedPanel(20);
+        backpnl.setBounds(25,665,200,105);
+        backpnl.setBackground(Color.BLACK);
+        backpnl.setBorder(null);
+        container.add(backpnl);
+
         panel.setBounds(0,0,250,800);
         panel.setBackground(panelColor);
         container.add(panel);
