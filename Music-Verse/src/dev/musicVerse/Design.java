@@ -41,6 +41,49 @@ public class Design extends JFrame {
         setBackground(backgroundColor);
         setLocation(120,10);
 
+        //Search panel
+        RoundedPanel searchPnl = new RoundedPanel(35);
+        searchPnl.setBounds(500,20,400,35);
+        searchPnl.setBackground(panelColor);
+        container.add(searchPnl);
+
+        JTextField searchTf = new JTextField("Search");
+        searchTf.setFont(new Font("Tahoma",Font.PLAIN,15));
+        searchTf.setForeground(whiteColor);
+        searchTf.setBackground(panelColor);
+        searchTf.setBorder(null);
+        searchTf.setBounds(510,28,380,20);
+        container.add(searchTf);
+        searchTf.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if(searchTf.getText().equals("Search")){
+                    searchTf.setText("");
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if(searchTf.getText().isEmpty()){
+                    searchTf.setText("Search");
+                }
+            }
+        });
+        searchTf.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+               if(searchTf.getText().equals("Search")) {
+                   searchTf.setText("");
+               }
+            }
+        });
+
+        //This is for songs to be search in server or database
+//        searchTf.addKeyListener(new KeyAdapter() {
+//        });
+
+
+
         //left panel
         panel.setBounds(0,0,250,800);
         panel.setBackground(panelColor);
