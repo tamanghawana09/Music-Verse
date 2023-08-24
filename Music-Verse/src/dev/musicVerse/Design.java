@@ -9,6 +9,17 @@ import java.awt.geom.RoundRectangle2D;
 public class Design extends JFrame {
     private static  final Container container = new Container();
     private static final JPanel panel = new JPanel();
+    private static final RoundedPanel playListPanel = new RoundedPanel(10);
+
+
+    private JPanel createPlaylistPanel;
+    private JTextField playlistNameField;
+    private JButton addPlaylistButton;
+    private boolean isCreatePanelVisible = false;
+
+
+
+    private boolean isPanelVisible = false;
 
    private Point mousePressLocation;
 //    JPanel imgpnl = new JPanel(){
@@ -152,6 +163,8 @@ public class Design extends JFrame {
         local.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(local);
 
+
+
         //Playlist
         JLabel playlist = new JLabel("PLAYLIST");
         playlist.setForeground(userPnlColor);
@@ -165,11 +178,116 @@ public class Design extends JFrame {
         newplaylist.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(newplaylist);
 
+
+        newplaylist.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if(isPanelVisible){
+                    playListPanel.setVisible(false);
+                    isPanelVisible = false;
+                }else{
+                    playListPanel.setVisible(true);
+                    isPanelVisible = true;
+                }
+            }
+        });
+
+        playListPanel.setBounds(265,370,625,420);
+        playListPanel.setBackground(panelColor);
+        container.add(playListPanel);
+        playListPanel.setVisible(false);
+
+//        playlistModel = new DefaultListModel<>();
+//        CreatePlayList = new JList<>(playlistModel);
+////        CreatePlayList.setForeground(whiteColor);
+//        CreatePlayList.setBounds(100,510,150,30);
+////        JScrollPane playlistScrollPane = new JScrollPane(playlist);
+//
+//        container.add(CreatePlayList);
+
+
         JLabel createplaylist = new JLabel("Create PlayList");
         createplaylist.setForeground(whiteColor);
         createplaylist.setBounds(100,510,150,30);
         createplaylist.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(createplaylist);
+
+
+        JLabel createNewplaylist = new JLabel("Create PlayList");
+        createNewplaylist.setForeground(whiteColor);
+        createNewplaylist.setBounds(100, 510, 150, 30);
+        createNewplaylist.setFont(new Font("Tahoma", Font.PLAIN, 18));
+        container.add(createNewplaylist);
+
+        // Mouse listener for the Create PlayList label
+        createplaylist.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!isCreatePanelVisible) {
+                    createPlaylistPanel.setVisible(true);
+                    container.setComponentZOrder(createPlaylistPanel, 0);
+                    isCreatePanelVisible = true;
+                }else{
+                    createPlaylistPanel.setVisible(false);
+                    isCreatePanelVisible = false;
+                }
+            }
+        });
+
+
+        // Create PlayList Panel
+        createPlaylistPanel = new JPanel();
+        createPlaylistPanel.setBounds(450, 350, 405, 150); // Adjust the height to make it bigger
+        createPlaylistPanel.setBackground(Color.red);
+        container.add(createPlaylistPanel);
+        createPlaylistPanel.setVisible(false);
+
+
+        // Playlist Name Field
+        playlistNameField = new JTextField("Enter Playlist Name");
+        playlistNameField.setBounds(10, 10, 400, 40);
+        playlistNameField.setForeground(Color.GRAY); // Set initial text color
+        createPlaylistPanel.add(playlistNameField);
+
+        playlistNameField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (playlistNameField.getText().equals("Enter Playlist Name")) {
+                    playlistNameField.setText("");
+                    playlistNameField.setForeground(Color.BLACK); // Set text color when focused
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (playlistNameField.getText().isEmpty()) {
+                    playlistNameField.setText("Enter Playlist Name");
+                    playlistNameField.setForeground(Color.GRAY); // Restore placeholder text color
+                }
+            }
+        });
+
+
+
+        // Add Playlist Button
+        addPlaylistButton = new JButton("Add");
+        addPlaylistButton.setBounds(220, 10, 40, 30);
+        createPlaylistPanel.add(addPlaylistButton);
+
+        addPlaylistButton.addActionListener(e -> {
+            String playlistName = playlistNameField.getText();
+            if (!playlistName.isEmpty()) {
+                // Add the playlist name to your model or perform the required action
+                // For now, we'll just print it to the console
+
+                System.out.println("New playlist: " + playlistName);
+                playlistNameField.setText("");
+            }
+        });
+
+
+
 
 
         //music device panel
