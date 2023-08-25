@@ -5,6 +5,7 @@ import javax.swing.text.FlowView;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
+import java.util.Objects;
 
 public class Design extends JFrame {
     private static  final Container container = new Container();
@@ -12,14 +13,25 @@ public class Design extends JFrame {
     private static final RoundedPanel playListPanel = new RoundedPanel(10);
 
 
-    private JPanel createPlaylistPanel;
-    private JTextField playlistNameField;
-    private JButton addPlaylistButton;
-    private boolean isCreatePanelVisible = false;
+//    Playlist
+
+    JLabel demoPlaylistOne = new JLabel("Domiee");
+    JLabel demoPlaylistTwo = new JLabel("Domiee");
+    JLabel demoPlaylistThree = new JLabel("Domiee");
+    JLabel demoPlaylistFour = new JLabel("Domiee");
+    JLabel demoPlaylistFive = new JLabel("Domiee");
+
+    // Create playlist Panel
+    RoundedPanel addPlaylistPanel = new RoundedPanel(20);
+    JTextField playlistName = new JTextField("Name of Playlist");
+    RoundedButton addPlaylist = new RoundedButton("Add",20);
+
+
+    private boolean isCreatePlaylistPanelVisible = false;
 
 
 
-    private boolean isPanelVisible = false;
+    private final boolean isPanelVisible = false;
 
    private Point mousePressLocation;
 //    JPanel imgpnl = new JPanel(){
@@ -35,6 +47,7 @@ public class Design extends JFrame {
         Color panelColor = Color.decode("#1b2223");
         Color greenColor = Color.decode("#0EF6CC");
         Color whiteColor = Color.decode("#F4FEFD");
+        Color YellowColor = Color.decode("#f9e509");
         Color userPnlColor = Color.decode("#3A4F50");
         Font pnlfont = new Font("Tahoma",Font.PLAIN,25);
         Font font = new Font("Tahoma",Font.PLAIN,20);
@@ -172,121 +185,145 @@ public class Design extends JFrame {
         playlist.setFont(new Font("Tahoma",Font.PLAIN,25));
         container.add(playlist);
 
-        JLabel newplaylist = new JLabel("New PlayList");
-        newplaylist.setForeground(whiteColor);
-        newplaylist.setBounds(100,475,150,30);
-        newplaylist.setFont(new Font("Tahoma",Font.PLAIN,18));
-        container.add(newplaylist);
+
+        demoPlaylistOne.setForeground(whiteColor);
+        demoPlaylistOne.setBounds(100,475,150,30);
+        demoPlaylistOne.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(demoPlaylistOne);
+        demoPlaylistOne.setVisible(false);
+
+        demoPlaylistTwo.setForeground(whiteColor);
+        demoPlaylistTwo.setBounds(100,505,150,30);
+        demoPlaylistTwo.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(demoPlaylistTwo);
+        demoPlaylistTwo.setVisible(false);
+
+        demoPlaylistThree.setForeground(whiteColor);
+        demoPlaylistThree.setBounds(100,535,150,30);
+        demoPlaylistThree.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(demoPlaylistThree);
+        demoPlaylistThree.setVisible(false);
+
+        demoPlaylistFour.setForeground(whiteColor);
+        demoPlaylistFour.setBounds(100,565,150,30);
+        demoPlaylistFour.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(demoPlaylistFour);
+        demoPlaylistFour.setVisible(false);
+
+        demoPlaylistFive.setForeground(whiteColor);
+        demoPlaylistFive.setBounds(100,695,150,30);
+        demoPlaylistFive.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(demoPlaylistFive);
+        demoPlaylistFive.setVisible(false);
 
 
-        newplaylist.addMouseListener(new MouseAdapter() {
+
+//        RoundedPanel addPLaylistBtnPanel = new RoundedPanel(20);
+//        addPLaylistBtnPanel.setBounds(30,625,200,60);
+//        addPLaylistBtnPanel.setBackground(YellowColor);
+//        container.add(addPLaylistBtnPanel);
+
+        RoundedButton createPlaylistBtn = new RoundedButton("Create Playlist",20);
+        createPlaylistBtn.setText("Create");
+        createPlaylistBtn.setBounds(32,627,190,50);
+        createPlaylistBtn.setForeground(whiteColor);
+        createPlaylistBtn.setBackground(greenColor);
+        createPlaylistBtn.setFont(new Font("Tahoma",Font.BOLD,24));
+//        container.setComponentZOrder(createPlaylistBtn, 0);
+        container.add(createPlaylistBtn);
+
+
+        createPlaylistBtn.addMouseListener(new MouseAdapter() {
+//    addPlaylistPanel, playlistName, addPlaylist
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if(isPanelVisible){
-                    playListPanel.setVisible(false);
-                    isPanelVisible = false;
+                if(!isCreatePlaylistPanelVisible){
+                    addPlaylistPanel.setVisible(true);
+                    playlistName.setVisible(true);
+                    addPlaylist.setVisible(true);
+                    isCreatePlaylistPanelVisible = true;
+
                 }else{
-                    playListPanel.setVisible(true);
-                    isPanelVisible = true;
+                    addPlaylistPanel.setVisible(false);
+                    playlistName.setVisible(false);
+                    addPlaylist.setVisible(false);
+                    isCreatePlaylistPanelVisible = false;
                 }
             }
         });
 
-        playListPanel.setBounds(265,370,625,420);
-        playListPanel.setBackground(panelColor);
-        container.add(playListPanel);
-        playListPanel.setVisible(false);
+        addPlaylistPanel.setBounds(450, 300,500,200);
+        addPlaylistPanel.setBackground(panelColor);
+        container.setComponentZOrder(addPlaylistPanel,0);
+        container.add(addPlaylistPanel);
+        addPlaylistPanel.setVisible(false);
 
-//        playlistModel = new DefaultListModel<>();
-//        CreatePlayList = new JList<>(playlistModel);
-////        CreatePlayList.setForeground(whiteColor);
-//        CreatePlayList.setBounds(100,510,150,30);
-////        JScrollPane playlistScrollPane = new JScrollPane(playlist);
-//
-//        container.add(CreatePlayList);
+        playlistName.setBounds(515,375,250,50);
+        playlistName.setBackground(panelColor);
+        playlistName.setForeground(greenColor);
+        playlistName.setFont(new Font("Tahoma",Font.PLAIN,24));
+        container.add(playlistName);
+        container.setComponentZOrder(playlistName,0);
+        playlistName.setVisible(false);
 
-
-        JLabel createplaylist = new JLabel("Create PlayList");
-        createplaylist.setForeground(whiteColor);
-        createplaylist.setBounds(100,510,150,30);
-        createplaylist.setFont(new Font("Tahoma",Font.PLAIN,18));
-        container.add(createplaylist);
-
-
-        JLabel createNewplaylist = new JLabel("Create PlayList");
-        createNewplaylist.setForeground(whiteColor);
-        createNewplaylist.setBounds(100, 510, 150, 30);
-        createNewplaylist.setFont(new Font("Tahoma", Font.PLAIN, 18));
-        container.add(createNewplaylist);
-
-        // Mouse listener for the Create PlayList label
-        createplaylist.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (!isCreatePanelVisible) {
-                    createPlaylistPanel.setVisible(true);
-                    container.setComponentZOrder(createPlaylistPanel, 0);
-                    isCreatePanelVisible = true;
-                }else{
-                    createPlaylistPanel.setVisible(false);
-                    isCreatePanelVisible = false;
-                }
-            }
-        });
-
-
-        // Create PlayList Panel
-        createPlaylistPanel = new JPanel();
-        createPlaylistPanel.setBounds(450, 350, 405, 150); // Adjust the height to make it bigger
-        createPlaylistPanel.setBackground(Color.red);
-        container.add(createPlaylistPanel);
-        createPlaylistPanel.setVisible(false);
-
-
-        // Playlist Name Field
-        playlistNameField = new JTextField("Enter Playlist Name");
-        playlistNameField.setBounds(10, 10, 400, 40);
-        playlistNameField.setForeground(Color.GRAY); // Set initial text color
-        createPlaylistPanel.add(playlistNameField);
-
-        playlistNameField.addFocusListener(new FocusListener() {
+        playlistName.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
-                if (playlistNameField.getText().equals("Enter Playlist Name")) {
-                    playlistNameField.setText("");
-                    playlistNameField.setForeground(Color.BLACK); // Set text color when focused
+                if(playlistName.getText().equals("Name of Playlist")){
+                    playlistName.setText("");
                 }
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                if (playlistNameField.getText().isEmpty()) {
-                    playlistNameField.setText("Enter Playlist Name");
-                    playlistNameField.setForeground(Color.GRAY); // Restore placeholder text color
+                if(playlistName.getText().isEmpty()){
+                    playlistName.setText("Name of Playlist");
                 }
             }
         });
 
+        addPlaylist.setBounds(785,375,100,50);
+        addPlaylist.setBackground(greenColor);
+        addPlaylist.setForeground(whiteColor);
+        addPlaylist.setFont(new Font("Tahoma",Font.BOLD,24));
+        container.add(addPlaylist);
+        container.setComponentZOrder(addPlaylist,0);
+
+        addPlaylist.setVisible(false);
 
 
-        // Add Playlist Button
-        addPlaylistButton = new JButton("Add");
-        addPlaylistButton.setBounds(220, 10, 40, 30);
-        createPlaylistPanel.add(addPlaylistButton);
+//        addPlaylist.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                super.mouseClicked(e);
+//                if(playlistName.getText().isEmpty() || playlistName.getText().equals("Name of Playlist")){
+//
+//                }else{
+//                    String playlistName = playlist.getName();
+//                    if(Objects.equals(demoPlaylistOne.getText(), "Domiee") || demoPlaylistOne.getText().isEmpty()){
+//                        demoPlaylistOne.setText(playlistName);
+//                        demoPlaylistOne.setVisible(true);
+//                    } else if (Objects.equals(demoPlaylistTwo.getText(), "Domiee") || demoPlaylistTwo.getText().isEmpty()) {
+//                        demoPlaylistTwo.setText(playlistName);
+//                        demoPlaylistTwo.setVisible(true);
+//                    }
+//                }
+//            }
+//        });
 
-        addPlaylistButton.addActionListener(e -> {
-            String playlistName = playlistNameField.getText();
-            if (!playlistName.isEmpty()) {
-                // Add the playlist name to your model or perform the required action
-                // For now, we'll just print it to the console
-
-                System.out.println("New playlist: " + playlistName);
-                playlistNameField.setText("");
-            }
-        });
 
 
+
+
+
+
+
+        playListPanel.setBounds(265,370,625,420);
+        playListPanel.setBackground(panelColor);
+        container.add(playListPanel);
+        playListPanel.setVisible(false);
 
 
 
