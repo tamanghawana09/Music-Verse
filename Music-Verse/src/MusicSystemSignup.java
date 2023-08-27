@@ -19,6 +19,7 @@ public class MusicSystemSignup extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new GridBagLayout());
 
+        
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.insets = new Insets(5, 10, 5, 10);
