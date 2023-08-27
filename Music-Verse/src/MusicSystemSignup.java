@@ -108,6 +108,7 @@ public class MusicSystemSignup extends JFrame {
         // Replace this with your actual signup validation logic
         return !username.isEmpty() && !password.isEmpty() && !reconfirmPassword.isEmpty() && password.equals(reconfirmPassword) && !email.isEmpty() && !fullName.isEmpty();
     }
+    
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             new MusicSystemSignup().setVisible(true);

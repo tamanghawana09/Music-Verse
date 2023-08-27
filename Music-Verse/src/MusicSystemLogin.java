@@ -12,7 +12,7 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
     private JPasswordField passwordField;
     JPanel panel = new JPanel();
     private JCheckBox showPasswordCheckbox; // Checkbox to show/hide password
-    
+
     public MusicSystemLogin() {
         setSize(600, 400);
         setTitle("Music System Login");
