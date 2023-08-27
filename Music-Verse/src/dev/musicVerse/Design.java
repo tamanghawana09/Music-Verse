@@ -141,24 +141,68 @@ public class Design extends JFrame {
         explore.setBounds(100,125,150,30);
         explore.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(explore);
+        explore.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                explore.setText("<html><u><font color='#0EF6CC'>Explore</font></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+               explore.setText("<html><font color='#F4FEFD'>Explore</font></html>");
+            }
+        });
 
         JLabel genres = new JLabel("Genres");
         genres.setForeground(whiteColor);
         genres.setBounds(100,165,150,30);
         genres.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(genres);
+        genres.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                genres.setText("<html><u><font color='#0EF6CC'>Genres</font></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                genres.setText("<html><font color='#F4FEFD'>Genres</font></html>");
+            }
+        });
 
         JLabel albums = new JLabel("Albums");
         albums.setForeground(whiteColor);
         albums.setBounds(100,200,150,30);
         albums.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(albums);
+        albums.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                albums.setText("<html><u><font color='#0EF6CC'>Albums</font></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                albums.setText("<html><font color='#F4FEFD'>Albums</font></html>");
+            }
+        });
 
         JLabel artists = new JLabel("Artists");
         artists.setForeground(whiteColor);
         artists.setBounds(100,235,150,30);
         artists.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(artists);
+        artists.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                artists.setText("<html><u><font color='#0EF6CC'>Artists</font></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+               artists.setText("<html><font color='#F4FEFD'>Artists</font></html>");
+            }
+        });
 
         //Library
         JLabel library = new JLabel("LIBRARY");
@@ -172,18 +216,51 @@ public class Design extends JFrame {
         recent.setBounds(100,325,150,30);
         recent.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(recent);
+        recent.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                recent.setText("<html><u><font color='#0EF6CC'>Recent</font></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                recent.setText("<html><font color='#F4FEFD'>Recent</font></html>");
+            }
+        });
 
         JLabel fav = new JLabel("Favorites");
         fav.setForeground(whiteColor);
         fav.setBounds(100,360,150,30);
         fav.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(fav);
+        fav.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                fav.setText("<html><u><font color='#0EF6CC'>Favorites</font></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                fav.setText("<html><font color='#F4FEFD'>Favorites</font></html>");
+            }
+        });
 
         JLabel local = new JLabel("Local");
         local.setForeground(whiteColor);
         local.setBounds(100,395,150,30);
         local.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(local);
+        local.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+               local.setText("<html><u><font color='#0EF6CC'>Local</font></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                local.setText("<html><font color='#F4FEFD'>Local</font></html>");
+            }
+        });
 
 
 
@@ -335,22 +412,6 @@ public class Design extends JFrame {
         playListPanel.setVisible(false);
 
 
-
-        //music device panel
-//        JPanel img = new JPanel() {
-//            @Override
-//            protected void paintComponent(Graphics g) {
-//
-//                ImageIcon imageIcon = new ImageIcon("/Images/music.png");
-//                Image image = imageIcon.getImage();
-//                g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-//
-//            }
-//        };
-//        img.setLayout(null);
-//        img.setOpaque(false);
-//        img.setBounds(35,670,55,60);
-//        container.add(img);
 
         JLabel backlbl = new JLabel("playing on device");
         backlbl.setForeground(whiteColor);
