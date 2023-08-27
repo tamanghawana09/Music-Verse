@@ -1,10 +1,17 @@
 package dev.musicVerse;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.text.FlowView;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
+import java.io.IOException;
 import java.util.Objects;
 
 public class Design extends JFrame {
@@ -12,6 +19,8 @@ public class Design extends JFrame {
     private static final JPanel panel = new JPanel();
     private static final RoundedPanel playListPanel = new RoundedPanel(10);
 
+    private ImageIcon image1;
+    private JLabel imgLbl;
 
 //    Playlist
 
@@ -65,6 +74,7 @@ public class Design extends JFrame {
         setBackground(backgroundColor);
         setLocation(120,10);
 
+
         //Search panel
         RoundedPanel searchPnl = new RoundedPanel(35);
         searchPnl.setBounds(500,20,400,35);
@@ -105,8 +115,7 @@ public class Design extends JFrame {
         //This is for songs to be search in server or database
 //        searchTf.addKeyListener(new KeyAdapter() {
 //        });
-
-
+//
 
         //left panel components
         JLabel nameLbl = new JLabel("Music-Verse");
@@ -379,18 +388,18 @@ public class Design extends JFrame {
         panel.setBackground(panelColor);
         container.add(panel);
 
-        // Top artist panel in dashboard
-        RoundedPanel artistPnl = new RoundedPanel(10);
-        artistPnl.setBounds(265,370,625,130);
-        artistPnl.setLayout(new FlowLayout(FlowLayout.LEFT));
-        artistPnl.setBackground(panelColor);
+        // Top playlists panel in dashboard
+        RoundedPanel playlistPnl = new RoundedPanel(10);
+        playlistPnl.setBounds(265,370,625,130);
+        playlistPnl.setLayout(new FlowLayout(FlowLayout.LEFT));
+        playlistPnl.setBackground(panelColor);
 
         JLabel artistLbl = new JLabel();
-        artistLbl.setText("Top Artists");
+        artistLbl.setText("Top Playlists");
         artistLbl.setFont(pnlfont);
         artistLbl.setForeground(whiteColor);
-        artistPnl.add(artistLbl);
-        container.add(artistPnl);
+        playlistPnl.add(artistLbl);
+        container.add(playlistPnl);
 
         //Player panel  components in dashboard
 
@@ -536,10 +545,17 @@ public class Design extends JFrame {
         container.add(genrePnl);
 
         //Top Charts panel in dashboard
+
         RoundedPanel chartPnl = new RoundedPanel(10);
         chartPnl.setBounds(560,510,330,280);
         chartPnl.setLayout(new FlowLayout(FlowLayout.LEFT));
         chartPnl.setBackground(panelColor);
+
+        JPanel chartPnl2 = new JPanel();
+        chartPnl2.setBounds(565,550,320,230);
+//        chartPnl2.setBackground(panelColor);
+        chartPnl2.setLayout(new BorderLayout());
+        container.add(chartPnl2);
 
         JLabel chartlbl = new JLabel();
         chartlbl.setText("Top Charts");
@@ -547,6 +563,25 @@ public class Design extends JFrame {
         chartlbl.setForeground(whiteColor);
         chartPnl.add(chartlbl);
         container.add(chartPnl);
+        Object[][] data ={
+                {01, "Bhanai","4:00"},
+                {02,"Chinta","4:20"},
+                {03, "Upahar","4:50"}
+        };
+        String[] columnNames = {"S.N","Name","Duration"};
+        DefaultTableModel model = new DefaultTableModel(data,columnNames);
+        JTable table = new JTable(model);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        table.setBackground(panelColor);
+        table.setForeground(whiteColor);
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(panelColor);
+        header.setForeground(whiteColor);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.getViewport().setBackground(panelColor);
+        scrollPane.setBorder(null);
+        chartPnl2.setBorder(null);
+        chartPnl2.add(scrollPane,BorderLayout.CENTER);
 
         // Top labels (Music, Playlist)
         JLabel musiclbl = new JLabel();
@@ -641,6 +676,11 @@ public class Design extends JFrame {
             }
         });
 
+        //Background Edge band image
+        image1 = new ImageIcon(getClass().getResource("/Images/edge.jpg"));
+        imgLbl = new JLabel(image1);
+        imgLbl.setBounds(700,30,600,400);
+        container.add(imgLbl);
 
         setLocationRelativeTo(null);
         setLayout(null);
