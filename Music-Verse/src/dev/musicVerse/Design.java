@@ -117,6 +117,43 @@ public class Design extends JFrame {
 //        });
 //
 
+        //Top label components
+
+        //Trending New Hits label
+        JLabel lbl =  new JLabel("Trending New Hits");
+        lbl.setForeground(whiteColor);
+        lbl.setBounds(270,100,150,30);
+        lbl.setFont(new Font("Tahoma",Font.PLAIN,15));
+        container.add(lbl);
+
+        JLabel lbl2 = new JLabel("Nachahe ko Hoina");
+        lbl2.setForeground(whiteColor);
+        lbl2.setBounds(270,170,400,40);
+        lbl2.setFont(new Font("Tahoma",Font.BOLD,40));
+        container.add(lbl2);
+
+        JLabel lbl3 = new JLabel("The Edge Band Nepal");
+        lbl3.setForeground(userPnlColor);
+        lbl3.setBounds(270,220,300,30);
+        lbl3.setFont(new Font("Tahoma",Font.BOLD,20));
+        container.add(lbl3);
+
+        JLabel lbl4 = new JLabel("1 Million Plays");
+        lbl4.setForeground(whiteColor);
+        lbl4.setBounds(500,220,150,30);
+        lbl4.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(lbl4);
+
+        //Rounded Button
+        RoundedButton rb = new RoundedButton("Listen Now",50);
+        rb.setFont(new Font("Tahoma",Font.BOLD,20));
+        rb.setBackground(panelColor);
+        rb.setForeground(greenColor);
+        rb.setBounds(270,280,180,50);
+        rb.setBorderPainted(false);
+        container.add(rb);
+
+
         //left panel components
         JLabel nameLbl = new JLabel("Music-Verse");
         nameLbl.setBounds(90,15,150,30);
