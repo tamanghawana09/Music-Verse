@@ -1,10 +1,17 @@
 package dev.musicVerse;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.text.FlowView;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
+import java.io.IOException;
 import java.util.Objects;
 
 public class Design extends JFrame {
@@ -12,6 +19,8 @@ public class Design extends JFrame {
     private static final JPanel panel = new JPanel();
     private static final RoundedPanel playListPanel = new RoundedPanel(10);
 
+    private ImageIcon image1;
+    private JLabel imgLbl;
 
 //    Playlist
 
@@ -65,6 +74,7 @@ public class Design extends JFrame {
         setBackground(backgroundColor);
         setLocation(120,10);
 
+
         //Search panel
         RoundedPanel searchPnl = new RoundedPanel(35);
         searchPnl.setBounds(500,20,400,35);
@@ -105,7 +115,43 @@ public class Design extends JFrame {
         //This is for songs to be search in server or database
 //        searchTf.addKeyListener(new KeyAdapter() {
 //        });
+//
 
+        //Top label components
+
+        //Trending New Hits label
+        JLabel lbl =  new JLabel("Trending New Hits");
+        lbl.setForeground(whiteColor);
+        lbl.setBounds(270,100,150,30);
+        lbl.setFont(new Font("Tahoma",Font.PLAIN,15));
+        container.add(lbl);
+
+        JLabel lbl2 = new JLabel("Nachahe ko Hoina");
+        lbl2.setForeground(whiteColor);
+        lbl2.setBounds(270,170,400,40);
+        lbl2.setFont(new Font("Tahoma",Font.BOLD,40));
+        container.add(lbl2);
+
+        JLabel lbl3 = new JLabel("The Edge Band Nepal");
+        lbl3.setForeground(userPnlColor);
+        lbl3.setBounds(270,220,300,30);
+        lbl3.setFont(new Font("Tahoma",Font.BOLD,20));
+        container.add(lbl3);
+
+        JLabel lbl4 = new JLabel("1 Million Plays");
+        lbl4.setForeground(whiteColor);
+        lbl4.setBounds(500,220,150,30);
+        lbl4.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(lbl4);
+
+        //Rounded Button
+        RoundedButton rb = new RoundedButton("Listen Now",50);
+        rb.setFont(new Font("Tahoma",Font.BOLD,20));
+        rb.setBackground(panelColor);
+        rb.setForeground(greenColor);
+        rb.setBounds(270,280,180,50);
+        rb.setBorderPainted(false);
+        container.add(rb);
 
 
         //left panel components
@@ -132,24 +178,68 @@ public class Design extends JFrame {
         explore.setBounds(100,125,150,30);
         explore.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(explore);
+        explore.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                explore.setText("<html><u><font color='#0EF6CC'>Explore</font></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+               explore.setText("<html><font color='#F4FEFD'>Explore</font></html>");
+            }
+        });
 
         JLabel genres = new JLabel("Genres");
         genres.setForeground(whiteColor);
         genres.setBounds(100,165,150,30);
         genres.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(genres);
+        genres.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                genres.setText("<html><u><font color='#0EF6CC'>Genres</font></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                genres.setText("<html><font color='#F4FEFD'>Genres</font></html>");
+            }
+        });
 
         JLabel albums = new JLabel("Albums");
         albums.setForeground(whiteColor);
         albums.setBounds(100,200,150,30);
         albums.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(albums);
+        albums.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                albums.setText("<html><u><font color='#0EF6CC'>Albums</font></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                albums.setText("<html><font color='#F4FEFD'>Albums</font></html>");
+            }
+        });
 
         JLabel artists = new JLabel("Artists");
         artists.setForeground(whiteColor);
         artists.setBounds(100,235,150,30);
         artists.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(artists);
+        artists.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                artists.setText("<html><u><font color='#0EF6CC'>Artists</font></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+               artists.setText("<html><font color='#F4FEFD'>Artists</font></html>");
+            }
+        });
 
         //Library
         JLabel library = new JLabel("LIBRARY");
@@ -163,18 +253,51 @@ public class Design extends JFrame {
         recent.setBounds(100,325,150,30);
         recent.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(recent);
+        recent.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                recent.setText("<html><u><font color='#0EF6CC'>Recent</font></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                recent.setText("<html><font color='#F4FEFD'>Recent</font></html>");
+            }
+        });
 
         JLabel fav = new JLabel("Favorites");
         fav.setForeground(whiteColor);
         fav.setBounds(100,360,150,30);
         fav.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(fav);
+        fav.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                fav.setText("<html><u><font color='#0EF6CC'>Favorites</font></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                fav.setText("<html><font color='#F4FEFD'>Favorites</font></html>");
+            }
+        });
 
         JLabel local = new JLabel("Local");
         local.setForeground(whiteColor);
         local.setBounds(100,395,150,30);
         local.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(local);
+        local.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+               local.setText("<html><u><font color='#0EF6CC'>Local</font></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                local.setText("<html><font color='#F4FEFD'>Local</font></html>");
+            }
+        });
 
 
 
@@ -327,22 +450,6 @@ public class Design extends JFrame {
 
 
 
-        //music device panel
-//        JPanel img = new JPanel() {
-//            @Override
-//            protected void paintComponent(Graphics g) {
-//
-//                ImageIcon imageIcon = new ImageIcon("/Images/music.png");
-//                Image image = imageIcon.getImage();
-//                g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-//
-//            }
-//        };
-//        img.setLayout(null);
-//        img.setOpaque(false);
-//        img.setBounds(35,670,55,60);
-//        container.add(img);
-
         JLabel backlbl = new JLabel("playing on device");
         backlbl.setForeground(whiteColor);
         backlbl.setFont(new Font("Tahoma",Font.PLAIN,15));
@@ -379,18 +486,18 @@ public class Design extends JFrame {
         panel.setBackground(panelColor);
         container.add(panel);
 
-        // Top artist panel in dashboard
-        RoundedPanel artistPnl = new RoundedPanel(10);
-        artistPnl.setBounds(265,370,625,130);
-        artistPnl.setLayout(new FlowLayout(FlowLayout.LEFT));
-        artistPnl.setBackground(panelColor);
+        // Top playlists panel in dashboard
+        RoundedPanel playlistPnl = new RoundedPanel(10);
+        playlistPnl.setBounds(265,370,625,130);
+        playlistPnl.setLayout(new FlowLayout(FlowLayout.LEFT));
+        playlistPnl.setBackground(panelColor);
 
         JLabel artistLbl = new JLabel();
-        artistLbl.setText("Top Artists");
+        artistLbl.setText("Top Playlists");
         artistLbl.setFont(pnlfont);
         artistLbl.setForeground(whiteColor);
-        artistPnl.add(artistLbl);
-        container.add(artistPnl);
+        playlistPnl.add(artistLbl);
+        container.add(playlistPnl);
 
         //Player panel  components in dashboard
 
@@ -536,10 +643,17 @@ public class Design extends JFrame {
         container.add(genrePnl);
 
         //Top Charts panel in dashboard
+
         RoundedPanel chartPnl = new RoundedPanel(10);
         chartPnl.setBounds(560,510,330,280);
         chartPnl.setLayout(new FlowLayout(FlowLayout.LEFT));
         chartPnl.setBackground(panelColor);
+
+        JPanel chartPnl2 = new JPanel();
+        chartPnl2.setBounds(565,550,320,230);
+//        chartPnl2.setBackground(panelColor);
+        chartPnl2.setLayout(new BorderLayout());
+        container.add(chartPnl2);
 
         JLabel chartlbl = new JLabel();
         chartlbl.setText("Top Charts");
@@ -547,6 +661,25 @@ public class Design extends JFrame {
         chartlbl.setForeground(whiteColor);
         chartPnl.add(chartlbl);
         container.add(chartPnl);
+        Object[][] data ={
+                {01, "Bhanai","4:00"},
+                {02,"Chinta","4:20"},
+                {03, "Upahar","4:50"}
+        };
+        String[] columnNames = {"S.N","Name","Duration"};
+        DefaultTableModel model = new DefaultTableModel(data,columnNames);
+        JTable table = new JTable(model);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        table.setBackground(panelColor);
+        table.setForeground(whiteColor);
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(panelColor);
+        header.setForeground(whiteColor);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.getViewport().setBackground(panelColor);
+        scrollPane.setBorder(null);
+        chartPnl2.setBorder(null);
+        chartPnl2.add(scrollPane,BorderLayout.CENTER);
 
         // Top labels (Music, Playlist)
         JLabel musiclbl = new JLabel();
@@ -641,6 +774,11 @@ public class Design extends JFrame {
             }
         });
 
+        //Background Edge band image
+        image1 = new ImageIcon(getClass().getResource("/Images/edge.jpg"));
+        imgLbl = new JLabel(image1);
+        imgLbl.setBounds(700,30,600,400);
+        container.add(imgLbl);
 
         setLocationRelativeTo(null);
         setLayout(null);
