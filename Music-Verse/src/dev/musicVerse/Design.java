@@ -1,5 +1,7 @@
 package dev.musicVerse;
 
+import Client.MusicHandler;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -15,12 +17,32 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class Design extends JFrame {
+    MusicHandler musicHandler;
+
     private static  final Container container = new Container();
     private static final JPanel panel = new JPanel();
     private static final RoundedPanel playListPanel = new RoundedPanel(10);
 
     private ImageIcon image1;
     private JLabel imgLbl;
+
+
+    //Panel to store table and songs data
+    RoundedPanel displaySongsPanel = new RoundedPanel(10);
+
+//    Data Table to display data from the database
+        public DefaultTableModel tableModel = new DefaultTableModel(
+            new String[][]{}, // Initial data (empty)
+            new String[]{"S.N", "Title", "Artist", "Duration", "Genre"}
+        );
+
+    public JTable displayData = new JTable(tableModel);
+    public JScrollPane scrollPane = new JScrollPane(displayData);
+
+
+
+    private boolean isDisplayPanelVisible = false;
+
 
 //    Playlist
 
@@ -40,6 +62,8 @@ public class Design extends JFrame {
 
 
 
+
+
     private final boolean isPanelVisible = false;
 
    private Point mousePressLocation;
@@ -51,6 +75,8 @@ public class Design extends JFrame {
 //        }
 //    };
     public Design(){
+        musicHandler = new MusicHandler(this);
+        musicHandler.connectServer();
         //Colors and Fonts properties
         Color backgroundColor = Color.decode("#00000");
         Color panelColor = Color.decode("#1b2223");
@@ -298,6 +324,24 @@ public class Design extends JFrame {
                 local.setText("<html><font color='#F4FEFD'>Local</font></html>");
             }
         });
+
+
+
+        //RoundedPanel to create table which display Songs.
+        //Table should consist Name, Artist, duration Genre.
+        displaySongsPanel.setBackground(panelColor);
+        displaySongsPanel.setBounds(265,370,625,420);
+        container.add(displaySongsPanel);
+        displaySongsPanel.setVisible(false);
+
+//      Table to retrieve songs data form database and store it
+
+//        displaySongsPanel.add(displayData);
+        scrollPane.setBounds(270,375,615,410);
+        container.add(scrollPane);
+        container.setComponentZOrder(scrollPane,0);
+        scrollPane.setVisible(false);
+
 
 
 
@@ -700,6 +744,22 @@ public class Design extends JFrame {
             public void mouseExited(MouseEvent e) {
                 musiclbl.setText("<html><font color='#F4FEFD'>Music</font></html>");
             }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setPanelVisible();
+                String songName = musiclbl.getText();
+                try {
+                    if(isDisplayPanelVisible){
+                        System.out.println("Calling getSongFunction");
+                        musicHandler.getSongData(songName);
+                    }
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+
+
         });
         container.add(musiclbl);
 
@@ -786,6 +846,18 @@ public class Design extends JFrame {
         setLocationRelativeTo(null);
         setLayout(null);
         setContentPane(container);
+    }
+
+    public void setPanelVisible(){
+        if(isDisplayPanelVisible){
+            displaySongsPanel.setVisible(false);
+            scrollPane.setVisible(false);
+            isDisplayPanelVisible = false;
+        }else{
+            displaySongsPanel.setVisible(true);
+            isDisplayPanelVisible = true;
+            scrollPane.setVisible(true);
+        }
     }
 
 }
