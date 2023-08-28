@@ -661,6 +661,7 @@ public class Design extends JFrame {
         chartlbl.setForeground(whiteColor);
         chartPnl.add(chartlbl);
         container.add(chartPnl);
+        int rows=20;
         Object[][] data ={
                 {01, "Bhanai","4:00"},
                 {02,"Chinta","4:20"},
@@ -672,9 +673,11 @@ public class Design extends JFrame {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         table.setBackground(panelColor);
         table.setForeground(whiteColor);
+        table.setRowHeight(rows);
         JTableHeader header = table.getTableHeader();
         header.setBackground(panelColor);
         header.setForeground(whiteColor);
+
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.getViewport().setBackground(panelColor);
         scrollPane.setBorder(null);
