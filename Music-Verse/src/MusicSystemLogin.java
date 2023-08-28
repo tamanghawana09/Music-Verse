@@ -121,6 +121,7 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
         setVisible(false); // Hide the current login panel
         MusicSystemSignup musicSystemSignup = new MusicSystemSignup();
         musicSystemSignup.setVisible(true); // Show the signup panel
+
     }
 
     public static void main(String[] args) {
