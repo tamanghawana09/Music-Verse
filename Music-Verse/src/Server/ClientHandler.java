@@ -10,6 +10,7 @@ public class ClientHandler implements Runnable{
     private ArrayList<Socket> clients;
     private Socket clientSocket;
     private String clientRequest;
+    private String dataRequest;
 
 
     //Rohan Database Connection
@@ -42,22 +43,29 @@ public class ClientHandler implements Runnable{
                     clientRequest = "";
                     System.out.println("Deleting Client Req.");
 
-                    System.out.println("Sending database data to client...");
+                    printWriter.println("SEND_TABLE_DETAIL");
+                    printWriter.flush();
 
-                    // Retrieve data from the database
-                    List<String> databaseData = retrieveDataFromDatabase();
+                    dataRequest = clientDataReader.readLine();
+                    System.out.println(dataRequest);
+//                    Music
+                    if(dataRequest.equals("Music")){
+                        System.out.println("Sending database data to client...");
+                        // Retrieve data from the database
+                        List<String> databaseData = retrieveDataFromDatabase(databaseUrl);
 
-                    // Send the data to the client
-                    for (String data : databaseData) {
-                        printWriter.println(data);
-                        printWriter.flush();
+                        // Send the data to the client
+                        for (String data : databaseData) {
+                            printWriter.println(data);
+                            printWriter.flush();
+                        }
                     }
 
+
+                    clientRequest = "";
+                    dataRequest = "";
                     System.out.println("Data sent to client");
                 }
-
-
-
 
             }
         } catch (IOException e) {
@@ -66,7 +74,7 @@ public class ClientHandler implements Runnable{
 
     }
 
-    private List<String> retrieveDataFromDatabase() {
+    private List<String> retrieveDataFromDatabase(String DefaultdatabaseUrl) {
 
         List<String> data = new ArrayList<>();
         try {
@@ -75,7 +83,7 @@ public class ClientHandler implements Runnable{
 //            String username = "your_username";
 //            String password = "your_password";
 
-            Connection connection = DriverManager.getConnection(databaseUrl, "root", "@qwe@123");
+            Connection connection = DriverManager.getConnection(DefaultdatabaseUrl, "root", "@qwe@123");
             Statement statement = connection.createStatement();
 
             ResultSet resultSet = statement.executeQuery("SELECT Title, Artist, Duration, Name FROM Songs " +

@@ -36,7 +36,14 @@ public class Design extends JFrame {
             new String[]{"S.N", "Title", "Artist", "Duration", "Genre"}
         );
 
-    public JTable displayData = new JTable(tableModel);
+    public JTable displayData = new JTable(tableModel){
+        @Override
+        public boolean isCellEditable(int row, int column) {
+//            return super.isCellEditable(row, column);
+            return false;
+        }
+    };
+
     public JScrollPane scrollPane = new JScrollPane(displayData);
 
 
@@ -76,7 +83,7 @@ public class Design extends JFrame {
 //    };
     public Design(){
         musicHandler = new MusicHandler(this);
-        musicHandler.connectServer();
+//        musicHandler.connectServer();
         //Colors and Fonts properties
         Color backgroundColor = Color.decode("#00000");
         Color panelColor = Color.decode("#1b2223");
@@ -748,7 +755,7 @@ public class Design extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 setPanelVisible();
-                String songName = musiclbl.getText();
+                String songName = "Music";
                 try {
                     if(isDisplayPanelVisible){
                         System.out.println("Calling getSongFunction");
@@ -857,6 +864,7 @@ public class Design extends JFrame {
             displaySongsPanel.setVisible(true);
             isDisplayPanelVisible = true;
             scrollPane.setVisible(true);
+            tableModel.setRowCount(0);
         }
     }
 
