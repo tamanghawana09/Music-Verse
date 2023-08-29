@@ -1,6 +1,7 @@
 package dev.musicVerse;
 
 import Client.MusicHandler;
+import com.mysql.cj.x.protobuf.MysqlxDatatypes;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -25,6 +26,8 @@ public class Design extends JFrame {
 
     private ImageIcon image1;
     private JLabel imgLbl;
+    private ImageIcon playerImg;
+    private JLabel playerLbl;
 
 
     //Panel to store table and songs data
@@ -551,6 +554,26 @@ public class Design extends JFrame {
         container.add(playlistPnl);
 
         //Player panel  components in dashboard
+//        playerImg = new ImageIcon(getClass().getResource("/Images/R.jpg"));
+//        BufferedImage scaledImg =
+//        playerLbl = new JLabel(playerImg);
+//        playerLbl.setBounds(800,400,500,200);
+//        container.add(playerLbl);
+
+        JLabel songName = new JLabel("Bhanai");
+        songName.setFont(new Font("Tahoma",Font.BOLD,40));
+        songName.setForeground(whiteColor);
+        songName.setBounds(1020,570,300,40);
+        container.add(songName);
+
+        JLabel singerName = new JLabel("The Tribal Rain");
+        singerName.setFont(new Font("Tahoma",Font.PLAIN,12));
+        singerName.setForeground(whiteColor);
+        singerName.setBounds(1050,620,300,12);
+        container.add(singerName);
+
+
+
 
         //play Button
         JButton playBtn = new JButton(){
