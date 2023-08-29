@@ -5,6 +5,8 @@ import com.mysql.cj.x.protobuf.MysqlxDatatypes;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.text.FlowView;
@@ -17,7 +19,7 @@ import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.util.Objects;
 
-public class Design extends JFrame {
+public class Design extends JFrame{
     MusicHandler musicHandler;
 
     private static  final Container container = new Container();
@@ -555,9 +557,13 @@ public class Design extends JFrame {
 
         //Player panel  components in dashboard
 //        playerImg = new ImageIcon(getClass().getResource("/Images/R.jpg"));
-//        BufferedImage scaledImg =
-//        playerLbl = new JLabel(playerImg);
-//        playerLbl.setBounds(800,400,500,200);
+//        Image newImg = playerImg.getImage().getScaledInstance(200,200,Image.SCALE_DEFAULT);
+//        playerLbl = new JLabel();
+//        playerLbl.setHorizontalAlignment(SwingConstants.CENTER);
+//        playerLbl.setBounds(800,400,200,200);
+//        playerLbl.setIcon(playerImg);
+//        playerLbl.setBounds(800,400,200,200);
+//
 //        container.add(playerLbl);
 
         JLabel songName = new JLabel("Bhanai");
@@ -571,6 +577,24 @@ public class Design extends JFrame {
         singerName.setForeground(whiteColor);
         singerName.setBounds(1050,620,300,12);
         container.add(singerName);
+
+        JSlider slider = new JSlider(JSlider.HORIZONTAL,0,100,50);
+        slider.setMajorTickSpacing(10);
+        slider.setMinorTickSpacing(1);
+        slider.setPaintTicks(true);
+        slider.setPaintLabels(true);
+
+        slider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                JSlider source = (JSlider) e.getSource();
+                int value = source.getValue();
+                System.out.println("Slider Value" + value);
+            }
+        });
+        slider.setBounds(1000,650,500,10);
+        container.add(slider);
+
 
 
 
