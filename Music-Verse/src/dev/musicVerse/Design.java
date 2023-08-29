@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.SliderUI;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.text.FlowView;
@@ -569,21 +570,18 @@ public class Design extends JFrame{
         JLabel songName = new JLabel("Bhanai");
         songName.setFont(new Font("Tahoma",Font.BOLD,40));
         songName.setForeground(whiteColor);
-        songName.setBounds(1020,570,300,40);
+        songName.setBounds(1010,570,300,40);
         container.add(songName);
 
         JLabel singerName = new JLabel("The Tribal Rain");
         singerName.setFont(new Font("Tahoma",Font.PLAIN,12));
         singerName.setForeground(whiteColor);
-        singerName.setBounds(1050,620,300,12);
+        singerName.setBounds(1040,620,300,12);
         container.add(singerName);
 
         JSlider slider = new JSlider(JSlider.HORIZONTAL,0,100,50);
         slider.setMajorTickSpacing(10);
         slider.setMinorTickSpacing(1);
-        slider.setPaintTicks(true);
-        slider.setPaintLabels(true);
-
         slider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -592,8 +590,12 @@ public class Design extends JFrame{
                 System.out.println("Slider Value" + value);
             }
         });
-        slider.setBounds(1000,650,500,10);
+        slider.setBackground(userPnlColor);
+        slider.setBorder(null);
+        //UIManager.put("Slider.thumb",new EllipseThumb());
+        slider.setBounds(930,650,300,15);
         container.add(slider);
+
 
 
 
