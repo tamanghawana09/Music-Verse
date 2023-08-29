@@ -3,6 +3,7 @@ package Client;
 import dev.musicVerse.Design;
 
 import javax.sound.sampled.*;
+import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -21,6 +22,7 @@ public class MusicHandler {
     OutputStream outputStream;
     public PrintWriter printWriter;
     public Design design;
+    private String serverRequest;
 
     public MusicHandler(Design design){
         this.design = design;
@@ -41,36 +43,53 @@ public class MusicHandler {
 
 
     public void getSongData(String songName) throws IOException {
+        connectServer();
         clientReq = "REQ_TO_RETRIEVE_DATA";
         this.songName = songName;
+        System.out.println(songName);
 
-        try {
-            socketDataReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            outputStream = socket.getOutputStream();
-            printWriter = new PrintWriter(outputStream);
+        if(design.tableModel.getRowCount() == 0){
+            try {
+                socketDataReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                outputStream = socket.getOutputStream();
+                printWriter = new PrintWriter(outputStream);
 
-            System.out.println("Sending Request");
-            printWriter.println(clientReq);
-            printWriter.flush();
+                System.out.println("Sending Request");
+                printWriter.println(clientReq);
+                printWriter.flush();
 
-            String serverResponse;
-            while ((serverResponse = socketDataReader.readLine()) != null) {
-                String[] rowData = serverResponse.split(" - "); // Split server response
-                design.tableModel.addRow(rowData);
-            }
+                serverRequest = socketDataReader.readLine();
+                System.out.println("Server : " + serverRequest);
+                if(serverRequest.equals("SEND_TABLE_DETAIL")){
+                    printWriter.println(songName);
+                    printWriter.flush();
+                }
 
-        } catch (Exception e) {
+                String serverResponse;
+                while ((serverResponse = socketDataReader.readLine()) != null) {
+                    String[] rowData = serverResponse.split(" - "); // Split server response
+                    design.tableModel.addRow(rowData);
+                }
+                System.out.println("Data received and Displayed on the Table");
+                socket.close();
+                System.out.println("server closed");
+
+            } catch (Exception e) {
 //            throw new RuntimeException(e);
-            System.out.println("Data Already Exist");
-        } finally {
-            // Close the resources other than the socket itself
-            if (socketDataReader != null) {
-                socketDataReader.close();
-            }
-            if (printWriter != null) {
-                printWriter.close();
+                System.out.println("Data Already Exist");
             }
         }
+
+
+//        finally {
+//            // Close the resources other than the socket itself
+//            if (socketDataReader != null) {
+//                socketDataReader.close();
+//            }
+//            if (printWriter != null) {
+//                printWriter.close();
+//            }
+//        }
 
 
 
