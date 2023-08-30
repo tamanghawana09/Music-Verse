@@ -3,6 +3,7 @@ package Client;
 import dev.musicVerse.Design;
 
 import javax.sound.sampled.*;
+import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -16,7 +17,16 @@ public class MusicHandler {
     public ByteArrayOutputStream byteArrayOutputStream;
     public InputStream inputStream;
     public int currentSongIndex = -1; // Initialize to an invalid index
+    String clientReq,songName;
+    public BufferedReader socketDataReader;
+    OutputStream outputStream;
+    public PrintWriter printWriter;
+    public Design design;
+    private String serverRequest;
 
+    public MusicHandler(Design design){
+        this.design = design;
+    }
 
 
     //Design Class
@@ -31,73 +41,127 @@ public class MusicHandler {
         }
     }
 
-    public void playMusic() throws LineUnavailableException, IOException, InterruptedException, UnsupportedAudioFileException {
-        if (audioData != null) {
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(audioData);
 
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(byteArrayInputStream);
-            clip = AudioSystem.getClip();
-            clip.open(audioInputStream);
+    public void getSongData(String songName) throws IOException {
+        connectServer();
+        clientReq = "REQ_TO_RETRIEVE_DATA";
+        this.songName = songName;
+        System.out.println(songName);
 
-            Thread audioThread = new Thread(() -> {
-                isPlaying = true;
-                clip.setMicrosecondPosition(clipPosition);
-                clip.start();
-                try {
-                    Thread.sleep(clip.getMicrosecondLength() / 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        if(design.tableModel.getRowCount() == 0){
+            try {
+                socketDataReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                outputStream = socket.getOutputStream();
+                printWriter = new PrintWriter(outputStream);
+
+                System.out.println("Sending Request");
+                printWriter.println(clientReq);
+                printWriter.flush();
+
+                serverRequest = socketDataReader.readLine();
+                System.out.println("Server : " + serverRequest);
+                if(serverRequest.equals("SEND_TABLE_DETAIL")){
+                    printWriter.println(songName);
+                    printWriter.flush();
                 }
-                clipPosition = clip.getMicrosecondPosition();
-                if (clipPosition >= clip.getMicrosecondLength()) {
-                    isPlaying = false;
+
+                String serverResponse;
+                while ((serverResponse = socketDataReader.readLine()) != null) {
+                    String[] rowData = serverResponse.split(" - "); // Split server response
+                    design.tableModel.addRow(rowData);
                 }
-                clip.close();
-            });
+                System.out.println("Data received and Displayed on the Table");
+                socket.close();
+                System.out.println("server closed");
 
-            audioThread.start();
-        }
-
-    }
-
-    public void pauseMusic() {
-        if (clip != null && clip.isRunning()) {
-            clipPosition = clip.getMicrosecondPosition();
-            clip.stop();
-            isPlaying = false;
-        }
-    }
-
-    public void resumePauseMusic() {
-        pauseMusic();
-        // Resume logic is the same as play, so call play
-        try {
-            playMusic();
-        } catch (LineUnavailableException | IOException | InterruptedException | UnsupportedAudioFileException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public byte[] fetchDataFromServer() {
-        try {
-            inputStream = socket.getInputStream();
-            byteArrayOutputStream = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                byteArrayOutputStream.write(buffer, 0, bytesRead);
+            } catch (Exception e) {
+//            throw new RuntimeException(e);
+                System.out.println("Data Already Exist");
             }
-
-            return byteArrayOutputStream.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        return null;
+
+
+//        finally {
+//            // Close the resources other than the socket itself
+//            if (socketDataReader != null) {
+//                socketDataReader.close();
+//            }
+//            if (printWriter != null) {
+//                printWriter.close();
+//            }
+//        }
+
+
+
     }
-
-
-
+//
+//    public void playMusic() throws LineUnavailableException, IOException, InterruptedException, UnsupportedAudioFileException {
+//        if (audioData != null) {
+//            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(audioData);
+//
+//            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(byteArrayInputStream);
+//            clip = AudioSystem.getClip();
+//            clip.open(audioInputStream);
+//
+//            Thread audioThread = new Thread(() -> {
+//                isPlaying = true;
+//                clip.setMicrosecondPosition(clipPosition);
+//                clip.start();
+//                try {
+//                    Thread.sleep(clip.getMicrosecondLength() / 1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                clipPosition = clip.getMicrosecondPosition();
+//                if (clipPosition >= clip.getMicrosecondLength()) {
+//                    isPlaying = false;
+//                }
+//                clip.close();
+//            });
+//
+//            audioThread.start();
+//        }
+//
+//    }
+//
+//    public void pauseMusic() {
+//        if (clip != null && clip.isRunning()) {
+//            clipPosition = clip.getMicrosecondPosition();
+//            clip.stop();
+//            isPlaying = false;
+//        }
+//    }
+//
+//    public void resumePauseMusic() {
+//        pauseMusic();
+//        // Resume logic is the same as play, so call play
+//        try {
+//            playMusic();
+//        } catch (LineUnavailableException | IOException | InterruptedException | UnsupportedAudioFileException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    public byte[] fetchDataFromServer() {
+//        try {
+//            inputStream = socket.getInputStream();
+//            byteArrayOutputStream = new ByteArrayOutputStream();
+//            byte[] buffer = new byte[1024];
+//            int bytesRead;
+//
+//            while ((bytesRead = inputStream.read(buffer)) != -1) {
+//                byteArrayOutputStream.write(buffer, 0, bytesRead);
+//            }
+//
+//            return byteArrayOutputStream.toByteArray();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+//
+//
+//
 
 }
 

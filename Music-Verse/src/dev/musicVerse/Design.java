@@ -1,7 +1,13 @@
 package dev.musicVerse;
 
+import Client.MusicHandler;
+import com.mysql.cj.x.protobuf.MysqlxDatatypes;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.SliderUI;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.text.FlowView;
@@ -14,13 +20,42 @@ import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.util.Objects;
 
-public class Design extends JFrame {
+public class Design extends JFrame{
+    MusicHandler musicHandler;
+
     private static  final Container container = new Container();
     private static final JPanel panel = new JPanel();
     private static final RoundedPanel playListPanel = new RoundedPanel(10);
 
     private ImageIcon image1;
     private JLabel imgLbl;
+    private ImageIcon playerImg;
+    private JLabel playerLbl;
+
+
+    //Panel to store table and songs data
+    RoundedPanel displaySongsPanel = new RoundedPanel(10);
+
+//    Data Table to display data from the database
+        public DefaultTableModel tableModel = new DefaultTableModel(
+            new String[][]{}, // Initial data (empty)
+            new String[]{"S.N", "Title", "Artist", "Duration", "Genre"}
+        );
+
+    public JTable displayData = new JTable(tableModel){
+        @Override
+        public boolean isCellEditable(int row, int column) {
+//            return super.isCellEditable(row, column);
+            return false;
+        }
+    };
+
+    public JScrollPane scrollPane = new JScrollPane(displayData);
+
+
+
+    private boolean isDisplayPanelVisible = false;
+
 
 //    Playlist
 
@@ -40,6 +75,8 @@ public class Design extends JFrame {
 
 
 
+
+
     private final boolean isPanelVisible = false;
 
    private Point mousePressLocation;
@@ -51,6 +88,8 @@ public class Design extends JFrame {
 //        }
 //    };
     public Design(){
+        musicHandler = new MusicHandler(this);
+//        musicHandler.connectServer();
         //Colors and Fonts properties
         Color backgroundColor = Color.decode("#00000");
         Color panelColor = Color.decode("#1b2223");
@@ -301,6 +340,24 @@ public class Design extends JFrame {
 
 
 
+        //RoundedPanel to create table which display Songs.
+        //Table should consist Name, Artist, duration Genre.
+        displaySongsPanel.setBackground(panelColor);
+        displaySongsPanel.setBounds(265,370,625,420);
+        container.add(displaySongsPanel);
+        displaySongsPanel.setVisible(false);
+
+//      Table to retrieve songs data form database and store it
+
+//        displaySongsPanel.add(displayData);
+        scrollPane.setBounds(270,375,615,410);
+        container.add(scrollPane);
+        container.setComponentZOrder(scrollPane,0);
+        scrollPane.setVisible(false);
+
+
+
+
         //Playlist
         JLabel playlist = new JLabel("PLAYLIST");
         playlist.setForeground(userPnlColor);
@@ -500,6 +557,49 @@ public class Design extends JFrame {
         container.add(playlistPnl);
 
         //Player panel  components in dashboard
+//        playerImg = new ImageIcon(getClass().getResource("/Images/R.jpg"));
+//        Image newImg = playerImg.getImage().getScaledInstance(200,200,Image.SCALE_DEFAULT);
+//        playerLbl = new JLabel();
+//        playerLbl.setHorizontalAlignment(SwingConstants.CENTER);
+//        playerLbl.setBounds(800,400,200,200);
+//        playerLbl.setIcon(playerImg);
+//        playerLbl.setBounds(800,400,200,200);
+//
+//        container.add(playerLbl);
+
+        JLabel songName = new JLabel("Bhanai");
+        songName.setFont(new Font("Tahoma",Font.BOLD,40));
+        songName.setForeground(whiteColor);
+        songName.setBounds(1010,570,300,40);
+        container.add(songName);
+
+        JLabel singerName = new JLabel("The Tribal Rain");
+        singerName.setFont(new Font("Tahoma",Font.PLAIN,12));
+        singerName.setForeground(whiteColor);
+        singerName.setBounds(1040,620,300,12);
+        container.add(singerName);
+
+        JSlider slider = new JSlider(JSlider.HORIZONTAL,0,100,50);
+        slider.setMajorTickSpacing(10);
+        slider.setMinorTickSpacing(1);
+        slider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                JSlider source = (JSlider) e.getSource();
+                int value = source.getValue();
+                System.out.println("Slider Value" + value);
+            }
+        });
+        slider.setBackground(userPnlColor);
+        slider.setBorder(null);
+        //UIManager.put("Slider.thumb",new EllipseThumb());
+        slider.setBounds(930,650,300,15);
+        container.add(slider);
+
+
+
+
+
 
         //play Button
         JButton playBtn = new JButton(){
@@ -661,6 +761,7 @@ public class Design extends JFrame {
         chartlbl.setForeground(whiteColor);
         chartPnl.add(chartlbl);
         container.add(chartPnl);
+        int rows=20;
         Object[][] data ={
                 {01, "Bhanai","4:00"},
                 {02,"Chinta","4:20"},
@@ -672,9 +773,11 @@ public class Design extends JFrame {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         table.setBackground(panelColor);
         table.setForeground(whiteColor);
+        table.setRowHeight(rows);
         JTableHeader header = table.getTableHeader();
         header.setBackground(panelColor);
         header.setForeground(whiteColor);
+
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.getViewport().setBackground(panelColor);
         scrollPane.setBorder(null);
@@ -697,6 +800,22 @@ public class Design extends JFrame {
             public void mouseExited(MouseEvent e) {
                 musiclbl.setText("<html><font color='#F4FEFD'>Music</font></html>");
             }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setPanelVisible();
+                String songName = "Music";
+                try {
+                    if(isDisplayPanelVisible){
+                        System.out.println("Calling getSongFunction");
+                        musicHandler.getSongData(songName);
+                    }
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+
+
         });
         container.add(musiclbl);
 
@@ -783,6 +902,19 @@ public class Design extends JFrame {
         setLocationRelativeTo(null);
         setLayout(null);
         setContentPane(container);
+    }
+
+    public void setPanelVisible(){
+        if(isDisplayPanelVisible){
+            displaySongsPanel.setVisible(false);
+            scrollPane.setVisible(false);
+            isDisplayPanelVisible = false;
+        }else{
+            displaySongsPanel.setVisible(true);
+            isDisplayPanelVisible = true;
+            scrollPane.setVisible(true);
+            tableModel.setRowCount(0);
+        }
     }
 
 }
