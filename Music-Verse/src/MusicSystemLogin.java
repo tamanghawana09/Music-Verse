@@ -5,6 +5,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class MusicSystemLogin extends JFrame implements ActionListener, ItemListener {
     private JTextField usernameField;
@@ -12,6 +15,7 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
     private JPasswordField passwordField;
     JPanel panel = new JPanel();
     private JCheckBox showPasswordCheckbox; // Checkbox to show/hide password
+    JButton loginButton;
 
     public MusicSystemLogin() {
         setSize(600, 400);
@@ -33,7 +37,8 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
         showPasswordCheckbox = new JCheckBox("Show Password");
         showPasswordCheckbox.addItemListener(this);
 
-        JButton loginButton = new JButton("Login");
+        loginButton = new JButton("Login");
+        loginButton.addActionListener(this);
         JButton signupButton = new JButton("Signup");
         signupButton.addActionListener(this);
         loginButton.setPreferredSize(new Dimension(80, 30));
@@ -59,7 +64,6 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
         });
 
         signupButton.addActionListener(this);
-
         constraints.gridx = 0;
         constraints.gridy = 0;
         panel.add(usernameLabel, constraints);
@@ -104,6 +108,22 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
     @Override
     public void actionPerformed(ActionEvent e) {
         MusicSystemSignup musicSystemSignup = new MusicSystemSignup();
+        if(e.getSource() == loginButton){
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                String url = "jdbc:mysql://localhost/music";
+                String password = "root";
+                Connection conn = DriverManager.getConnection(url,"root",password);
+                System.out.printf("database connected");
+            } catch (ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+
+        }
+
+
     }
 
     @Override
