@@ -1,24 +1,20 @@
 package dev.musicVerse;
 
 import Client.MusicHandler;
-import com.mysql.cj.x.protobuf.MysqlxDatatypes;
 
-import javax.imageio.ImageIO;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.plaf.SliderUI;
+
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.swing.text.FlowView;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import javax.imageio.ImageIO;
+
 import java.io.IOException;
-import java.util.Objects;
 
 public class Design extends JFrame{
     MusicHandler musicHandler;
@@ -557,26 +553,37 @@ public class Design extends JFrame{
         container.add(playlistPnl);
 
         //Player panel  components in dashboard
-//        playerImg = new ImageIcon(getClass().getResource("/Images/R.jpg"));
+//        playerImg = new ImageIcon(getClass().getResource("/Images/bhanai.jpg"));
 //        Image newImg = playerImg.getImage().getScaledInstance(200,200,Image.SCALE_DEFAULT);
 //        playerLbl = new JLabel();
 //        playerLbl.setHorizontalAlignment(SwingConstants.CENTER);
-//        playerLbl.setBounds(800,400,200,200);
+//        playerLbl.setBounds(960,410,250,150);
 //        playerLbl.setIcon(playerImg);
-//        playerLbl.setBounds(800,400,200,200);
 //
 //        container.add(playerLbl);
 
+        RoundedPanel coverImgPanel = new RoundedPanel(10){
+            protected void paintComponent(Graphics g){
+                super.paintComponents(g);
+                Image image = new ImageIcon(this.getClass().getResource("/Images/R.jpg")).getImage();
+                g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
+
+        };
+        coverImgPanel.setBounds(960,420,250,160);
+        container.add(coverImgPanel);
+
+
         JLabel songName = new JLabel("Bhanai");
-        songName.setFont(new Font("Tahoma",Font.BOLD,40));
+        songName.setFont(new Font("Tahoma",Font.BOLD,35));
         songName.setForeground(whiteColor);
-        songName.setBounds(1010,570,300,40);
+        songName.setBounds(1020,590,300,40);
         container.add(songName);
 
         JLabel singerName = new JLabel("The Tribal Rain");
         singerName.setFont(new Font("Tahoma",Font.PLAIN,12));
         singerName.setForeground(whiteColor);
-        singerName.setBounds(1040,620,300,12);
+        singerName.setBounds(1040,630,300,12);
         container.add(singerName);
 
         JSlider slider = new JSlider(JSlider.HORIZONTAL,0,100,50);
@@ -587,16 +594,29 @@ public class Design extends JFrame{
             public void stateChanged(ChangeEvent e) {
                 JSlider source = (JSlider) e.getSource();
                 int value = source.getValue();
-                System.out.println("Slider Value" + value);
+//                System.out.println("Slider Value" + value);
             }
         });
-        slider.setBackground(userPnlColor);
+        slider.setBackground(panelColor);
         slider.setBorder(null);
         //UIManager.put("Slider.thumb",new EllipseThumb());
-        slider.setBounds(930,650,300,15);
+        slider.setBounds(960,660,250,15);
         container.add(slider);
 
+        Font text = new Font("Tahoma",Font.PLAIN,12);
+        JLabel startTime = new JLabel();
+        startTime.setText("00:00");
+        startTime.setFont(text);
+        startTime.setForeground(whiteColor);
+        startTime.setBounds(915,660,50,12);
+        container.add(startTime);
 
+        JLabel stopTime = new JLabel();
+        stopTime.setText("00:00");
+        stopTime.setFont(text);
+        stopTime.setForeground(whiteColor);
+        stopTime.setBounds( 1220,660,50,12);
+        container.add(stopTime);
 
 
 
