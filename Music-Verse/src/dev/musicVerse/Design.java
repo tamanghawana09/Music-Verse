@@ -730,6 +730,17 @@ public class Design extends JFrame{
             }
         });
 
+        //Next Button
+        JPanel nextBtn = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image image = new ImageIcon(this.getClass().getResource("/Images/next.png")).getImage();
+                g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+
+        nextBtn.setBounds(1165,737,20,20);
+        container.add(nextBtn);
+
         //Shuffle Button
         JPanel shuffleBtn = new JPanel(){
             protected void paintComponent(Graphics g){
@@ -738,8 +749,19 @@ public class Design extends JFrame{
             }
         };
         container.setLayout(null);
-        shuffleBtn.setBounds(1210,737,20,20);
+        shuffleBtn.setBounds(1220,737,20,20);
         container.add(shuffleBtn);
+
+        //Previous Button
+        JPanel prevBtn = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image image = new ImageIcon(this.getClass().getResource("/Images/previous.png")).getImage();
+                g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+
+        prevBtn.setBounds(985,737,20,20);
+        container.add(prevBtn);
 
         //Loop Button
         JPanel loopBtn = new JPanel(){
