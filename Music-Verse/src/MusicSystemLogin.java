@@ -89,7 +89,6 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
         constraints.gridy = 2;
         panel.add(showPasswordCheckbox, constraints);
 
-
         constraints.gridx = 0;
         constraints.gridy = 3;
         panel.add(loginButton, constraints);
@@ -97,8 +96,6 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
         constraints.gridx = 1;
         constraints.gridy = 3;
         panel.add(signupButton, constraints);
-
-
 
         add(panel);
         setVisible(true);

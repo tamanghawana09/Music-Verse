@@ -59,5 +59,4 @@ public class LoginServer {
             throw new RuntimeException(e);
         }
     }
-
 }
