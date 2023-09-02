@@ -140,10 +140,7 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
             } catch (IOException exception) {
                 throw new RuntimeException(exception);
             }
-
         }
-
-
     }
 
     @Override
