@@ -2,21 +2,22 @@ package dev.musicVerse;
 
 import Client.MusicHandler;
 
-import javax.imageio.ImageIO;
+
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.swing.text.FlowView;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import javax.imageio.ImageIO;
-import java.io.IOException;
-import java.util.Objects;
 
-public class Design extends JFrame {
+import java.io.IOException;
+
+public class Design extends JFrame{
     MusicHandler musicHandler;
 
     private static  final Container container = new Container();
@@ -25,6 +26,8 @@ public class Design extends JFrame {
 
     private ImageIcon image1;
     private JLabel imgLbl;
+    private ImageIcon playerImg;
+    private JLabel playerLbl;
 
 
     //Panel to store table and songs data
@@ -202,9 +205,18 @@ public class Design extends JFrame {
         //Menu label
         JLabel menuLbl = new JLabel("MENU");
         menuLbl.setForeground(userPnlColor);
-        menuLbl.setBounds(50,80,150,30);
+        menuLbl.setBounds(40,80,150,30);
         menuLbl.setFont(new Font("Tahoma",Font.PLAIN,25));
         container.add(menuLbl);
+
+        JPanel exploreimg = new JPanel(){
+          protected void paintComponent(Graphics g){
+              Image img = new ImageIcon(this.getClass().getResource("/Images/explore.png")).getImage();
+              g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+          }
+        };
+        exploreimg.setBounds(65,130,18,18);
+        container.add(exploreimg);
 
         JLabel explore = new JLabel("Explore");
         explore.setForeground(whiteColor);
@@ -223,6 +235,15 @@ public class Design extends JFrame {
             }
         });
 
+        JPanel genreimg = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image img = new ImageIcon(this.getClass().getResource("/Images/genre.png")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        genreimg.setBounds(65,170,18,18);
+        container.add(genreimg);
+
         JLabel genres = new JLabel("Genres");
         genres.setForeground(whiteColor);
         genres.setBounds(100,165,150,30);
@@ -240,6 +261,15 @@ public class Design extends JFrame {
             }
         });
 
+        JPanel albumsimg = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image img = new ImageIcon(this.getClass().getResource("/Images/albums.png")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        albumsimg.setBounds(65,205,18,18);
+        container.add(albumsimg);
+
         JLabel albums = new JLabel("Albums");
         albums.setForeground(whiteColor);
         albums.setBounds(100,200,150,30);
@@ -256,6 +286,15 @@ public class Design extends JFrame {
                 albums.setText("<html><font color='#F4FEFD'>Albums</font></html>");
             }
         });
+
+        JPanel artistsimg = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image img = new ImageIcon(this.getClass().getResource("/Images/artists.png")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        artistsimg.setBounds(65,240,18,18);
+        container.add(artistsimg);
 
         JLabel artists = new JLabel("Artists");
         artists.setForeground(whiteColor);
@@ -277,9 +316,18 @@ public class Design extends JFrame {
         //Library
         JLabel library = new JLabel("LIBRARY");
         library.setForeground(userPnlColor);
-        library.setBounds(50,280,150,30);
+        library.setBounds(40,280,150,30);
         library.setFont(new Font("Tahoma",Font.PLAIN,25));
         container.add(library);
+
+        JPanel recentimg = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image img = new ImageIcon(this.getClass().getResource("/Images/recent.png")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        recentimg.setBounds(65,330,18,18);
+        container.add(recentimg);
 
         JLabel recent = new JLabel("Recent");
         recent.setForeground(whiteColor);
@@ -298,6 +346,15 @@ public class Design extends JFrame {
             }
         });
 
+        JPanel favimg = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image img = new ImageIcon(this.getClass().getResource("/Images/fav.png")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        favimg.setBounds(65,365,18,18);
+        container.add(favimg);
+
         JLabel fav = new JLabel("Favorites");
         fav.setForeground(whiteColor);
         fav.setBounds(100,360,150,30);
@@ -314,6 +371,15 @@ public class Design extends JFrame {
                 fav.setText("<html><font color='#F4FEFD'>Favorites</font></html>");
             }
         });
+
+        JPanel localimg = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image img = new ImageIcon(this.getClass().getResource("/Images/local.png")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        localimg.setBounds(65,400,18,18);
+        container.add(localimg);
 
         JLabel local = new JLabel("Local");
         local.setForeground(whiteColor);
@@ -344,7 +410,12 @@ public class Design extends JFrame {
 //      Table to retrieve songs data form database and store it
 
 //        displaySongsPanel.add(displayData);
+        JTableHeader tblHeader = displayData.getTableHeader();
+        tblHeader.setBackground(panelColor);
+        tblHeader.setForeground(whiteColor);
         scrollPane.setBounds(270,375,615,410);
+        scrollPane.getViewport().setBackground(panelColor);
+
         container.add(scrollPane);
         container.setComponentZOrder(scrollPane,0);
         scrollPane.setVisible(false);
@@ -355,7 +426,7 @@ public class Design extends JFrame {
         //Playlist
         JLabel playlist = new JLabel("PLAYLIST");
         playlist.setForeground(userPnlColor);
-        playlist.setBounds(50,440,150,30);
+        playlist.setBounds(40,440,150,30);
         playlist.setFont(new Font("Tahoma",Font.PLAIN,25));
         container.add(playlist);
 
@@ -397,9 +468,10 @@ public class Design extends JFrame {
 //        addPLaylistBtnPanel.setBackground(YellowColor);
 //        container.add(addPLaylistBtnPanel);
 
-        RoundedButton createPlaylistBtn = new RoundedButton("Create Playlist",20);
+        RoundedButton createPlaylistBtn = new RoundedButton("Create Playlist",10);
         createPlaylistBtn.setText("Create");
-        createPlaylistBtn.setBounds(32,627,190,50);
+        createPlaylistBtn.setBounds(32,600,190,40);
+        createPlaylistBtn.setBorderPainted(false);
         createPlaylistBtn.setForeground(whiteColor);
         createPlaylistBtn.setBackground(greenColor);
         createPlaylistBtn.setFont(new Font("Tahoma",Font.BOLD,24));
@@ -500,12 +572,29 @@ public class Design extends JFrame {
         playListPanel.setVisible(false);
 
 
+        JPanel deviceimg = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image img = new ImageIcon(this.getClass().getResource("/Images/headphone.png")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        deviceimg.setBounds(50,742,25,20);
+        container.add(deviceimg);
 
         JLabel backlbl = new JLabel("playing on device");
         backlbl.setForeground(whiteColor);
         backlbl.setFont(new Font("Tahoma",Font.PLAIN,15));
         backlbl.setBounds(90,737,150,30);
         container.add(backlbl);
+
+        JPanel enjoymusicimg = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image img = new ImageIcon(this.getClass().getResource("/Images/AirPods-Pro.jpg")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        enjoymusicimg.setBounds(40,665,60,60);
+        container.add(enjoymusicimg);
 
         JLabel frontlbl = new JLabel();
         frontlbl.setText("<html>Enjoy <br> Music</html>");
@@ -552,8 +641,67 @@ public class Design extends JFrame {
 
         //Player panel  components in dashboard
 
+        RoundedPanel coverImgPanel = new RoundedPanel(10){
+            protected void paintComponent(Graphics g){
+                super.paintComponents(g);
+                Image image = new ImageIcon(this.getClass().getResource("/Images/R.jpg")).getImage();
+                g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
+
+        };
+        coverImgPanel.setBounds(960,420,250,160);
+        container.add(coverImgPanel);
+
+
+        JLabel songName = new JLabel("Bhanai");
+        songName.setFont(new Font("Tahoma",Font.BOLD,35));
+        songName.setForeground(whiteColor);
+        songName.setBounds(1020,590,300,40);
+        container.add(songName);
+
+        JLabel singerName = new JLabel("The Tribal Rain");
+        singerName.setFont(new Font("Tahoma",Font.PLAIN,12));
+        singerName.setForeground(whiteColor);
+        singerName.setBounds(1040,630,300,12);
+        container.add(singerName);
+
+        JSlider slider = new JSlider(JSlider.HORIZONTAL,0,100,50);
+        slider.setMajorTickSpacing(10);
+        slider.setMinorTickSpacing(1);
+        slider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                JSlider source = (JSlider) e.getSource();
+                int value = source.getValue();
+//                System.out.println("Slider Value" + value);
+            }
+        });
+        slider.setBackground(panelColor);
+        slider.setBorder(null);
+        //UIManager.put("Slider.thumb",new EllipseThumb());
+        slider.setBounds(960,660,250,15);
+        container.add(slider);
+
+        Font text = new Font("Tahoma",Font.PLAIN,12);
+        JLabel startTime = new JLabel();
+        startTime.setText("00:00");
+        startTime.setFont(text);
+        startTime.setForeground(whiteColor);
+        startTime.setBounds(915,660,50,12);
+        container.add(startTime);
+
+        JLabel stopTime = new JLabel();
+        stopTime.setText("00:00");
+        stopTime.setFont(text);
+        stopTime.setForeground(whiteColor);
+        stopTime.setBounds( 1220,660,50,12);
+        container.add(stopTime);
+
+
+
+
         //play Button
-        JButton playBtn = new JButton(){
+        JPanel playBtn = new JPanel(){
             protected void paintComponent(Graphics g){
                 Image image = new ImageIcon(this.getClass().getResource("/Images/playButton.png")).getImage();
                 g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
@@ -561,37 +709,68 @@ public class Design extends JFrame {
 
         };
         container.setLayout(null);
-        playBtn.setBorderPainted(false);
         playBtn.setBounds(1070,727,35,35);
         container.add(playBtn);
-//        playBtn.addMouseListener(new MouseAdapter(){
-//            @Override
-//            public void mouseClicked(MouseEvent event){
-//
-//            }
-//        });
+        playBtn.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent event){
+//                JPanel pauseBtn = new JPanel(){
+//                    protected void paintComponent(Graphics g2){
+//                        Image img = new ImageIcon(this.getClass().getResource("/Images/pause.png")).getImage();
+//                        g2.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+//                    }
+//                };
+//                container.setLayout(null);
+//                pauseBtn.setBounds(1070,727,35,35);
+//                container.add(pauseBtn);
+
+//                This is for testing of the play button
+                JOptionPane.showMessageDialog(container, "This is a message dialog!", "Message", JOptionPane.INFORMATION_MESSAGE);
+
+            }
+        });
+
+        //Next Button
+        JPanel nextBtn = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image image = new ImageIcon(this.getClass().getResource("/Images/next.png")).getImage();
+                g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+
+        nextBtn.setBounds(1165,737,20,20);
+        container.add(nextBtn);
 
         //Shuffle Button
-        JButton shuffleBtn = new JButton(){
+        JPanel shuffleBtn = new JPanel(){
             protected void paintComponent(Graphics g){
                 Image image = new ImageIcon(this.getClass().getResource("/Images/shuffle.png")).getImage();
                 g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
             }
         };
         container.setLayout(null);
-        shuffleBtn.setBorderPainted(false);
-        shuffleBtn.setBounds(1210,737,20,20);
+        shuffleBtn.setBounds(1220,737,20,20);
         container.add(shuffleBtn);
 
+        //Previous Button
+        JPanel prevBtn = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image image = new ImageIcon(this.getClass().getResource("/Images/previous.png")).getImage();
+                g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+
+        prevBtn.setBounds(985,737,20,20);
+        container.add(prevBtn);
+
         //Loop Button
-        JButton loopBtn = new JButton(){
+        JPanel loopBtn = new JPanel(){
             protected void paintComponent(Graphics g){
                 Image image = new ImageIcon(this.getClass().getResource("/Images/loop.png")).getImage();
                 g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
             }
         };
         container.setLayout(null);
-        loopBtn.setBorderPainted(false);
         loopBtn.setBounds(930,737,20,20);
         container.add(loopBtn);
 
@@ -789,6 +968,12 @@ public class Design extends JFrame {
         });
         container.add(playlistlbl);
 
+        JLabel userlabel = new JLabel();
+        userlabel.setText("User-Name");
+        userlabel.setFont(new Font("Tahoma",Font.PLAIN,20));
+        userlabel.setForeground(whiteColor);
+        userlabel.setBounds(1065,30,100,20);
+        container.add(userlabel);
         //User Name Panel
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setBounds(1000,20,200,45);
@@ -796,14 +981,21 @@ public class Design extends JFrame {
         userPnl.setBackground(userPnlColor);
         userPnl.setBounds(0,0,180,45);
         //User Image Panel
-        RoundedPanel userimgPnl = new RoundedPanel(10);
+        RoundedPanel userimgPnl = new RoundedPanel(10){
+            @Override
+            protected void paintComponent(Graphics g) {
+                Image img = new ImageIcon(this.getClass().getResource("/Images/user.png")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+
+        };
         userimgPnl.setBackground(whiteColor);
-        userimgPnl.setBounds(0,0,55,45);
+        userimgPnl.setBounds(2,2,40,40);
         layeredPane.add(userPnl,Integer.valueOf(1));
         layeredPane.add(userimgPnl,Integer.valueOf(2));
         container.add(layeredPane);
 
-        JButton exitBtn = new JButton(){
+        JPanel exitBtn = new JPanel(){
             protected void paintComponent(Graphics g){
                 Image image = new ImageIcon(this.getClass().getResource("/Images/exit.png")).getImage();
                 g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
@@ -811,7 +1003,7 @@ public class Design extends JFrame {
 
         };
         container.setLayout(null);
-        exitBtn.setBorderPainted(false);
+
         exitBtn.setBounds(1255,5,20,20);
         container.add(exitBtn);
         exitBtn.addMouseListener(new MouseAdapter(){

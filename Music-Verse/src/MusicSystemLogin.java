@@ -1,10 +1,17 @@
 
+import dev.musicVerse.Design;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.*;
+import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class MusicSystemLogin extends JFrame implements ActionListener, ItemListener {
     private JTextField usernameField;
@@ -12,6 +19,7 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
     private JPasswordField passwordField;
     JPanel panel = new JPanel();
     private JCheckBox showPasswordCheckbox; // Checkbox to show/hide password
+    JButton loginButton;
 
     public MusicSystemLogin() {
         setSize(600, 400);
@@ -33,33 +41,33 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
         showPasswordCheckbox = new JCheckBox("Show Password");
         showPasswordCheckbox.addItemListener(this);
 
-        JButton loginButton = new JButton("Login");
+        loginButton = new JButton("Login");
+        loginButton.addActionListener(this);
         JButton signupButton = new JButton("Signup");
         signupButton.addActionListener(this);
         loginButton.setPreferredSize(new Dimension(80, 30));
         signupButton.setPreferredSize(new Dimension(80, 30));
 
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                char[] passwordChars = passwordField.getPassword();
-                String password = new String(passwordChars);
-
-                if (isValidLogin(username, password)) {
-                    JOptionPane.showMessageDialog(null, "Login successful!");
-                } else {
-                    JOptionPane.showMessageDialog(null, "Invalid credentials. Please try again.");
-                }
-                if(e.getSource()==signupButton){
-                    switchToSignupPanel();
-
-                }
-            }
-        });
+//        loginButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                String username = usernameField.getText();
+//                char[] passwordChars = passwordField.getPassword();
+//                String password = new String(passwordChars);
+//
+//                if (isValidLogin(username, password)) {
+//                    JOptionPane.showMessageDialog(null, "Login successful!");
+//                } else {
+//                    JOptionPane.showMessageDialog(null, "Invalid credentials. Please try again.");
+//                }
+//                if(e.getSource()==signupButton){
+//                    switchToSignupPanel();
+//
+//                }
+//            }
+//        });
 
         signupButton.addActionListener(this);
-
         constraints.gridx = 0;
         constraints.gridy = 0;
         panel.add(usernameLabel, constraints);
@@ -103,7 +111,39 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        MusicSystemSignup musicSystemSignup = new MusicSystemSignup();
+//        MusicSystemSignup musicSystemSignup = new MusicSystemSignup();
+        if(e.getSource() == loginButton){
+            String userNameEntered = usernameField.getText();
+            String passwordEntered = passwordField.getText();
+            try (Socket socket = new Socket("localhost", 12300)) {
+                BufferedReader computerResponse = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                OutputStream outputStream = socket.getOutputStream();
+                PrintWriter printWriter = new PrintWriter(outputStream, true);
+
+                // Send username and password to the server
+                printWriter.println(userNameEntered);
+                printWriter.flush();
+                printWriter.println(passwordEntered);
+                printWriter.flush();
+
+                // Receive and process the server response
+                String receivedResponse = computerResponse.readLine();
+                System.out.println("Response: " + receivedResponse);
+                if(receivedResponse.equals("access")){
+                    JOptionPane.showMessageDialog(null,"Access granted");
+                    Design obj = new Design();
+                    obj.setVisible(true);
+                }
+                if(receivedResponse.equals("denied")){
+                    JOptionPane.showMessageDialog(null,"Access denied");
+                }
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+
+        }
+
+
     }
 
     @Override
@@ -121,6 +161,7 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
         setVisible(false); // Hide the current login panel
         MusicSystemSignup musicSystemSignup = new MusicSystemSignup();
         musicSystemSignup.setVisible(true); // Show the signup panel
+
     }
 
     public static void main(String[] args) {
