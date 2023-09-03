@@ -75,6 +75,7 @@ public class MusicSystemSignup extends JFrame {
             }
         });
 
+
         constraints.gridx = 0;
         constraints.gridy = 0;
         panel.add(fullNameLabel, constraints);
