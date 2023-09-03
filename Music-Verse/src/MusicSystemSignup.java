@@ -122,6 +122,7 @@ public class MusicSystemSignup extends JFrame {
 
         add(panel);
         setVisible(true);
+
     }
 
     private boolean isValidSignup(String username, String password, String reconfirmPassword, String email, String fullName) {
