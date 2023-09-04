@@ -1,100 +1,134 @@
 package Server;
+
 import java.io.*;
 import java.net.Socket;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-public class ClientHandler implements Runnable{
-    private ArrayList<Socket> clients;
+public class ClientHandler implements Runnable {
     private Socket clientSocket;
-    private String clientRequest;
+    private List<Socket> clients;
+    private BufferedReader clientDataReader;
+    private PrintWriter printWriter;
+
+    // Database connection details
+    private static final String DATABASE_URL = "jdbc:mysql://localhost/musicplayerdb";
+    private static final String DATABASE_USER = "root";
+    private static final String DATABASE_PASSWORD = "@qwe@123";
+
+
+
     private String dataRequest;
 
-
-    //Rohan Database Connection
-
-    String databaseUrl = "jdbc:mysql://localhost/musicplayerdb";
-    String filepath;
-
-
-
-    public ClientHandler(Socket clientSocket, ArrayList<Socket> clients) throws ClassNotFoundException {
+    public ClientHandler(Socket clientSocket, List<Socket> clients) throws IOException {
         this.clientSocket = clientSocket;
         this.clients = clients;
+        this.clientDataReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        this.printWriter = new PrintWriter(clientSocket.getOutputStream(), true); // Auto-flush enabled
     }
-
-
 
     @Override
     public void run() {
+        try {
+            handleClient();
+        } catch (IOException e) {
+            System.err.println("Error handling client: " + e.getMessage());
+        }
+        finally {
+            try {
+                System.out.println("The server is closed!!!");
+                clientSocket.close();
+                clients.remove(clientSocket);
+            } catch (IOException e) {
+                System.err.println("Error closing client socket: " + e.getMessage());
+            }
+        }
+    }
 
-        try (BufferedReader clientDataReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-             PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream())) {
+    private void handleClient() throws IOException {
+        String clientRequest;
+        while ((clientRequest = clientDataReader.readLine()) != null) {
+            System.out.println("Server : Request received : " + clientRequest);
+//            System.out.println("Server: Request Received");
 
-            System.out.println("Waiting For Request");
-            clientRequest = clientDataReader.readLine();
+            if (clientRequest.equals("REQ_TO_RETRIEVE_DATA")) {
+                System.out.println("Req received to send Data");
+                handleDataRequest();
+            } else if (clientRequest.equals("PLAY_MUSIC")) {
+                System.out.println("Request received to play music");
+                handleMusicRequest();
+            }
+        }
+    }
 
-            if (!clientRequest.isEmpty()) {
-                System.out.println("Request Received");
-                if (clientRequest.equals("REQ_TO_RETRIEVE_DATA")) {
-                    System.out.println("Request Received to send Database data");
-                    clientRequest = "";
-                    System.out.println("Deleting Client Req.");
+    private void handleDataRequest() {
+        try {
+//            System.out.println("Requestion data from the client!!!");
+//            printWriter.flush();
+//            printWriter.println("SEND_TABLE_DETAIL");
+//            printWriter.flush();
 
-                    printWriter.println("SEND_TABLE_DETAIL");
+            dataRequest = clientDataReader.readLine();
+            System.out.println("Server : Request received to " + dataRequest);
+            if (dataRequest.equals("Music")) {
+                List<String> databaseData = retrieveDataFromDatabase(DATABASE_URL);
+                for (String data : databaseData) {
+                    printWriter.println(data);
                     printWriter.flush();
-
-                    dataRequest = clientDataReader.readLine();
-                    System.out.println(dataRequest);
-//                    Music
-                    if(dataRequest.equals("Music")){
-                        System.out.println("Sending database data to client...");
-                        // Retrieve data from the database
-                        List<String> databaseData = retrieveDataFromDatabase(databaseUrl);
-
-                        // Send the data to the client
-                        for (String data : databaseData) {
-                            printWriter.println(data);
-                            printWriter.flush();
-                        }
-                    }
-
-
-                    clientRequest = "";
-                    dataRequest = "";
-                    System.out.println("Data sent to client");
                 }
+                // Clear the list after sending data
+                databaseData.clear();
 
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println("Error handling data request: " + e.getMessage());
         }
-
     }
 
-    private List<String> retrieveDataFromDatabase(String DefaultdatabaseUrl) {
+    private void handleMusicRequest() {
+        try {
+            String musicName = clientDataReader.readLine();
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection conn = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD)) {
+                String query = "SELECT filepath FROM songs WHERE Title = ?";
+                PreparedStatement preparedStatement = conn.prepareStatement(query);
+                preparedStatement.setString(1, musicName);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    String filepath = resultSet.getString("filepath");
+                    File audioFile = new File(filepath);
+                    try (InputStream inputStream = new FileInputStream(audioFile);
+                         OutputStream outputStream = clientSocket.getOutputStream()) {
+                        byte[] buffer = new byte[1024];
+                        int bytesRead;
+                        while ((bytesRead = inputStream.read(buffer)) != -1) {
+                            outputStream.write(buffer, 0, bytesRead);
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | SQLException | IOException e) {
+            System.err.println("Error handling music request: " + e.getMessage());
+        }
+    }
 
+    private List<String> retrieveDataFromDatabase(String databaseUrl) {
         List<String> data = new ArrayList<>();
         try {
-            // Replace with your database connection details
-//            String jdbcUrl = "jdbc:mysql://localhost:3306/your_database";
-//            String username = "your_username";
-//            String password = "your_password";
-
-            Connection connection = DriverManager.getConnection(DefaultdatabaseUrl, "root", "@qwe@123");
+            Connection connection = DriverManager.getConnection(databaseUrl, "root", "@qwe@123");
             Statement statement = connection.createStatement();
 
             ResultSet resultSet = statement.executeQuery("SELECT Title, Artist, Duration, Name FROM Songs " +
                     "INNER JOIN Genres ON Songs.GenreId = Genres.GenreID");
+
             int sn = 1;
             while (resultSet.next()) {
                 String title = resultSet.getString("Title");
                 String artist = resultSet.getString("Artist");
                 int durationInSeconds = resultSet.getInt("Duration");
-                int minutes = durationInSeconds / 60; // Calculate minutes
-                int seconds = durationInSeconds % 60; // Calculate seconds
+                int minutes = durationInSeconds / 60;
+                int seconds = durationInSeconds % 60;
                 String genre = resultSet.getString("Name");
                 String songData = sn + " - " + title + " - " + artist + " - " + minutes + " : " + seconds + " min - " + genre;
                 data.add(songData);
@@ -103,48 +137,10 @@ public class ClientHandler implements Runnable{
             resultSet.close();
             statement.close();
             connection.close();
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error retrieving data from database: " + e.getMessage());
         }
         return data;
     }
-
 }
-
-
-//try {
-//            Class.forName("com.mysql.cj.jdbc.Driver");
-//            try(Connection conn = DriverManager.getConnection(databaseUrl,"root","@qwe@123")) {
-//
-//                String query= "SELECT filepath FROM songs WHERE songID = ?";
-//
-//
-//                PreparedStatement preparedStatement = conn.prepareStatement(query);
-//                preparedStatement.setInt(1,1);
-//
-//                ResultSet resultSet = preparedStatement.executeQuery();
-//                if(resultSet.next()){
-//                    filepath = resultSet.getString("filepath");
-//                    File audioFile = new File(filepath);
-//
-//                    try (InputStream inputStream = new FileInputStream(audioFile);
-//                         OutputStream outputStream = clientSocket.getOutputStream()) {
-//
-//                        byte[] buffer = new byte[1024];
-//                        int bytesRead;
-//
-//                        while ((bytesRead = inputStream.read(buffer)) != -1) {
-//                            outputStream.write(buffer, 0, bytesRead);
-//                        }
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//
-//            } catch (SQLException e) {
-//                throw new RuntimeException(e);
-//            }
-//
-//        } catch (ClassNotFoundException e) {
-//            System.out.println("Client Disconnected");
-//        }
