@@ -15,11 +15,12 @@ import java.sql.SQLException;
 
 public class MusicSystemLogin extends JFrame implements ActionListener, ItemListener {
     private JTextField usernameField;
-    MusicSystemSignup signup = new MusicSystemSignup();
+    MusicSystemSignup signup;
     private JPasswordField passwordField;
     JPanel panel = new JPanel();
     private JCheckBox showPasswordCheckbox; // Checkbox to show/hide password
     JButton loginButton;
+    JButton signupButton;
 
     public MusicSystemLogin() {
         setSize(600, 400);
@@ -43,31 +44,12 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
 
         loginButton = new JButton("Login");
         loginButton.addActionListener(this);
-        JButton signupButton = new JButton("Signup");
+         signupButton = new JButton("Signup");
         signupButton.addActionListener(this);
         loginButton.setPreferredSize(new Dimension(80, 30));
         signupButton.setPreferredSize(new Dimension(80, 30));
 
-//        loginButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                String username = usernameField.getText();
-//                char[] passwordChars = passwordField.getPassword();
-//                String password = new String(passwordChars);
-//
-//                if (isValidLogin(username, password)) {
-//                    JOptionPane.showMessageDialog(null, "Login successful!");
-//                } else {
-//                    JOptionPane.showMessageDialog(null, "Invalid credentials. Please try again.");
-//                }
-//                if(e.getSource()==signupButton){
-//                    switchToSignupPanel();
-//
-//                }
-//            }
-//        });
 
-        signupButton.addActionListener(this);
         constraints.gridx = 0;
         constraints.gridy = 0;
         panel.add(usernameLabel, constraints);
@@ -89,7 +71,6 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
         constraints.gridy = 2;
         panel.add(showPasswordCheckbox, constraints);
 
-
         constraints.gridx = 0;
         constraints.gridy = 3;
         panel.add(loginButton, constraints);
@@ -97,8 +78,6 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
         constraints.gridx = 1;
         constraints.gridy = 3;
         panel.add(signupButton, constraints);
-
-
 
         add(panel);
         setVisible(true);
@@ -111,7 +90,6 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
 
     @Override
     public void actionPerformed(ActionEvent e) {
-//        MusicSystemSignup musicSystemSignup = new MusicSystemSignup();
         if(e.getSource() == loginButton){
             String userNameEntered = usernameField.getText();
             String passwordEntered = passwordField.getText();
@@ -140,10 +118,12 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
             } catch (IOException exception) {
                 throw new RuntimeException(exception);
             }
-
         }
-
-
+        if(e.getSource() == signupButton){
+            dispose();
+            System.out.println("here");
+            signup = new MusicSystemSignup();
+        }
     }
 
     @Override
@@ -163,6 +143,7 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
         musicSystemSignup.setVisible(true); // Show the signup panel
 
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

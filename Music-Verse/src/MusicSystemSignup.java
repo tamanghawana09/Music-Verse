@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
+import java.net.Socket;
 
 public class MusicSystemSignup extends JFrame {
     private JTextField usernameField;
@@ -41,21 +43,41 @@ public class MusicSystemSignup extends JFrame {
         signupButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                char[] passwordChars = passwordField.getPassword();
-                String password = new String(passwordChars);
-                char[] reconfirmPasswordChars = reconfirmPasswordField.getPassword();
-                String reconfirmPassword = new String(reconfirmPasswordChars);
-                String email = emailField.getText();
-                String fullName = fullNameField.getText();
+                try {
+                    Socket socket = new Socket("localhost",12340);
+                    BufferedReader computerResponse = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    OutputStream outputStream = socket.getOutputStream();
+                    PrintWriter printWriter = new PrintWriter(outputStream, true);
 
-                if (isValidSignup(username, password, reconfirmPassword, email, fullName)) {
-                    JOptionPane.showMessageDialog(null, "Signup successful!");
-                } else {
-                    JOptionPane.showMessageDialog(null, "Signup failed. Please check your information.");
+                    // Send username and password to the server
+
+                    String enteredName = usernameField.getText();
+                    String enteredPassword = passwordField.getText();
+                    printWriter.println(enteredName);
+                    printWriter.flush();
+                    printWriter.println(enteredPassword);
+                    printWriter.flush();
+
+                    // Receive and process the server response
+                    String receivedResponse = computerResponse.readLine();
+                    System.out.println("Response: " + receivedResponse);
+                    if(receivedResponse.equals("Registered")){
+                        JOptionPane.showMessageDialog(null,"sucessfull");
+                        MusicSystemLogin obj = new MusicSystemLogin();
+                    }
+
+                    else {
+                        JOptionPane.showMessageDialog(null,"unsucessfull");
+                    }
+                    dispose();
+
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
                 }
+
             }
         });
+
 
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -103,6 +125,7 @@ public class MusicSystemSignup extends JFrame {
 
         add(panel);
         setVisible(true);
+
     }
 
     private boolean isValidSignup(String username, String password, String reconfirmPassword, String email, String fullName) {

@@ -1,33 +1,31 @@
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.*;
+import javax.swing.event.*;
 
 public class test {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(()->{
-           JFrame frame = new JFrame("SeekBar Example") ;
-           frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-           JSlider slider = new JSlider(JSlider.HORIZONTAL,0,100,50);
-           slider.setMajorTickSpacing(10);
-           slider.setMinorTickSpacing(1);
-           slider.setPaintTicks(false);
-           slider.setPaintLabels(false);
+        // Create a JFrame
+        JFrame frame = new JFrame("Java Seek Bar Example");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 100);
 
-           UIDefaults uiDefaults = UIManager.getLookAndFeelDefaults();
-           uiDefaults.put("Slider.trackForeground",Color.BLACK);
-           slider.addChangeListener(new ChangeListener() {
-               @Override
-               public void stateChanged(ChangeEvent e) {
-                   JSlider source =(JSlider) e.getSource();
-                   int value = source.getValue();
-                   System.out.println("Slider value:" + value);
-               }
-           });
-
-           frame.add(slider);
-           frame.pack();
-           frame.setVisible(true);
+        // Create a JProgressBar (Seek Bar)
+        JProgressBar seekBar = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
+        seekBar.setValue(50); // Initial value
+        seekBar.setStringPainted(true); // Display the value
+        seekBar.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                JProgressBar source = (JProgressBar) e.getSource();
+                int value = source.getValue();
+                System.out.println("Seek bar value: " + value);
+            }
         });
+
+        // Add the seek bar to the JFrame
+        frame.add(seekBar);
+
+        // Set JFrame properties and make it visible
+        frame.setLocationRelativeTo(null); // Center the frame on the screen
+        frame.setVisible(true);
     }
 }
