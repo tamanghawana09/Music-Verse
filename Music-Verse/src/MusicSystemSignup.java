@@ -63,11 +63,14 @@ public class MusicSystemSignup extends JFrame {
                     System.out.println("Response: " + receivedResponse);
                     if(receivedResponse.equals("Registered")){
                         JOptionPane.showMessageDialog(null,"sucessfull");
-//                        MusicSystemSignup.dispose();
+                        MusicSystemLogin obj = new MusicSystemLogin();
                     }
+
                     else {
                         JOptionPane.showMessageDialog(null,"unsucessfull");
                     }
+                    dispose();
+
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
