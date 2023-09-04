@@ -3,6 +3,8 @@ package dev.musicVerse;
 import Client.MusicHandler;
 
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -75,6 +77,7 @@ public class Design extends JFrame{
 
 
     private final boolean isPanelVisible = false;
+    private boolean isMusicPlaying = false;
 
    private Point mousePressLocation;
 //    JPanel imgpnl = new JPanel(){
@@ -86,7 +89,7 @@ public class Design extends JFrame{
 //    };
     public Design(){
         musicHandler = new MusicHandler(this);
-//        musicHandler.connectServer();
+        musicHandler.connectServer();
         //Colors and Fonts properties
         Color backgroundColor = Color.decode("#00000");
         Color panelColor = Color.decode("#1b2223");
@@ -941,13 +944,9 @@ public class Design extends JFrame{
                 super.mouseClicked(e);
                 setPanelVisible();
                 String songName = "Music";
-                try {
-                    if(isDisplayPanelVisible){
-                        System.out.println("Calling getSongFunction");
-                        musicHandler.getSongData(songName);
-                    }
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
+                if(isDisplayPanelVisible){
+                    System.out.println("Calling getSongFunction");
+                    musicHandler.getSongDataAsync(songName);
                 }
             }
 
@@ -1047,6 +1046,41 @@ public class Design extends JFrame{
         imgLbl = new JLabel(image1);
         imgLbl.setBounds(700,30,600,400);
         container.add(imgLbl);
+
+
+        //        Handeling Table...
+        displayData.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int selectedRow = displayData.getSelectedRow();
+                int titleColumnIndex = 1; // Assuming Title column is at index 1
+                Object selectedTitle = tableModel.getValueAt(selectedRow, titleColumnIndex);
+
+                if (selectedTitle != null) {
+
+//                    playBtn
+                    String title = selectedTitle.toString();
+                    System.out.println( "Selected Title : " + title);
+
+//                    if (!musicHandler.isPlaying) {
+//                        if (musicHandler.clip == null || musicHandler.clipPosition >= musicHandler.clip.getMicrosecondLength()) {
+//                            musicHandler.audioData = musicHandler.fetchDataFromServer();
+//                            try {
+//                                musicHandler.playMusic(title);
+//                            } catch (LineUnavailableException | IOException | InterruptedException |
+//                                     UnsupportedAudioFileException ex) {
+//                                throw new RuntimeException(ex);
+//                            }
+//                            isMusicPlaying = true;
+//                        }
+//                    } else {
+//                        isMusicPlaying = false;
+//                        musicHandler.pauseMusic();
+//                    }
+//                    selectedTitleLabel.setText("Selected Title: " + title);
+                }
+            }
+        });
 
         setLocationRelativeTo(null);
         setLayout(null);
