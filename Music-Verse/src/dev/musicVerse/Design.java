@@ -44,6 +44,7 @@ public class Design extends JFrame{
 
     //Panel to store table and songs data
     RoundedPanel displaySongsPanel = new RoundedPanel(10);
+    RoundedPanel localPnl = new RoundedPanel(10);
 
 //    Data Table to display data from the database
         public DefaultTableModel tableModel = new DefaultTableModel(
@@ -64,6 +65,8 @@ public class Design extends JFrame{
 
 
     private boolean isDisplayPanelVisible = false;
+    private boolean local = false;
+
 
 
 //    Playlist
@@ -99,8 +102,8 @@ public class Design extends JFrame{
 //    };
     public Design(){
         //Server
-        musicHandler = new MusicHandler(this);
-        musicHandler.connectServer();
+//        musicHandler = new MusicHandler(this);
+//        musicHandler.connectServer();
 
 
         //frame properties
@@ -117,6 +120,95 @@ public class Design extends JFrame{
         setLocation(120,10);
 
 
+
+        //Local design & components
+
+        localPnl.setBounds(265,370,1005,425);
+        localPnl.setBackground(panelColor);
+        localPnl.setLayout(null);
+        container.add(localPnl);
+        localPnl.setVisible(false);
+
+        JLabel localSongsLbl = new JLabel("Local Songs");
+        localSongsLbl.setFont(new Font("Tahoma",Font.BOLD,20));
+        localSongsLbl.setBounds(10,10,150,40);
+        localSongsLbl.setForeground(Color.WHITE);
+        localSongsLbl.setVisible(true);
+        localPnl.add(localSongsLbl);
+
+        RoundedButton addBtn = new RoundedButton("Add",30);
+        addBtn.setBounds(880,10,100,30);
+        addBtn.setFont(new Font("Tahoma",Font.PLAIN,15));
+        addBtn.setBackground(greenColor);
+        addBtn.setBorderPainted(false);
+        addBtn.setForeground(Color.BLACK);
+        localPnl.add(addBtn);
+
+        RoundedPanel lowerplaypnl = new RoundedPanel(10);
+        lowerplaypnl.setBackground(Color.black);
+        lowerplaypnl.setVisible(true);
+        lowerplaypnl.setBounds(0,370,1005,55);
+        localPnl.add(lowerplaypnl,BorderLayout.CENTER);
+
+        JPanel musicPnl = new JPanel();
+        musicPnl.setBounds(30,60,940,300);
+        musicPnl.setLayout(new BorderLayout());
+        musicPnl.setBackground(panelColor);
+        localPnl.add(musicPnl);
+        int rowsNew = 20;
+        Object[][] dataNew = {
+                {1,"Pal","4:55"},
+                {2,"Upahar","4:50"},
+                {3,"Chinta","4:20"}
+
+        };
+        String[] column = {"S.N.","Title","Duration"};
+        DefaultTableModel models = new DefaultTableModel(dataNew,column);
+        JTable songsTbl = new JTable(models);
+        songsTbl.setBackground(panelColor);
+        songsTbl.setForeground(whiteColor);
+        songsTbl.setRowHeight(rowsNew);
+        JTableHeader tableHeader = songsTbl.getTableHeader();
+        tableHeader.setBackground(panelColor);
+        tableHeader.setForeground(whiteColor);
+
+        JScrollPane localScroll= new JScrollPane(songsTbl);
+        localScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        localScroll.setVisible(true);
+        // scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        localScroll.getViewport().setBackground(panelColor);
+
+        musicPnl.add(localScroll,BorderLayout.CENTER);
+
+        JPanel localimg = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image img = new ImageIcon(this.getClass().getResource("/Images/local.png")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        localimg.setBounds(65,400,18,18);
+        container.add(localimg);
+
+        JLabel local = new JLabel("Local");
+        local.setForeground(whiteColor);
+        local.setBounds(100,395,150,30);
+        local.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(local);
+        local.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+               localDesign();
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                local.setText("<html><u><font color='#0EF6CC'>Local</font></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                local.setText("<html><font color='#F4FEFD'>Local</font></html>");
+            }
+        });
         //Search panel
         RoundedPanel searchPnl = new RoundedPanel(35);
         searchPnl.setBounds(500,20,400,35);
@@ -378,37 +470,8 @@ public class Design extends JFrame{
             }
         });
 
-        JPanel localimg = new JPanel(){
-            protected void paintComponent(Graphics g){
-                Image img = new ImageIcon(this.getClass().getResource("/Images/local.png")).getImage();
-                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
-            }
-        };
-        localimg.setBounds(65,400,18,18);
-        container.add(localimg);
-
-        JLabel local = new JLabel("Local");
-        local.setForeground(whiteColor);
-        local.setBounds(100,395,150,30);
-        local.setFont(new Font("Tahoma",Font.PLAIN,18));
-        container.add(local);
-        local.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-               local.setText("<html><u><font color='#0EF6CC'>Local</font></u></html>");
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                Local lo = new Local();
-            }
 
 
-            @Override
-            public void mouseExited(MouseEvent e) {
-                local.setText("<html><font color='#F4FEFD'>Local</font></html>");
-            }
-        });
 
 
 
@@ -431,8 +494,6 @@ public class Design extends JFrame{
         container.add(scrollPane);
         container.setComponentZOrder(scrollPane,0);
         scrollPane.setVisible(false);
-
-
 
 
         //Playlist
@@ -584,6 +645,7 @@ public class Design extends JFrame{
         playListPanel.setVisible(false);
 
 
+
         JPanel deviceimg = new JPanel(){
             protected void paintComponent(Graphics g){
                 Image img = new ImageIcon(this.getClass().getResource("/Images/headphone.png")).getImage();
@@ -708,7 +770,6 @@ public class Design extends JFrame{
         stopTime.setForeground(whiteColor);
         stopTime.setBounds( 1220,660,50,12);
         container.add(stopTime);
-
 
 
 
@@ -1085,6 +1146,12 @@ public class Design extends JFrame{
             }
         });
 
+
+
+
+
+
+
         setLocationRelativeTo(null);
         setLayout(null);
         setContentPane(container);
@@ -1102,5 +1169,22 @@ public class Design extends JFrame{
             tableModel.setRowCount(0);
         }
     }
+
+    public void localDesign(){
+        if(local){
+            localPnl.setVisible(false);
+            local = false;
+        }else{
+            localPnl.setVisible(true);
+            local = true;
+        }
+
+    }
+
+
+
+
+
+
 
 }
