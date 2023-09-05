@@ -11,20 +11,22 @@ import java.net.UnknownHostException;
 public class MusicHandler {
     Socket socket;
     public Clip clip;
-    public  long clipPosition = 0;
+    public long clipPosition = 0;
     public boolean isPlaying = false;
     public byte[] audioData;
     public ByteArrayOutputStream byteArrayOutputStream;
     public InputStream inputStream;
     public int currentSongIndex = -1; // Initialize to an invalid index
-    String clientReq,songName;
+    String clientReq, songName, tableName;
     public BufferedReader socketDataReader;
     OutputStream outputStream;
     public PrintWriter printWriter;
     public Design design;
-    private String serverRequest;
+    //    private String serverRequest;
+    private String serverResponse;
 
-    public MusicHandler(Design design){
+
+    public MusicHandler(Design design) {
         this.design = design;
     }
 
@@ -32,24 +34,37 @@ public class MusicHandler {
     //Design Class
 
 
-    public void connectServer(){
+    public void connectServer() {
         try {
-            socket = new Socket("localhost",12345);
+            socket = new Socket("localhost", 12345);
             System.out.println("Connection Successful");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-
-    public void getSongData(String songName) throws IOException {
-        connectServer();
-        clientReq = "REQ_TO_RETRIEVE_DATA";
-        this.songName = songName;
-        System.out.println(songName);
-
-        if(design.tableModel.getRowCount() == 0){
+    public void getSongDataAsync(String table) {
+        Thread networkThread = new Thread(() -> {
             try {
+                getSongData(table);
+            } catch (IOException e) {
+                // Handle exceptions
+                e.printStackTrace();
+            }
+        });
+        networkThread.start();
+    }
+
+//
+
+
+    public void getSongData(String table) throws IOException {
+        connectServer();
+        if (design.tableModel.getRowCount() == 0) {
+            try {
+                clientReq = "REQ_TO_RETRIEVE_DATA";
+                this.tableName = table;
+                System.out.println(tableName);
                 socketDataReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 outputStream = socket.getOutputStream();
                 printWriter = new PrintWriter(outputStream);
@@ -58,30 +73,27 @@ public class MusicHandler {
                 printWriter.println(clientReq);
                 printWriter.flush();
 
-                serverRequest = socketDataReader.readLine();
-                System.out.println("Server : " + serverRequest);
-                if(serverRequest.equals("SEND_TABLE_DETAIL")){
-                    printWriter.println(songName);
-                    printWriter.flush();
-                }
+//                serverRequest = socketDataReader.readLine();
+//                System.out.println("Server : " + serverRequest);
+//                if (serverRequest.equals("SEND_TABLE_DETAIL")) {
 
-                String serverResponse;
+//                }
+                printWriter.println(tableName);
+                printWriter.flush();
+
+                System.out.println("Displaying Data in the ScrollPane");
                 while ((serverResponse = socketDataReader.readLine()) != null) {
+                    System.out.println(serverResponse);
                     String[] rowData = serverResponse.split(" - "); // Split server response
                     design.tableModel.addRow(rowData);
                 }
+
+//                serverResponse = " ";
                 System.out.println("Data received and Displayed on the Table");
-                socket.close();
-                System.out.println("server closed");
-
             } catch (Exception e) {
-//            throw new RuntimeException(e);
-                System.out.println("Data Already Exist");
+                System.out.println("Could not connect to the server");
             }
-        }
-
-
-//        finally {
+//            finally {
 //            // Close the resources other than the socket itself
 //            if (socketDataReader != null) {
 //                socketDataReader.close();
@@ -90,13 +102,35 @@ public class MusicHandler {
 //                printWriter.close();
 //            }
 //        }
-
-
-
+        }
     }
+
+}
+
+
+//public void playMusicAsync(String music) {
+//        Thread audioThread = new Thread(() -> {
+//            try {
+//                playMusic(music);
+//            } catch (LineUnavailableException | IOException | InterruptedException | UnsupportedAudioFileException e) {
+//                // Handle exceptions
+//                e.printStackTrace();
+//            }
+//        });
+//        audioThread.start();
+//    }
+
+
+//    public void playMusic(String music) throws LineUnavailableException, IOException, InterruptedException, UnsupportedAudioFileException {
 //
-//    public void playMusic() throws LineUnavailableException, IOException, InterruptedException, UnsupportedAudioFileException {
+////        connectServer();
+//        clientReq = "PLAY_MUSIC";
+//        this.songName = music;
+//
+//
 //        if (audioData != null) {
+//            printWriter.println(songName);
+//
 //            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(audioData);
 //
 //            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(byteArrayInputStream);
@@ -136,7 +170,7 @@ public class MusicHandler {
 //        pauseMusic();
 //        // Resume logic is the same as play, so call play
 //        try {
-//            playMusic();
+//            playMusic(this.songName);
 //        } catch (LineUnavailableException | IOException | InterruptedException | UnsupportedAudioFileException e) {
 //            throw new RuntimeException(e);
 //        }
@@ -159,11 +193,4 @@ public class MusicHandler {
 //        }
 //        return null;
 //    }
-//
-//
-//
-
-}
-
-
 
