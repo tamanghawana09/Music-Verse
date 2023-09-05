@@ -31,6 +31,16 @@ public class Design extends JFrame{
     private ImageIcon playerImg;
     private JLabel playerLbl;
 
+    //Colors and Fonts properties
+    Color backgroundColor = Color.decode("#00000");
+    Color panelColor = Color.decode("#1b2223");
+    Color greenColor = Color.decode("#0EF6CC");
+    Color whiteColor = Color.decode("#F4FEFD");
+    //Color YellowColor = Color.decode("#f9e509");
+    Color userPnlColor = Color.decode("#3A4F50");
+    Font pnlfont = new Font("Tahoma",Font.PLAIN,25);
+    Font font = new Font("Tahoma",Font.PLAIN,20);
+
 
     //Panel to store table and songs data
     RoundedPanel displaySongsPanel = new RoundedPanel(10);
@@ -88,17 +98,10 @@ public class Design extends JFrame{
 //        }
 //    };
     public Design(){
+        //Server
         musicHandler = new MusicHandler(this);
         musicHandler.connectServer();
-        //Colors and Fonts properties
-        Color backgroundColor = Color.decode("#00000");
-        Color panelColor = Color.decode("#1b2223");
-        Color greenColor = Color.decode("#0EF6CC");
-        Color whiteColor = Color.decode("#F4FEFD");
-        //Color YellowColor = Color.decode("#f9e509");
-        Color userPnlColor = Color.decode("#3A4F50");
-        Font pnlfont = new Font("Tahoma",Font.PLAIN,25);
-        Font font = new Font("Tahoma",Font.PLAIN,20);
+
 
         //frame properties
         setUndecorated(true);
