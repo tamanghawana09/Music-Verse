@@ -199,12 +199,12 @@ public class Design extends JFrame{
                 g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
             }
         };
-        localimg.setBounds(65,400,18,18);
+        localimg.setBounds(65,365,18,18);
         container.add(localimg);
 
         JLabel local = new JLabel("Local");
         local.setForeground(whiteColor);
-        local.setBounds(100,395,150,30);
+        local.setBounds(100,360,150,30);
         local.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(local);
         local.addMouseListener(new MouseAdapter() {
@@ -600,36 +600,6 @@ public class Design extends JFrame{
             }
         });
 
-        JPanel favimg = new JPanel(){
-            protected void paintComponent(Graphics g){
-                Image img = new ImageIcon(this.getClass().getResource("/Images/fav.png")).getImage();
-                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
-            }
-        };
-        favimg.setBounds(65,365,18,18);
-        container.add(favimg);
-
-        JLabel fav = new JLabel("Favorites");
-        fav.setForeground(whiteColor);
-        fav.setBounds(100,360,150,30);
-        fav.setFont(new Font("Tahoma",Font.PLAIN,18));
-        container.add(fav);
-        fav.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                fav.setText("<html><u><font color='#0EF6CC'>Favorites</font></u></html>");
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                fav.setText("<html><font color='#F4FEFD'>Favorites</font></html>");
-            }
-        });
-
-
-
-
-
 
         //RoundedPanel to create table which display Songs.
         //Table should consist Name, Artist, duration Genre.
@@ -655,7 +625,7 @@ public class Design extends JFrame{
         //Playlist
         JLabel playlist = new JLabel("PLAYLIST");
         playlist.setForeground(userPnlColor);
-        playlist.setBounds(40,440,150,30);
+        playlist.setBounds(40,410,150,30);
         playlist.setFont(new Font("Tahoma",Font.PLAIN,25));
         container.add(playlist);
 
