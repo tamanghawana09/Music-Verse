@@ -10,7 +10,7 @@ public class Main {
         SwingUtilities.invokeLater(() ->{
         Design dj = new Design();
         dj.setVisible(true);
-//            Local lo = new Local();
+        // Local lo = new Local();
         });
 
 
