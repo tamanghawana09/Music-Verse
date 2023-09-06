@@ -18,6 +18,7 @@ import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class Design extends JFrame{
     MusicHandler musicHandler;
@@ -106,8 +107,8 @@ public class Design extends JFrame{
 //    };
     public Design(){
         //Server
-//        musicHandler = new MusicHandler(this);
-//        musicHandler.connectServer();
+        musicHandler = new MusicHandler(this);
+        musicHandler.connectServer();
 
 
         //frame properties
@@ -804,9 +805,19 @@ public class Design extends JFrame{
 //                This is for testing of the play button
 //                JOptionPane.showMessageDialog(container, "This is a message dialog!", "Message", JOptionPane.INFORMATION_MESSAGE);
 
-            if(!isMusicPlaying){
-                musicHandler.playSongAsync();
-            }
+
+                if(!isMusicPlaying){
+                    if (!musicHandler.isPlaying) {
+                        if (musicHandler.clip == null || musicHandler.clipPosition >= musicHandler.clip.getMicrosecondLength()) {
+                            musicHandler.audioData = musicHandler.fetchDataFromServer();
+                            musicHandler.playSongAsync();
+                        } else {
+                            musicHandler.resumePauseMusic();
+                        }
+                    }else{
+                        musicHandler.pauseMusic();
+                    }
+                }
 
             }
         });
