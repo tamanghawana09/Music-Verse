@@ -23,7 +23,9 @@ public class MusicHandler {
     public PrintWriter printWriter;
     public Design design;
     //    private String serverRequest;
-    private String serverResponse;
+    public String serverResponse;
+    public String musicTitle;
+    public String music = "PLAY_DEFAULT_MUSIC";
 
 
     public MusicHandler(Design design) {
@@ -53,6 +55,97 @@ public class MusicHandler {
             }
         });
         networkThread.start();
+    }
+
+    public void playSongAsync(){
+        Thread networkThread = new Thread(() ->{
+            try {
+                playMusic();
+            } catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        networkThread.start();
+    }
+
+    public void playMusic() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+//        connectServer();
+        this.musicTitle = design.musicTitle;
+        System.out.println(this.musicTitle);
+        socketDataReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        outputStream = socket.getOutputStream();
+        printWriter = new PrintWriter(outputStream);
+
+        if(musicTitle.equals("DefaultMusic")){
+            printWriter.println(music);
+            printWriter.flush();
+
+
+            printWriter.println(musicTitle);
+            printWriter.flush();
+
+            if (audioData != null) {
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(audioData);
+
+                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(byteArrayInputStream);
+                clip = AudioSystem.getClip();
+                clip.open(audioInputStream);
+
+                Thread audioThread = new Thread(() -> {
+                    isPlaying = true;
+                    clip.setMicrosecondPosition(clipPosition);
+                    clip.start();
+                    try {
+                        Thread.sleep(clip.getMicrosecondLength() / 1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    clipPosition = clip.getMicrosecondPosition();
+                    if (clipPosition >= clip.getMicrosecondLength()) {
+                        isPlaying = false;
+                    }
+                    clip.close();
+                });
+
+                audioThread.start();
+            }
+        }
+    }
+
+    public void pauseMusic() {
+        if (clip != null && clip.isRunning()) {
+            clipPosition = clip.getMicrosecondPosition();
+            clip.stop();
+            isPlaying = false;
+        }
+    }
+
+    public void resumePauseMusic() {
+        pauseMusic();
+        // Resume logic is the same as play, so call play
+        try {
+            playMusic();
+        } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public byte[] fetchDataFromServer() {
+        try {
+            inputStream = socket.getInputStream();
+            byteArrayOutputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, bytesRead);
+            }
+
+            return byteArrayOutputStream.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 //
@@ -129,31 +222,31 @@ public class MusicHandler {
 //
 //
 //        if (audioData != null) {
-//            printWriter.println(songName);
+//                printWriter.println(songName);
 //
-//            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(audioData);
+//                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(audioData);
 //
-//            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(byteArrayInputStream);
-//            clip = AudioSystem.getClip();
-//            clip.open(audioInputStream);
+//                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(byteArrayInputStream);
+//                clip = AudioSystem.getClip();
+//                clip.open(audioInputStream);
 //
-//            Thread audioThread = new Thread(() -> {
-//                isPlaying = true;
-//                clip.setMicrosecondPosition(clipPosition);
-//                clip.start();
-//                try {
-//                    Thread.sleep(clip.getMicrosecondLength() / 1000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                clipPosition = clip.getMicrosecondPosition();
-//                if (clipPosition >= clip.getMicrosecondLength()) {
-//                    isPlaying = false;
-//                }
-//                clip.close();
-//            });
+//        Thread audioThread = new Thread(() -> {
+//        isPlaying = true;
+//        clip.setMicrosecondPosition(clipPosition);
+//        clip.start();
+//        try {
+//        Thread.sleep(clip.getMicrosecondLength() / 1000);
+//        } catch (InterruptedException e) {
+//        e.printStackTrace();
+//        }
+//        clipPosition = clip.getMicrosecondPosition();
+//        if (clipPosition >= clip.getMicrosecondLength()) {
+//        isPlaying = false;
+//        }
+//        clip.close();
+//        });
 //
-//            audioThread.start();
+//        audioThread.start();
 //        }
 //
 //    }
@@ -176,21 +269,5 @@ public class MusicHandler {
 //        }
 //    }
 //
-//    public byte[] fetchDataFromServer() {
-//        try {
-//            inputStream = socket.getInputStream();
-//            byteArrayOutputStream = new ByteArrayOutputStream();
-//            byte[] buffer = new byte[1024];
-//            int bytesRead;
-//
-//            while ((bytesRead = inputStream.read(buffer)) != -1) {
-//                byteArrayOutputStream.write(buffer, 0, bytesRead);
-//            }
-//
-//            return byteArrayOutputStream.toByteArray();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
+
 
