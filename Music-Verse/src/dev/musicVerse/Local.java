@@ -19,6 +19,7 @@ public class Local extends JFrame {
         setBackground(Color.BLACK);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLayout(null);
+
         setUndecorated(true);
 
         // Local player components
@@ -48,6 +49,7 @@ public class Local extends JFrame {
         musicPnl.setBounds(30,60,940,300);
         musicPnl.setLayout(new BorderLayout());
         musicPnl.setBackground(panelColor);
+
         container.add(musicPnl);
         int rows = 20;
         Object[][] data = {
@@ -70,7 +72,7 @@ public class Local extends JFrame {
         JScrollPane scrollPane = new JScrollPane(songsTbl);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
        // scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scrollPane.getViewport().setBackground(panelColor);
+        scrollPane.getViewport().setBackground(Color.BLUE);
         scrollPane.setBorder(null);
         musicPnl.add(scrollPane,BorderLayout.CENTER);
 

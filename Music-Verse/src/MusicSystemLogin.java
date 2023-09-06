@@ -109,6 +109,7 @@ public class MusicSystemLogin extends JFrame implements ActionListener, ItemList
                 System.out.println("Response: " + receivedResponse);
                 if(receivedResponse.equals("access")){
                     JOptionPane.showMessageDialog(null,"Access granted");
+                    dispose();
                     Design obj = new Design();
                     obj.setVisible(true);
                 }

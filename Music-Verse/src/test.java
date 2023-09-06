@@ -1,31 +1,43 @@
+import dev.musicVerse.RoundedPanel;
+
 import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class test {
     public static void main(String[] args) {
-        // Create a JFrame
-        JFrame frame = new JFrame("Java Seek Bar Example");
+        JFrame frame = new JFrame("Label Click Example");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 100);
+        frame.setSize(1005, 700);
 
-        // Create a JProgressBar (Seek Bar)
-        JProgressBar seekBar = new JProgressBar(JProgressBar.HORIZONTAL, 0, 100);
-        seekBar.setValue(50); // Initial value
-        seekBar.setStringPainted(true); // Display the value
-        seekBar.addChangeListener(new ChangeListener() {
+        // Create a JPanel to hold your content
+        JPanel contentPane = new JPanel();
+        frame.setContentPane(contentPane);
+        contentPane.setLayout(new BorderLayout()); // Use BorderLayout
+
+        // Create a label
+        JLabel label = new JLabel("Click me!");
+        contentPane.add(label, BorderLayout.NORTH); // Add label to the top (North) of the contentPane
+
+        // Create the panel you want to show/hide
+        RoundedPanel localPnl = new RoundedPanel(10);
+        localPnl.setVisible(false);
+        localPnl.setBackground(Color.BLACK);
+        localPnl.setBounds(100,100,100,100);
+        contentPane.add(localPnl, BorderLayout.CENTER);
+
+        // Add a click listener to the label
+        label.addMouseListener(new MouseAdapter() {
             @Override
-            public void stateChanged(ChangeEvent e) {
-                JProgressBar source = (JProgressBar) e.getSource();
-                int value = source.getValue();
-                System.out.println("Seek bar value: " + value);
+            public void mouseClicked(MouseEvent evt) {
+                // Toggle the visibility of the panel on label click
+                localPnl.setVisible(!localPnl.isVisible());
+
+
             }
         });
 
-        // Add the seek bar to the JFrame
-        frame.add(seekBar);
-
-        // Set JFrame properties and make it visible
-        frame.setLocationRelativeTo(null); // Center the frame on the screen
         frame.setVisible(true);
     }
 }
