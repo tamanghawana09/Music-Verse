@@ -51,6 +51,7 @@ public class Design extends JFrame{
     RoundedPanel genrePnl = new RoundedPanel(10);
 
     RoundedPanel albumsPnl = new RoundedPanel(10);
+    RoundedPanel artistsPnl = new RoundedPanel(10);
 
 //    Data Table to display data from the database
         public DefaultTableModel tableModel = new DefaultTableModel(
@@ -77,6 +78,7 @@ public class Design extends JFrame{
     private boolean local = false;
     private boolean genre = false;
     private boolean albums = false;
+    private boolean artists = false;
 
 
 
@@ -492,6 +494,48 @@ public class Design extends JFrame{
             }
         });
 
+        //Artist Table
+        artistsPnl.setBounds(265,370,625,420);
+        artistsPnl.setBackground(panelColor);
+        artistsPnl.setLayout(null);
+        container.add(artistsPnl);
+        artistsPnl.setVisible(false);
+
+        JLabel artistsLbl = new JLabel("Artists");
+        artistsLbl.setFont(new Font("Tahoma",Font.BOLD,20));
+        artistsLbl.setBounds(10,10,150,40);
+        artistsLbl.setForeground(whiteColor);
+        artistsLbl.setVisible(true);
+        artistsPnl.add(artistsLbl);
+
+        JPanel artPnl = new JPanel();
+        artPnl.setBounds(15,55,600,350);
+        artPnl.setLayout(new BorderLayout());
+        artPnl.setBackground(panelColor);
+        artistsPnl.add(artPnl);
+
+        int artists_row = 20;
+        Object[][] artistsData ={
+                {1,"Pal","Arjit Singh, Shreya Ghosal"},
+                {2,"Matargasti","Mohit Chauhan"}
+
+        };
+        String[] artists_column ={"S.N.","Title","Artists"};
+        DefaultTableModel artists_model = new DefaultTableModel(artistsData,artists_column);
+        JTable artistsTbl = new JTable(artists_model);
+        artistsTbl.setBackground(panelColor);
+        artistsTbl.setForeground(whiteColor);
+        artistsTbl.setRowHeight(artists_row);
+        JTableHeader artistsHeader = artistsTbl.getTableHeader();
+        artistsHeader.setBackground(panelColor);
+        artistsHeader.setForeground(whiteColor);
+
+        JScrollPane artistsScroll = new JScrollPane(artistsTbl);
+        artistsScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        artistsScroll.setVisible(true);
+        artistsScroll.getViewport().setBackground(panelColor);
+        artPnl.add(artistsScroll,BorderLayout.CENTER);
+
         JPanel artistsimg = new JPanel(){
             protected void paintComponent(Graphics g){
                 Image img = new ImageIcon(this.getClass().getResource("/Images/artists.png")).getImage();
@@ -515,6 +559,11 @@ public class Design extends JFrame{
             @Override
             public void mouseExited(MouseEvent e) {
                artists.setText("<html><font color='#F4FEFD'>Artists</font></html>");
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                artists();
             }
         });
 
@@ -1322,6 +1371,16 @@ public class Design extends JFrame{
         }
     }
 
+    public void artists(){
+        if(artists){
+            artistsPnl.setVisible(false);
+            artists = false;
+
+        }else{
+            artistsPnl.setVisible(true);
+            artists = true;
+        }
+    }
 
 
 
