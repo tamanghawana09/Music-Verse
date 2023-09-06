@@ -32,6 +32,7 @@ public class Design extends JFrame{
     private JLabel playerLbl;
 
 
+
     //Panel to store table and songs data
     RoundedPanel displaySongsPanel = new RoundedPanel(10);
 
@@ -48,6 +49,9 @@ public class Design extends JFrame{
             return false;
         }
     };
+
+
+    public final String musicTitle = "DefaultMusic";
 
     public JScrollPane scrollPane = new JScrollPane(displayData);
 
@@ -734,7 +738,11 @@ public class Design extends JFrame{
 //                container.add(pauseBtn);
 
 //                This is for testing of the play button
-                JOptionPane.showMessageDialog(container, "This is a message dialog!", "Message", JOptionPane.INFORMATION_MESSAGE);
+//                JOptionPane.showMessageDialog(container, "This is a message dialog!", "Message", JOptionPane.INFORMATION_MESSAGE);
+
+            if(!isMusicPlaying){
+                musicHandler.playSongAsync();
+            }
 
             }
         });

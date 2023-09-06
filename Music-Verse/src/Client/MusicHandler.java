@@ -23,7 +23,8 @@ public class MusicHandler {
     public PrintWriter printWriter;
     public Design design;
     //    private String serverRequest;
-    private String serverResponse;
+    public String serverResponse;
+    public String musicTitle;
 
 
     public MusicHandler(Design design) {
@@ -53,6 +54,25 @@ public class MusicHandler {
             }
         });
         networkThread.start();
+    }
+
+    public  void playSongAsync(){
+//        Thread networkThread = new Thread(() ->{
+//           try {
+//               playMusic();
+//           }catch (LineUnavailableException | IOException | InterruptedException | UnsupportedAudioFileException e){
+//               e.printStackTrace();
+//           }
+//        });
+    }
+
+    private void playMusic() {
+        connectServer();
+        this.musicTitle = design.musicTitle;
+
+        if(musicTitle.equals("DefaultMusic")){
+
+        }
     }
 
 //
