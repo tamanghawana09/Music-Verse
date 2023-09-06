@@ -50,6 +50,8 @@ public class Design extends JFrame{
 
     RoundedPanel genrePnl = new RoundedPanel(10);
 
+    RoundedPanel albumsPnl = new RoundedPanel(10);
+
 //    Data Table to display data from the database
         public DefaultTableModel tableModel = new DefaultTableModel(
             new String[][]{}, // Initial data (empty)
@@ -70,10 +72,11 @@ public class Design extends JFrame{
     public JScrollPane scrollPane = new JScrollPane(displayData);
 
 
-
+    //Panel table variable initializations
     private boolean isDisplayPanelVisible = false;
     private boolean local = false;
     private boolean genre = false;
+    private boolean albums = false;
 
 
 
@@ -384,9 +387,7 @@ public class Design extends JFrame{
         gPnl.add(genreScroll,BorderLayout.CENTER);
 
 
-
-
-
+        //Genre image
         JPanel genreimg = new JPanel(){
             protected void paintComponent(Graphics g){
                 Image img = new ImageIcon(this.getClass().getResource("/Images/genre.png")).getImage();
@@ -418,6 +419,48 @@ public class Design extends JFrame{
             }
         });
 
+        //Albums table
+        albumsPnl.setBounds(265,370,625,420);
+        albumsPnl.setBackground(panelColor);
+        albumsPnl.setLayout(null);
+        container.add(albumsPnl);
+        albumsPnl.setVisible(false);
+
+        JLabel albumsLbl = new JLabel("Albums");
+        albumsLbl.setFont(new Font("Tahoma",Font.BOLD,20));
+        albumsLbl.setBounds(10,10,150,40);
+        albumsLbl.setForeground(whiteColor);
+        albumsLbl.setVisible(true);
+        albumsPnl.add(albumsLbl);
+
+        JPanel albPnl = new JPanel();
+        albPnl.setBounds(15,55,600,350);
+        albPnl.setLayout(new BorderLayout());
+        albPnl.setBackground(panelColor);
+        albumsPnl.add(albPnl);
+
+        int album_row = 20;
+        Object[][] albumsData ={
+                {1,"Pal","Arjit Singh,Javed Mohsin,Shreya Ghosal","4:50","Classical Period"},
+                {2,"Matargasti","Mohit Chauhan","3:50","Alternative Indie"}
+        };
+        String[] albums_column ={"S.N.","Title","Artists","Duration","Genre"};
+        DefaultTableModel albums_model = new DefaultTableModel(albumsData,albums_column);
+        JTable albumsTbl = new JTable(albums_model);
+        albumsTbl.setBackground(panelColor);
+        albumsTbl.setForeground(whiteColor);
+        albumsTbl.setRowHeight(album_row);
+        JTableHeader albumsHeader = albumsTbl.getTableHeader();
+        albumsHeader.setBackground(panelColor);
+        albumsHeader.setForeground(whiteColor);
+
+        JScrollPane albumsScroll = new JScrollPane(albumsTbl);
+        albumsScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        albumsScroll.setVisible(true);
+        albumsScroll.getViewport().setBackground(panelColor);
+        albPnl.add(albumsScroll,BorderLayout.CENTER);
+
+
         JPanel albumsimg = new JPanel(){
             protected void paintComponent(Graphics g){
                 Image img = new ImageIcon(this.getClass().getResource("/Images/albums.png")).getImage();
@@ -441,6 +484,11 @@ public class Design extends JFrame{
             @Override
             public void mouseExited(MouseEvent e) {
                 albums.setText("<html><font color='#F4FEFD'>Albums</font></html>");
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                albums();
             }
         });
 
@@ -1261,6 +1309,16 @@ public class Design extends JFrame{
         }else{
             genrePnl.setVisible(true);
             genre = true;
+        }
+    }
+
+    public void albums(){
+        if(albums){
+            albumsPnl.setVisible(false);
+            albums = false;
+        }else{
+            albumsPnl.setVisible(true);
+            albums = true;
         }
     }
 
