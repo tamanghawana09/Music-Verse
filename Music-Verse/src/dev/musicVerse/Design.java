@@ -48,6 +48,8 @@ public class Design extends JFrame{
     RoundedPanel displaySongsPanel = new RoundedPanel(10);
     RoundedPanel localPnl = new RoundedPanel(10);
 
+    RoundedPanel genrePnl = new RoundedPanel(10);
+
 //    Data Table to display data from the database
         public DefaultTableModel tableModel = new DefaultTableModel(
             new String[][]{}, // Initial data (empty)
@@ -71,6 +73,7 @@ public class Design extends JFrame{
 
     private boolean isDisplayPanelVisible = false;
     private boolean local = false;
+    private boolean genre = false;
 
 
 
@@ -107,8 +110,8 @@ public class Design extends JFrame{
 //    };
     public Design(){
         //Server
-        musicHandler = new MusicHandler(this);
-        musicHandler.connectServer();
+     //   musicHandler = new MusicHandler(this);
+       // musicHandler.connectServer();
 
 
         //frame properties
@@ -338,6 +341,52 @@ public class Design extends JFrame{
             }
         });
 
+        //Genre table
+        genrePnl.setBounds(265,370,625,420);
+        genrePnl.setBackground(panelColor);
+        genrePnl.setLayout(null);
+        container.add(genrePnl);
+        genrePnl.setVisible(false);
+
+        JLabel genreLbl = new JLabel("Genre");
+        genreLbl.setFont(new Font("Tahoma",Font.BOLD,20));
+        genreLbl.setBounds(10,10,150,40);
+        genreLbl.setForeground(whiteColor);
+        genreLbl.setVisible(true);
+        genrePnl.add(genreLbl);
+
+        JPanel gPnl = new JPanel();
+        gPnl.setBounds(15,55,600,350);
+        gPnl.setLayout(new BorderLayout());
+        gPnl.setBackground(panelColor);
+        genrePnl.add(gPnl);
+
+        int genre_row = 20;
+        Object[][] genreData ={
+                {1,"Pal","Classical Period"},
+                {2,"Matargasti","Alternative Indie"},
+                {3,"Gadimai","Electro pop"}
+        };
+        String[] genre_column ={"S.N.","Title","Genre"};
+        DefaultTableModel genre_model = new DefaultTableModel(genreData,genre_column);
+        JTable genreTbl = new JTable(genre_model);
+        genreTbl.setBackground(panelColor);
+        genreTbl.setForeground(whiteColor);
+        genreTbl.setRowHeight(genre_row);
+        JTableHeader genreHeader = genreTbl.getTableHeader();
+        genreHeader.setBackground(panelColor);
+        genreHeader.setForeground(whiteColor);
+
+        JScrollPane genreScroll = new JScrollPane(genreTbl);
+        genreScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        genreScroll.setVisible(true);
+        genreScroll.getViewport().setBackground(panelColor);
+        gPnl.add(genreScroll,BorderLayout.CENTER);
+
+
+
+
+
         JPanel genreimg = new JPanel(){
             protected void paintComponent(Graphics g){
                 Image img = new ImageIcon(this.getClass().getResource("/Images/genre.png")).getImage();
@@ -361,6 +410,11 @@ public class Design extends JFrame{
             @Override
             public void mouseExited(MouseEvent e) {
                 genres.setText("<html><font color='#F4FEFD'>Genres</font></html>");
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                genre();
             }
         });
 
@@ -1200,6 +1254,15 @@ public class Design extends JFrame{
 
     }
 
+    public void genre(){
+        if(genre){
+            genrePnl.setVisible(false);
+            genre = false;
+        }else{
+            genrePnl.setVisible(true);
+            genre = true;
+        }
+    }
 
 
 
