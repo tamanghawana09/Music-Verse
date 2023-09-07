@@ -48,6 +48,11 @@ public class Design extends JFrame{
     RoundedPanel displaySongsPanel = new RoundedPanel(10);
     RoundedPanel localPnl = new RoundedPanel(10);
 
+    RoundedPanel genrePnl = new RoundedPanel(10);
+
+    RoundedPanel albumsPnl = new RoundedPanel(10);
+    RoundedPanel artistsPnl = new RoundedPanel(10);
+
 //    Data Table to display data from the database
         public DefaultTableModel tableModel = new DefaultTableModel(
             new String[][]{}, // Initial data (empty)
@@ -68,9 +73,12 @@ public class Design extends JFrame{
     public JScrollPane scrollPane = new JScrollPane(displayData);
 
 
-
+    //Panel table variable initializations
     private boolean isDisplayPanelVisible = false;
     private boolean local = false;
+    private boolean genre = false;
+    private boolean albums = false;
+    private boolean artists = false;
 
 
 
@@ -107,8 +115,8 @@ public class Design extends JFrame{
 //    };
     public Design(){
         //Server
-        musicHandler = new MusicHandler(this);
-        musicHandler.connectServer();
+     //   musicHandler = new MusicHandler(this);
+       // musicHandler.connectServer();
 
 
         //frame properties
@@ -191,12 +199,12 @@ public class Design extends JFrame{
                 g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
             }
         };
-        localimg.setBounds(65,400,18,18);
+        localimg.setBounds(65,365,18,18);
         container.add(localimg);
 
         JLabel local = new JLabel("Local");
         local.setForeground(whiteColor);
-        local.setBounds(100,395,150,30);
+        local.setBounds(100,360,150,30);
         local.setFont(new Font("Tahoma",Font.PLAIN,18));
         container.add(local);
         local.addMouseListener(new MouseAdapter() {
@@ -338,6 +346,50 @@ public class Design extends JFrame{
             }
         });
 
+        //Genre table
+        genrePnl.setBounds(265,370,625,420);
+        genrePnl.setBackground(panelColor);
+        genrePnl.setLayout(null);
+        container.add(genrePnl);
+        genrePnl.setVisible(false);
+
+        JLabel genreLbl = new JLabel("Genre");
+        genreLbl.setFont(new Font("Tahoma",Font.BOLD,20));
+        genreLbl.setBounds(10,10,150,40);
+        genreLbl.setForeground(whiteColor);
+        genreLbl.setVisible(true);
+        genrePnl.add(genreLbl);
+
+        JPanel gPnl = new JPanel();
+        gPnl.setBounds(15,55,600,350);
+        gPnl.setLayout(new BorderLayout());
+        gPnl.setBackground(panelColor);
+        genrePnl.add(gPnl);
+
+        int genre_row = 20;
+        Object[][] genreData ={
+                {1,"Pal","Classical Period"},
+                {2,"Matargasti","Alternative Indie"},
+                {3,"Gadimai","Electro pop"}
+        };
+        String[] genre_column ={"S.N.","Title","Genre"};
+        DefaultTableModel genre_model = new DefaultTableModel(genreData,genre_column);
+        JTable genreTbl = new JTable(genre_model);
+        genreTbl.setBackground(panelColor);
+        genreTbl.setForeground(whiteColor);
+        genreTbl.setRowHeight(genre_row);
+        JTableHeader genreHeader = genreTbl.getTableHeader();
+        genreHeader.setBackground(panelColor);
+        genreHeader.setForeground(whiteColor);
+
+        JScrollPane genreScroll = new JScrollPane(genreTbl);
+        genreScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        genreScroll.setVisible(true);
+        genreScroll.getViewport().setBackground(panelColor);
+        gPnl.add(genreScroll,BorderLayout.CENTER);
+
+
+        //Genre image
         JPanel genreimg = new JPanel(){
             protected void paintComponent(Graphics g){
                 Image img = new ImageIcon(this.getClass().getResource("/Images/genre.png")).getImage();
@@ -362,7 +414,54 @@ public class Design extends JFrame{
             public void mouseExited(MouseEvent e) {
                 genres.setText("<html><font color='#F4FEFD'>Genres</font></html>");
             }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                genre();
+            }
         });
+
+        //Albums table
+        albumsPnl.setBounds(265,370,625,420);
+        albumsPnl.setBackground(panelColor);
+        albumsPnl.setLayout(null);
+        container.add(albumsPnl);
+        albumsPnl.setVisible(false);
+
+        JLabel albumsLbl = new JLabel("Albums");
+        albumsLbl.setFont(new Font("Tahoma",Font.BOLD,20));
+        albumsLbl.setBounds(10,10,150,40);
+        albumsLbl.setForeground(whiteColor);
+        albumsLbl.setVisible(true);
+        albumsPnl.add(albumsLbl);
+
+        JPanel albPnl = new JPanel();
+        albPnl.setBounds(15,55,600,350);
+        albPnl.setLayout(new BorderLayout());
+        albPnl.setBackground(panelColor);
+        albumsPnl.add(albPnl);
+
+        int album_row = 20;
+        Object[][] albumsData ={
+                {1,"Pal","Arjit Singh,Javed Mohsin,Shreya Ghosal","4:50","Classical Period"},
+                {2,"Matargasti","Mohit Chauhan","3:50","Alternative Indie"}
+        };
+        String[] albums_column ={"S.N.","Title","Artists","Duration","Genre"};
+        DefaultTableModel albums_model = new DefaultTableModel(albumsData,albums_column);
+        JTable albumsTbl = new JTable(albums_model);
+        albumsTbl.setBackground(panelColor);
+        albumsTbl.setForeground(whiteColor);
+        albumsTbl.setRowHeight(album_row);
+        JTableHeader albumsHeader = albumsTbl.getTableHeader();
+        albumsHeader.setBackground(panelColor);
+        albumsHeader.setForeground(whiteColor);
+
+        JScrollPane albumsScroll = new JScrollPane(albumsTbl);
+        albumsScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        albumsScroll.setVisible(true);
+        albumsScroll.getViewport().setBackground(panelColor);
+        albPnl.add(albumsScroll,BorderLayout.CENTER);
+
 
         JPanel albumsimg = new JPanel(){
             protected void paintComponent(Graphics g){
@@ -388,7 +487,54 @@ public class Design extends JFrame{
             public void mouseExited(MouseEvent e) {
                 albums.setText("<html><font color='#F4FEFD'>Albums</font></html>");
             }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                albums();
+            }
         });
+
+        //Artist Table
+        artistsPnl.setBounds(265,370,625,420);
+        artistsPnl.setBackground(panelColor);
+        artistsPnl.setLayout(null);
+        container.add(artistsPnl);
+        artistsPnl.setVisible(false);
+
+        JLabel artistsLbl = new JLabel("Artists");
+        artistsLbl.setFont(new Font("Tahoma",Font.BOLD,20));
+        artistsLbl.setBounds(10,10,150,40);
+        artistsLbl.setForeground(whiteColor);
+        artistsLbl.setVisible(true);
+        artistsPnl.add(artistsLbl);
+
+        JPanel artPnl = new JPanel();
+        artPnl.setBounds(15,55,600,350);
+        artPnl.setLayout(new BorderLayout());
+        artPnl.setBackground(panelColor);
+        artistsPnl.add(artPnl);
+
+        int artists_row = 20;
+        Object[][] artistsData ={
+                {1,"Pal","Arjit Singh, Shreya Ghosal"},
+                {2,"Matargasti","Mohit Chauhan"}
+
+        };
+        String[] artists_column ={"S.N.","Title","Artists"};
+        DefaultTableModel artists_model = new DefaultTableModel(artistsData,artists_column);
+        JTable artistsTbl = new JTable(artists_model);
+        artistsTbl.setBackground(panelColor);
+        artistsTbl.setForeground(whiteColor);
+        artistsTbl.setRowHeight(artists_row);
+        JTableHeader artistsHeader = artistsTbl.getTableHeader();
+        artistsHeader.setBackground(panelColor);
+        artistsHeader.setForeground(whiteColor);
+
+        JScrollPane artistsScroll = new JScrollPane(artistsTbl);
+        artistsScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        artistsScroll.setVisible(true);
+        artistsScroll.getViewport().setBackground(panelColor);
+        artPnl.add(artistsScroll,BorderLayout.CENTER);
 
         JPanel artistsimg = new JPanel(){
             protected void paintComponent(Graphics g){
@@ -413,6 +559,11 @@ public class Design extends JFrame{
             @Override
             public void mouseExited(MouseEvent e) {
                artists.setText("<html><font color='#F4FEFD'>Artists</font></html>");
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                artists();
             }
         });
 
@@ -449,36 +600,6 @@ public class Design extends JFrame{
             }
         });
 
-        JPanel favimg = new JPanel(){
-            protected void paintComponent(Graphics g){
-                Image img = new ImageIcon(this.getClass().getResource("/Images/fav.png")).getImage();
-                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
-            }
-        };
-        favimg.setBounds(65,365,18,18);
-        container.add(favimg);
-
-        JLabel fav = new JLabel("Favorites");
-        fav.setForeground(whiteColor);
-        fav.setBounds(100,360,150,30);
-        fav.setFont(new Font("Tahoma",Font.PLAIN,18));
-        container.add(fav);
-        fav.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                fav.setText("<html><u><font color='#0EF6CC'>Favorites</font></u></html>");
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                fav.setText("<html><font color='#F4FEFD'>Favorites</font></html>");
-            }
-        });
-
-
-
-
-
 
         //RoundedPanel to create table which display Songs.
         //Table should consist Name, Artist, duration Genre.
@@ -504,7 +625,7 @@ public class Design extends JFrame{
         //Playlist
         JLabel playlist = new JLabel("PLAYLIST");
         playlist.setForeground(userPnlColor);
-        playlist.setBounds(40,440,150,30);
+        playlist.setBounds(40,410,150,30);
         playlist.setFont(new Font("Tahoma",Font.PLAIN,25));
         container.add(playlist);
 
@@ -1200,7 +1321,36 @@ public class Design extends JFrame{
 
     }
 
+    public void genre(){
+        if(genre){
+            genrePnl.setVisible(false);
+            genre = false;
+        }else{
+            genrePnl.setVisible(true);
+            genre = true;
+        }
+    }
 
+    public void albums(){
+        if(albums){
+            albumsPnl.setVisible(false);
+            albums = false;
+        }else{
+            albumsPnl.setVisible(true);
+            albums = true;
+        }
+    }
+
+    public void artists(){
+        if(artists){
+            artistsPnl.setVisible(false);
+            artists = false;
+
+        }else{
+            artistsPnl.setVisible(true);
+            artists = true;
+        }
+    }
 
 
 
