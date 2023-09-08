@@ -11,7 +11,7 @@ public class Main {
         Design dj = new Design();
         dj.setVisible(true);
 //        Local lo = new Local();
-//        lo.setVisible(true);
+
         });
 
 
