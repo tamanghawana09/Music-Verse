@@ -1,6 +1,8 @@
 import dev.musicVerse.RoundedPanel;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -11,32 +13,22 @@ public class test {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1005, 700);
 
-        // Create a JPanel to hold your content
-        JPanel contentPane = new JPanel();
-        frame.setContentPane(contentPane);
-        contentPane.setLayout(new BorderLayout()); // Use BorderLayout
-
-        // Create a label
-        JLabel label = new JLabel("Click me!");
-        contentPane.add(label, BorderLayout.NORTH); // Add label to the top (North) of the contentPane
-
-        // Create the panel you want to show/hide
-        RoundedPanel localPnl = new RoundedPanel(10);
-        localPnl.setVisible(false);
-        localPnl.setBackground(Color.BLACK);
-        localPnl.setBounds(100,100,100,100);
-        contentPane.add(localPnl, BorderLayout.CENTER);
-
-        // Add a click listener to the label
-        label.addMouseListener(new MouseAdapter() {
+        JSlider slider = new JSlider(JSlider.HORIZONTAL,0,100,50);
+        slider.setMajorTickSpacing(10);
+        slider.setMinorTickSpacing(1);
+        slider.addChangeListener(new ChangeListener() {
             @Override
-            public void mouseClicked(MouseEvent evt) {
-                // Toggle the visibility of the panel on label click
-                localPnl.setVisible(!localPnl.isVisible());
-
-
+            public void stateChanged(ChangeEvent e) {
+                JSlider source = (JSlider) e.getSource();
+                int value = source.getValue();
+//                System.out.println("Slider Value" + value);
             }
         });
+/*        slider.setBackground(panelColor);
+        slider.setBorder(null);
+        //UIManager.put("Slider.thumb",new EllipseThumb());
+        slider.setBounds(960,660,250,15);
+        container.add(slider);*/
 
         frame.setVisible(true);
     }
