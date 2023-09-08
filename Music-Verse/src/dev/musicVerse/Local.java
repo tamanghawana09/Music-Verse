@@ -59,6 +59,22 @@ public class Local {
         stop.setVisible(true);
         stop.setBounds(810,415,30,10);
         container.add(stop);
+        JPanel exitBtn = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image image = new ImageIcon(this.getClass().getResource("/Images/exit.png")).getImage();
+                g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
+
+        };
+        container.setLayout(null);
+        exitBtn.setBounds(985,5,15,15);
+        container.add(exitBtn);
+        exitBtn.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent event){
+                local.dispose();
+            }
+        });
 
         //Shuffle Button
         JPanel shuffleBtn = new JPanel(){
@@ -136,12 +152,12 @@ public class Local {
         addbtn.setBorderPainted(false);
         addbtn.setForeground(Color.BLACK);
         container.add(addbtn);
-        addbtn.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                local.dispose();
-            }
-        });
+//        addbtn.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//
+//            }
+//        });
 
         RoundedPanel lowerplaypnl = new RoundedPanel(10);
         lowerplaypnl.setBackground(panelColor);
