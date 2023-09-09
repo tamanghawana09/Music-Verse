@@ -8,8 +8,7 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.RoundRectangle2D;
-import java.awt.image.ImageObserver;
+
 
 public class Local {
     Container container = new Container();
@@ -26,8 +25,6 @@ public class Local {
        local.setBackground(Color.BLACK);
        local.setUndecorated(true);
        local.setLayout(null);
-
-
 
         // Local player components
         JSlider localSlider = new JSlider(JSlider.HORIZONTAL,0,100,50);
