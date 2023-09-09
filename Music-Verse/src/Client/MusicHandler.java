@@ -196,6 +196,8 @@ public class MusicHandler {
                 audioData = null;
             });
 
+
+
             audioThread.start();
 
         }
