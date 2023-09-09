@@ -8,7 +8,7 @@ import java.util.*;
 public class ClientHandler implements Runnable {
     private Socket clientSocket;
     private List<Socket> clients;
-    private BufferedReader clientDataReader;
+    private BufferedReader clientDataReader,clientFetchAudioReader;
     private PrintWriter printWriter;
 
     // Database connection details
@@ -27,6 +27,7 @@ public class ClientHandler implements Runnable {
         this.clientSocket = clientSocket;
         this.clients = clients;
         this.clientDataReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        this.clientFetchAudioReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         this.printWriter = new PrintWriter(clientSocket.getOutputStream(), true); // Auto-flush enabled
     }
 
@@ -36,8 +37,7 @@ public class ClientHandler implements Runnable {
             handleClient();
         } catch (IOException e) {
             System.err.println("Error handling client: " + e.getMessage());
-        }
-        finally {
+        }finally {
             try {
                 System.out.println("The server is closed!!!");
                 clientSocket.close();
@@ -56,9 +56,11 @@ public class ClientHandler implements Runnable {
 
             if (clientRequest.equals("REQ_TO_RETRIEVE_DATA")) {
                 System.out.println("Req received to send Data");
+                clientRequest = "";
                 handleDataRequest();
             } else if (clientRequest.equals("PLAY_DEFAULT_MUSIC")) {
                 System.out.println("Request received to play music");
+                clientRequest = "";
                 handleMusicRequest();
             }
         }
@@ -92,54 +94,99 @@ public class ClientHandler implements Runnable {
         System.out.println("Play Music request received");
 
         try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
             String musicName = clientDataReader.readLine();
             System.out.println(musicName);
 
-            if(musicName.equals("DefaultMusic")){
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                try{
-                    Connection conn = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD);
-                    String query1 = "SELECT COUNT(*) AS row_count FROM songs";
+            switch (musicName){
+                case "DefaultMusic":
 
-                    try (PreparedStatement preparedStatement = conn.prepareStatement(query1)) {
-                        try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                            if (resultSet.next()) {
-                                rowCount = resultSet.getInt("row_count");
-                                System.out.println("Row Count (Excluding Header): " + rowCount);
-                            } else {
-                                System.out.println("Table not found.");
+                    try {
+                        Connection conn = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD);
+                        String query1 = "SELECT COUNT(*) AS row_count FROM songs";
+
+                        try (PreparedStatement preparedStatement = conn.prepareStatement(query1)) {
+                            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                                if (resultSet.next()) {
+                                    rowCount = resultSet.getInt("row_count");
+                                    System.out.println("Row Count (Excluding Header): " + rowCount);
+                                } else {
+                                    System.out.println("Table not found.");
+                                }
                             }
                         }
-                    }
-                    int randNum = getRandNum(rowCount);
-                    System.out.println(randNum);
+                        int randNum = getRandNum(rowCount);
+                        System.out.println(randNum);
 
 
-                    String query = "SELECT filepath FROM songs WHERE Title = ?";
-                    PreparedStatement preparedStatement = conn.prepareStatement(query);
-                    preparedStatement.setInt(1, randNum);
-                    ResultSet resultSet = preparedStatement.executeQuery();
-                    if (resultSet.next()) {
-                        String filepath = resultSet.getString("filepath");
-                        System.out.println(filepath);
-                        File audioFile = new File(filepath);
-                        try (InputStream inputStream = new FileInputStream(audioFile);
-                             OutputStream outputStream = clientSocket.getOutputStream()) {
-                            byte[] buffer = new byte[1024];
-                            int bytesRead;
-                            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                                outputStream.write(buffer, 0, bytesRead);
+//                        printWriter.println(randNum);
+//                        printWriter.flush();
+
+
+
+                        String query = "SELECT filepath FROM songs WHERE SongID = ?";
+                        PreparedStatement preparedStatement = conn.prepareStatement(query);
+                        preparedStatement.setInt(1, randNum);
+                        ResultSet resultSet = preparedStatement.executeQuery();
+                        if (resultSet.next()) {
+                            String filepath = resultSet.getString("filepath");
+                            System.out.println(filepath);
+                            File audioFile = new File(filepath);
+
+                            try (FileInputStream fileInputStream = new FileInputStream(audioFile);
+                                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(clientSocket.getOutputStream())) {
+                                byte[] buffer = new byte[1024];
+                                int bytesRead;
+                                while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                                    bufferedOutputStream.write(buffer, 0, bytesRead);
+                                }
+                                bufferedOutputStream.flush(); // Ensure all data is sent
                             }
                         }
+                        conn.close();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }finally {
+                        if (clientDataReader != null){
+                            clientDataReader.close();
+                        }
+                        if(printWriter != null){
+                            printWriter.close();
+                        }
+                    }
+                    break;
+                case "PLAY_ANOTHER":
+                    System.out.println("Hello ");
+                    String selectedMusic = clientDataReader.readLine();
+                    try {
+                        Connection conn = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD);
+                        String query = "SELECT filepath FROM songs WHERE Title = ?";
+                        PreparedStatement preparedStatement = conn.prepareStatement(query);
+                        preparedStatement.setString(1,selectedMusic);
+                        ResultSet resultSet = preparedStatement.executeQuery();
+                        if (resultSet.next()) {
+                            String filepath = resultSet.getString("filepath");
+                            System.out.println(filepath);
+                            File audioFile = new File(filepath);
+
+                            try (FileInputStream fileInputStream = new FileInputStream(audioFile);
+                                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(clientSocket.getOutputStream())) {
+                                byte[] buffer = new byte[1024];
+                                int bytesRead;
+                                while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                                    bufferedOutputStream.write(buffer, 0, bytesRead);
+                                }
+                                bufferedOutputStream.flush(); // Ensure all data is sent
+                            }
+                        }
+
+
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
                     }
 
-
-//
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
+                    break;
             }
-
         } catch (ClassNotFoundException | IOException e) {
             System.err.println("Error handling music request: " + e.getMessage());
         }
@@ -188,6 +235,41 @@ public class ClientHandler implements Runnable {
         return data;
     }
 }
+
+
+
+
+
+
+//                        System.out.println("Sending Audio data to Client");
+//                        String query = "SELECT filepath FROM songs WHERE SongID = ?";
+//                        PreparedStatement preparedStatement = conn.prepareStatement(query);
+//                        preparedStatement.setInt(1, randNum);
+//                        ResultSet resultSet = preparedStatement.executeQuery();
+//                        if (resultSet.next()) {
+//                            String filepath = resultSet.getString("filepath");
+//                            System.out.println(filepath);
+//                            File audioFile = new File(filepath);
+////                               try (InputStream inputStream = new FileInputStream(audioFile);
+////                                    OutputStream outputStream = clientSocket.getOutputStream()) {
+////                                    byte[] buffer = new byte[1024];
+////                                    int bytesRead;
+////                                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+////                                        outputStream.write(buffer, 0, bytesRead);
+////                                    }
+////                                }
+//                            try (FileInputStream fileInputStream = new FileInputStream(audioFile);
+//                                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(clientSocket.getOutputStream())) {
+//                                 byte[] buffer = new byte[1024];
+//                                 int bytesRead;
+//                                 while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+//                                     bufferedOutputStream.write(buffer, 0, bytesRead);
+//                                 }
+//                                 bufferedOutputStream.flush(); // Ensure all data is sent
+//                            }
+//                        }
+
+
 
 
 

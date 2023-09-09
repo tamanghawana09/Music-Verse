@@ -1,6 +1,7 @@
 package dev.musicVerse;
 
 import Client.MusicHandler;
+import javazoom.jl.player.Player;
 
 
 import javax.sound.sampled.LineUnavailableException;
@@ -18,6 +19,7 @@ import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Objects;
 
 public class Design extends JFrame{
@@ -28,8 +30,8 @@ public class Design extends JFrame{
     private static final JPanel panel = new JPanel();
     private static final RoundedPanel playListPanel = new RoundedPanel(10);
 
-    private ImageIcon image1;
-    private JLabel imgLbl;
+    private final ImageIcon image1;
+    private final JLabel imgLbl;
     private ImageIcon playerImg;
     private JLabel playerLbl;
 
@@ -69,19 +71,21 @@ public class Design extends JFrame{
     };
 
 
-    public final String musicTitle = "DefaultMusic";
+    public String musicTitle = "DefaultMusic";
+    public final String reqForPlayMusic = "PLAY_DEFAULT_MUSIC";
 
     public JScrollPane scrollPane = new JScrollPane(displayData);
 
 
     //Panel table variable initializations
     private boolean isDisplayPanelVisible = false;
-    private boolean local = false;
+    private final boolean local = false;
     private boolean genre = false;
     private boolean albums = false;
     private boolean artists = false;
+    private boolean musicPlayed = false;
 
-
+    private Player player;
 
 //    Playlist
 
@@ -101,15 +105,15 @@ public class Design extends JFrame{
 
 
     private final boolean isPanelVisible = false;
-    private boolean isMusicPlaying = false;
+    private final boolean isMusicPlaying = false;
 
    private Point mousePressLocation;
 
 
     public Design(){
         //Server
-     //   musicHandler = new MusicHandler(this);
-       // musicHandler.connectServer();
+        musicHandler = new MusicHandler(this);
+//        musicHandler.connectServer();
 
 
         //frame properties
@@ -519,7 +523,7 @@ public class Design extends JFrame{
         recentimg.setBounds(65,330,18,18);
         container.add(recentimg);
 
-        JLabel recent = new JLabel("Recent");
+        JLabel recent = new JLabel("Radio");
         recent.setForeground(whiteColor);
         recent.setBounds(100,325,150,30);
         recent.setFont(new Font("Tahoma",Font.PLAIN,18));
@@ -527,12 +531,33 @@ public class Design extends JFrame{
         recent.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                recent.setText("<html><u><font color='#0EF6CC'>Recent</font></u></html>");
+                recent.setText("<html><u><font color='#0EF6CC'>Radio</font></u></html>");
+
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                recent.setText("<html><font color='#F4FEFD'>Recent</font></html>");
+                recent.setText("<html><font color='#F4FEFD'>Radio</font></html>");
+
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(!musicPlayed){
+                    Thread musicThread = new Thread(()->{
+                        try{
+                            String radioStreamUrl = "https://drive.uber.radio/uber/bollywoodlove/icecast.audio";
+                            Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
+                            System.out.println("Playing radio ...");
+                            player.play();
+                        }catch(Exception music){
+                            System.out.println("There was an error:" + music.getMessage());
+                        }
+                    });
+                    musicThread.start();
+                    musicPlayed = true;
+                }
+
             }
         });
 
@@ -768,12 +793,131 @@ public class Design extends JFrame{
         playlistPnl.setLayout(new FlowLayout(FlowLayout.LEFT));
         playlistPnl.setBackground(panelColor);
 
-        JLabel artistLbl = new JLabel();
-        artistLbl.setText("Top Playlists");
-        artistLbl.setFont(pnlfont);
-        artistLbl.setForeground(whiteColor);
-        playlistPnl.add(artistLbl);
+        JPanel BBC = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                Image img = new ImageIcon(this.getClass().getResource("/Images/BBC-Radio.png")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        BBC.setBounds(320,415,100,70);
+        BBC.setVisible(true);
+        container.add(BBC);
+        BBC.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(!musicPlayed){
+                    Thread musicThread = new Thread(()->{
+                        try{
+                            String radioStreamUrl = "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service";
+                            Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
+                            System.out.println("Playing radio ...");
+                            player.play();
+                            musicPlayed = true;
+                        }catch(Exception bbc){
+                            System.out.println("There was an error:" + bbc.getMessage());
+                        }
+                    });
+                    musicThread.start();
+                }
+            }
+        });
+
+        JPanel hits = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                Image img = new ImageIcon(this.getClass().getResource("/Images/hits.jpg")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        hits.setBounds(460,415,100,70);
+        hits.setVisible(true);
+        container.add(hits);
+        hits.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(!musicPlayed){
+                    Thread musicThread = new Thread(()->{
+                        try{
+                            String radioStreamUrl = "https://stream-159.zeno.fm/2w81t82wx3duv?zs=2h_dK16mScCqYkOKFBPppw";
+                            Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
+                            System.out.println("Playing radio ...");
+                            player.play();
+                            musicPlayed = true;
+                        }catch(Exception hits){
+                            System.out.println("There was an error:" + hits.getMessage());
+                        }
+                    });
+                    musicThread.start();
+                }
+            }
+        });
+        JPanel kantipur = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                Image img = new ImageIcon(this.getClass().getResource("/Images/radio-kantipur.jpg")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        kantipur.setBounds(600,415,100,70);
+        kantipur.setVisible(true);
+        container.add(kantipur);
+        kantipur.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(!musicPlayed){
+                    Thread musicThread = new Thread(()->{
+                        try{
+                            String radioStreamUrl = "https://radio-broadcast.ekantipur.com/stream";
+                            Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
+                            System.out.println("Playing radio ...");
+                            player.play();
+                            musicPlayed = true;
+                        }catch(Exception kan){
+                            System.out.println("There was an error:" + kan.getMessage());
+                        }
+                    });
+                    musicThread.start();
+                }
+            }
+        });
+        JPanel mirchi = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                Image img = new ImageIcon(this.getClass().getResource("/Images/mirchi.jpg")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        mirchi.setBounds(740,415,100,70);
+        mirchi.setVisible(true);
+        container.add(mirchi);
+        mirchi.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(!musicPlayed){
+                    Thread musicThread = new Thread(()->{
+                        try{
+                            String radioStreamUrl = "https://drive.uber.radio/uber/bollywoodlove/icecast.audio";
+                            Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
+                            System.out.println("Playing radio ...");
+                            player.play();
+                            musicPlayed = true;
+                        }catch(Exception mirchi){
+                            System.out.println("There was an error:" + mirchi.getMessage());
+                        }
+                    });
+                    musicThread.start();
+                }
+            }
+        });
+
+        JLabel radioStationLbl = new JLabel();
+        radioStationLbl.setText("Radio Stations");
+        radioStationLbl.setFont(pnlfont);
+        radioStationLbl.setForeground(whiteColor);
+        playlistPnl.add(radioStationLbl);
         container.add(playlistPnl);
+
 
         //Player panel  components in dashboard
 
@@ -862,21 +1006,22 @@ public class Design extends JFrame{
 //                This is for testing of the play button
 //                JOptionPane.showMessageDialog(container, "This is a message dialog!", "Message", JOptionPane.INFORMATION_MESSAGE);
 
-
-                if(!isMusicPlaying){
+//                System.out.println("Hello");
                     if (!musicHandler.isPlaying) {
+//                        System.out.println("HI");
                         if (musicHandler.clip == null || musicHandler.clipPosition >= musicHandler.clip.getMicrosecondLength()) {
-                            musicHandler.audioData = musicHandler.fetchDataFromServer();
+//                            musicHandler.audioData = musicHandler.fetchDataFromServer();
+//                            System.out.println("playSongAsync function");
                             musicHandler.playSongAsync();
+
                         } else {
                             musicHandler.resumePauseMusic();
                         }
                     }else{
                         musicHandler.pauseMusic();
                     }
-                }
-
             }
+
         });
 
         //Next Button
@@ -889,6 +1034,17 @@ public class Design extends JFrame{
 
         nextBtn.setBounds(1165,737,20,20);
         container.add(nextBtn);
+
+        nextBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                musicHandler.prevData = musicHandler.audioData;
+                musicHandler.clip.stop();
+                musicHandler.playSongAsync();
+
+            }
+        });
 
         //Shuffle Button
         JPanel shuffleBtn = new JPanel(){
@@ -911,6 +1067,20 @@ public class Design extends JFrame{
 
         prevBtn.setBounds(985,737,20,20);
         container.add(prevBtn);
+
+        prevBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                musicHandler.clip.stop();
+                try {
+                    musicHandler.audioData = musicHandler.prevData;
+                    musicHandler.runmusic();
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
 
         //Loop Button
         JPanel loopBtn = new JPanel(){
@@ -1083,6 +1253,8 @@ public class Design extends JFrame{
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 setPanelVisible();
+                displayData.setBackground(panelColor);
+                displayData.setForeground(whiteColor);
                 String songName = "Music";
                 if(isDisplayPanelVisible){
                     System.out.println("Calling getSongFunction");
@@ -1195,27 +1367,19 @@ public class Design extends JFrame{
                 Object selectedTitle = tableModel.getValueAt(selectedRow, titleColumnIndex);
 
                 if (selectedTitle != null) {
-
 //                    playBtn
-                    String title = selectedTitle.toString();
-                    System.out.println( "Selected Title : " + title);
+                    musicTitle = selectedTitle.toString();
 
-//                    if (!musicHandler.isPlaying) {
-//                        if (musicHandler.clip == null || musicHandler.clipPosition >= musicHandler.clip.getMicrosecondLength()) {
-//                            musicHandler.audioData = musicHandler.fetchDataFromServer();
-//                            try {
-//                                musicHandler.playMusic(title);
-//                            } catch (LineUnavailableException | IOException | InterruptedException |
-//                                     UnsupportedAudioFileException ex) {
-//                                throw new RuntimeException(ex);
-//                            }
-//                            isMusicPlaying = true;
-//                        }
-//                    } else {
-//                        isMusicPlaying = false;
-//                        musicHandler.pauseMusic();
-//                    }
-//                    selectedTitleLabel.setText("Selected Title: " + title);
+                    System.out.println("Selected title : " + musicTitle);
+
+                    if(musicHandler.clip != null){
+                        musicHandler.clip.stop();
+                    }
+                    musicHandler.playSongAsync();
+
+
+
+
                 }
             }
         });
@@ -1275,9 +1439,6 @@ public class Design extends JFrame{
             artists = true;
         }
     }
-
-
-
 
 
 }
