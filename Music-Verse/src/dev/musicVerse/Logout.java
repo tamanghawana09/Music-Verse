@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 
-public class Logout extends JFrame {
+public class Logout {
     Container container = new Container();
     public Logout(){
         //properties
@@ -18,18 +18,13 @@ public class Logout extends JFrame {
         Color borderColor = Color.decode("#0EF6CC");
         int borderWidth = 2;
         Border customBorder = new LineBorder(borderColor,borderWidth);
+        JDialog logout = new JDialog();
+        logout.setUndecorated(true);
 
-        setUndecorated(true);
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                setShape(new RoundRectangle2D.Double(0,0,getWidth(),getHeight(),20,20));
-            }
-        });
-        setSize(680,545);
-        setBackground(backgroundColor);
-        setLocation(450,100);
-        setContentPane(container);
+        logout.setSize(680,545);
+        logout.setBackground(backgroundColor);
+        logout.setLocation(450,150);
+        logout.setContentPane(container);
 
         JButton logBtn=  new JButton("Naah, Just Kidding !");
         logBtn.setFont(font);
@@ -38,6 +33,12 @@ public class Logout extends JFrame {
         logBtn.setBorder(customBorder);
         logBtn.setBounds(185,320,320,50);
         container.add(logBtn);
+        logBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                logout.dispose();
+            }
+        });
 
         JButton logBtn2=  new JButton("Yes, Log me out !");
         logBtn2.setFont(font);
@@ -61,14 +62,14 @@ public class Logout extends JFrame {
 
         };
         imgpnl.setBounds(220,90,260,180);
-        container.add(imgpnl);
+        logout.add(imgpnl);
 
         //logout panel
         RoundedPanel pnl = new RoundedPanel(20);
         pnl.setBackground(pnlColor);
         pnl.setSize(520,420);
         pnl.setLocation(85,65);
-        container.add(pnl);
+        logout.add(pnl);
 
         // exit button
         JButton button = new JButton(){
@@ -80,19 +81,19 @@ public class Logout extends JFrame {
         };
         button.setBounds(660,5,15,15);
         button.setBorderPainted(false);
-        container.add(button);
+        logout.add(button);
         button.addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent event){
                 if(event.getSource() == button){
-                    System.exit(0);
+                    logout.dispose();
                 }
             }
         });
 
 
-        setVisible(true);
-        setLayout(new BorderLayout());
+        logout.setVisible(true);
+        logout.setLayout(new BorderLayout());
     }
 
 }
