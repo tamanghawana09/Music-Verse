@@ -3,11 +3,8 @@ package Client;
 import dev.musicVerse.Design;
 
 import javax.sound.sampled.*;
-import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Arrays;
 
 public class MusicHandler {
     Socket socket;
@@ -29,6 +26,7 @@ public class MusicHandler {
     public String musicTitle;
 //    public String music = "PLAY_DEFAULT_MUSIC";
     public String fetchData = "FETCH_AUDIO_DATA";
+    public String anotherMusicTitle = "PLAY_ANOTHER";
     public String reqForPlayMusic;
 
     public int prevReq = -1;
@@ -92,14 +90,67 @@ public class MusicHandler {
         printWriter.println(reqForPlayMusic); //PLAY_DEFAULT_MUSIC
         printWriter.flush();
 
-        //sending which music to play
-        printWriter.println(musicTitle);  //DefaultMusic
-        printWriter.flush();
+
 
 //        prevReq = socketDataReader.read();
 //        System.out.println(prevReq);
 
+        if (musicTitle.equals("DefaultMusic")){
+            //sending which music to play
+            printWriter.println(musicTitle);  //DefaultMusic
+            printWriter.flush();
+            try {
+                System.out.println("Fetching audio data from the server");
+                inputStream = socket.getInputStream();
+                bufferedInputStream = new BufferedInputStream(inputStream); // Initialize the buffered input stream
+                byteArrayOutputStream = new ByteArrayOutputStream();
+                byte[] buffer = new byte[1024];
+                int bytesRead;
 
+                while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
+                    byteArrayOutputStream.write(buffer, 0, bytesRead);
+                }
+                audioData = byteArrayOutputStream.toByteArray();
+
+                if(prevData == null){
+                    prevData = audioData;
+                }
+//              prevData = audioData;
+                System.out.println("audio data received");
+//              System.out.println(Arrays.toString(audioData));
+
+                runmusic();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                if (socketDataReader != null){
+                    socketDataReader.close();
+                }if(printWriter != null){
+                    printWriter.close();
+                }
+            }
+        }else{
+            printWriter.println(anotherMusicTitle);
+            printWriter.flush();
+
+
+            printWriter.println(musicTitle);
+            printWriter.flush();
+
+            audioData = fetchAudioData();
+
+            if(prevData == null){
+                prevData = audioData;
+            }
+            System.out.println("Hii");
+
+            runmusic();
+
+        }
+    }
+
+    public byte[] fetchAudioData(){
         try {
             System.out.println("Fetching audio data from the server");
             inputStream = socket.getInputStream();
@@ -111,26 +162,15 @@ public class MusicHandler {
             while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
                 byteArrayOutputStream.write(buffer, 0, bytesRead);
             }
-
-            audioData = byteArrayOutputStream.toByteArray();
-//            prevData = audioData;
-            System.out.println("audio data received");
-//            System.out.println(Arrays.toString(audioData));
-
-            runmusic();
+            return byteArrayOutputStream.toByteArray();
 
         } catch (IOException e) {
-            e.printStackTrace();
-        }finally {
-            if (socketDataReader != null){
-                socketDataReader.close();
-            }
-            if(printWriter != null){
-                printWriter.close();
-            }
+            throw new RuntimeException(e);
         }
-
     }
+
+
+
     public void runmusic() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         if (audioData != null) {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(audioData);

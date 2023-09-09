@@ -28,8 +28,8 @@ public class Design extends JFrame{
     private static final JPanel panel = new JPanel();
     private static final RoundedPanel playListPanel = new RoundedPanel(10);
 
-    private ImageIcon image1;
-    private JLabel imgLbl;
+    private final ImageIcon image1;
+    private final JLabel imgLbl;
     private ImageIcon playerImg;
     private JLabel playerLbl;
 
@@ -69,7 +69,7 @@ public class Design extends JFrame{
     };
 
 
-    public final String musicTitle = "DefaultMusic";
+    public String musicTitle = "DefaultMusic";
     public final String reqForPlayMusic = "PLAY_DEFAULT_MUSIC";
 
     public JScrollPane scrollPane = new JScrollPane(displayData);
@@ -77,7 +77,7 @@ public class Design extends JFrame{
 
     //Panel table variable initializations
     private boolean isDisplayPanelVisible = false;
-    private boolean local = false;
+    private final boolean local = false;
     private boolean genre = false;
     private boolean albums = false;
     private boolean artists = false;
@@ -102,7 +102,7 @@ public class Design extends JFrame{
 
 
     private final boolean isPanelVisible = false;
-    private boolean isMusicPlaying = false;
+    private final boolean isMusicPlaying = false;
 
    private Point mousePressLocation;
 
@@ -870,7 +870,7 @@ public class Design extends JFrame{
 //                            musicHandler.audioData = musicHandler.fetchDataFromServer();
 //                            System.out.println("playSongAsync function");
                             musicHandler.playSongAsync();
-                            musicHandler.audioData = musicHandler.prevData;
+
                         } else {
                             musicHandler.resumePauseMusic();
                         }
@@ -1110,6 +1110,8 @@ public class Design extends JFrame{
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 setPanelVisible();
+                displayData.setBackground(panelColor);
+                displayData.setForeground(whiteColor);
                 String songName = "Music";
                 if(isDisplayPanelVisible){
                     System.out.println("Calling getSongFunction");
@@ -1222,27 +1224,19 @@ public class Design extends JFrame{
                 Object selectedTitle = tableModel.getValueAt(selectedRow, titleColumnIndex);
 
                 if (selectedTitle != null) {
-
 //                    playBtn
-                    String title = selectedTitle.toString();
-                    System.out.println( "Selected Title : " + title);
+                    musicTitle = selectedTitle.toString();
 
-//                    if (!musicHandler.isPlaying) {
-//                        if (musicHandler.clip == null || musicHandler.clipPosition >= musicHandler.clip.getMicrosecondLength()) {
-//                            musicHandler.audioData = musicHandler.fetchDataFromServer();
-//                            try {
-//                                musicHandler.playMusic(title);
-//                            } catch (LineUnavailableException | IOException | InterruptedException |
-//                                     UnsupportedAudioFileException ex) {
-//                                throw new RuntimeException(ex);
-//                            }
-//                            isMusicPlaying = true;
-//                        }
-//                    } else {
-//                        isMusicPlaying = false;
-//                        musicHandler.pauseMusic();
-//                    }
-//                    selectedTitleLabel.setText("Selected Title: " + title);
+                    System.out.println("Selected title : " + musicTitle);
+
+                    if(musicHandler.clip != null){
+                        musicHandler.clip.stop();
+                    }
+                    musicHandler.playSongAsync();
+
+
+
+
                 }
             }
         });
