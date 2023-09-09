@@ -69,6 +69,7 @@ public class Design extends JFrame{
 
 
     public final String musicTitle = "DefaultMusic";
+    public final String reqForPlayMusic = "PLAY_DEFAULT_MUSIC";
 
     public JScrollPane scrollPane = new JScrollPane(displayData);
 
@@ -115,8 +116,8 @@ public class Design extends JFrame{
 //    };
     public Design(){
         //Server
-     //   musicHandler = new MusicHandler(this);
-       // musicHandler.connectServer();
+        musicHandler = new MusicHandler(this);
+//        musicHandler.connectServer();
 
 
         //frame properties
@@ -926,21 +927,22 @@ public class Design extends JFrame{
 //                This is for testing of the play button
 //                JOptionPane.showMessageDialog(container, "This is a message dialog!", "Message", JOptionPane.INFORMATION_MESSAGE);
 
-
-                if(!isMusicPlaying){
+//                System.out.println("Hello");
                     if (!musicHandler.isPlaying) {
+//                        System.out.println("HI");
                         if (musicHandler.clip == null || musicHandler.clipPosition >= musicHandler.clip.getMicrosecondLength()) {
-                            musicHandler.audioData = musicHandler.fetchDataFromServer();
+//                            musicHandler.audioData = musicHandler.fetchDataFromServer();
+//                            System.out.println("playSongAsync function");
                             musicHandler.playSongAsync();
+                            musicHandler.audioData = musicHandler.prevData;
                         } else {
                             musicHandler.resumePauseMusic();
                         }
                     }else{
                         musicHandler.pauseMusic();
                     }
-                }
-
             }
+
         });
 
         //Next Button
@@ -953,6 +955,17 @@ public class Design extends JFrame{
 
         nextBtn.setBounds(1165,737,20,20);
         container.add(nextBtn);
+
+        nextBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                musicHandler.prevData = musicHandler.audioData;
+                musicHandler.clip.stop();
+                musicHandler.playSongAsync();
+
+            }
+        });
 
         //Shuffle Button
         JPanel shuffleBtn = new JPanel(){
@@ -975,6 +988,20 @@ public class Design extends JFrame{
 
         prevBtn.setBounds(985,737,20,20);
         container.add(prevBtn);
+
+        prevBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                musicHandler.clip.stop();
+                try {
+                    musicHandler.audioData = musicHandler.prevData;
+                    musicHandler.runmusic();
+                } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
 
         //Loop Button
         JPanel loopBtn = new JPanel(){
