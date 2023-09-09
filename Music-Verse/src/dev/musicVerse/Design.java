@@ -24,6 +24,7 @@ public class Design extends JFrame{
     MusicHandler musicHandler;
 
     private static  final Container container = new Container();
+    private static final Container container2 = new Container();
     private static final JPanel panel = new JPanel();
     private static final RoundedPanel playListPanel = new RoundedPanel(10);
 
@@ -99,20 +100,12 @@ public class Design extends JFrame{
     private boolean isCreatePlaylistPanelVisible = false;
 
 
-
-
-
     private final boolean isPanelVisible = false;
     private boolean isMusicPlaying = false;
 
    private Point mousePressLocation;
-//    JPanel imgpnl = new JPanel(){
-//        protected void paintComponent(Graphics g){
-//            super.paintComponent(g);
-//            Image image = new ImageIcon(this.getClass().getResource("Images/edge.jpg")).getImage();
-//            g.drawImage(image,0,500,this.getWidth(),this.getHeight(),this);
-//        }
-//    };
+
+
     public Design(){
         //Server
      //   musicHandler = new MusicHandler(this);
@@ -136,63 +129,6 @@ public class Design extends JFrame{
 
         //Local design & components
 
-        localPnl.setBounds(265,370,1005,425);
-        localPnl.setBackground(panelColor);
-        localPnl.setLayout(null);
-        container.add(localPnl);
-        localPnl.setVisible(false);
-
-        JLabel localSongsLbl = new JLabel("Local Songs");
-        localSongsLbl.setFont(new Font("Tahoma",Font.BOLD,20));
-        localSongsLbl.setBounds(10,10,150,40);
-        localSongsLbl.setForeground(Color.WHITE);
-        localSongsLbl.setVisible(true);
-        localPnl.add(localSongsLbl);
-
-        RoundedButton addBtn = new RoundedButton("Add",30);
-        addBtn.setBounds(880,10,100,30);
-        addBtn.setFont(new Font("Tahoma",Font.PLAIN,15));
-        addBtn.setBackground(greenColor);
-        addBtn.setBorderPainted(false);
-        addBtn.setForeground(Color.BLACK);
-        localPnl.add(addBtn);
-
-        RoundedPanel lowerplaypnl = new RoundedPanel(10);
-        lowerplaypnl.setBackground(Color.black);
-        lowerplaypnl.setVisible(true);
-        lowerplaypnl.setBounds(0,370,1005,55);
-        localPnl.add(lowerplaypnl,BorderLayout.CENTER);
-
-        JPanel musicPnl = new JPanel();
-        musicPnl.setBounds(30,60,940,300);
-        musicPnl.setLayout(new BorderLayout());
-        musicPnl.setBackground(panelColor);
-        localPnl.add(musicPnl);
-        int rowsNew = 20;
-        Object[][] dataNew = {
-                {1,"Pal","4:55"},
-                {2,"Upahar","4:50"},
-                {3,"Chinta","4:20"}
-
-        };
-        String[] column = {"S.N.","Title","Duration"};
-        DefaultTableModel models = new DefaultTableModel(dataNew,column);
-        JTable songsTbl = new JTable(models);
-        songsTbl.setBackground(panelColor);
-        songsTbl.setForeground(whiteColor);
-        songsTbl.setRowHeight(rowsNew);
-        JTableHeader tableHeader = songsTbl.getTableHeader();
-        tableHeader.setBackground(panelColor);
-        tableHeader.setForeground(whiteColor);
-
-        JScrollPane localScroll= new JScrollPane(songsTbl);
-        localScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        localScroll.setVisible(true);
-        // scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        localScroll.getViewport().setBackground(panelColor);
-
-        musicPnl.add(localScroll,BorderLayout.CENTER);
-
         JPanel localimg = new JPanel(){
             protected void paintComponent(Graphics g){
                 Image img = new ImageIcon(this.getClass().getResource("/Images/local.png")).getImage();
@@ -210,7 +146,7 @@ public class Design extends JFrame{
         local.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-               localDesign();
+               Local lo =  new Local();
             }
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -1218,11 +1154,9 @@ public class Design extends JFrame{
         exitBtn.addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent event){
-                    System.exit(0);
+                   Logout lo = new Logout();
             }
         });
-
-
 
 
         //Add mouse listener to handle dragging (moving) the frame
@@ -1297,6 +1231,7 @@ public class Design extends JFrame{
         setContentPane(container);
     }
 
+
     public void setPanelVisible(){
         if(isDisplayPanelVisible){
             displaySongsPanel.setVisible(false);
@@ -1308,17 +1243,6 @@ public class Design extends JFrame{
             scrollPane.setVisible(true);
             tableModel.setRowCount(0);
         }
-    }
-
-    public void localDesign(){
-        if(local){
-            localPnl.setVisible(false);
-            local = false;
-        }else{
-            localPnl.setVisible(true);
-            local = true;
-        }
-
     }
 
     public void genre(){
