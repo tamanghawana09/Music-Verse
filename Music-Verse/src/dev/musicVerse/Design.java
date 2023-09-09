@@ -1,6 +1,7 @@
 package dev.musicVerse;
 
 import Client.MusicHandler;
+import javazoom.jl.player.Player;
 
 
 import javax.sound.sampled.LineUnavailableException;
@@ -18,6 +19,7 @@ import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Objects;
 
 public class Design extends JFrame{
@@ -81,6 +83,7 @@ public class Design extends JFrame{
     private boolean genre = false;
     private boolean albums = false;
     private boolean artists = false;
+    private boolean musicPlayed = false;
 
 
 
@@ -520,7 +523,7 @@ public class Design extends JFrame{
         recentimg.setBounds(65,330,18,18);
         container.add(recentimg);
 
-        JLabel recent = new JLabel("Recent");
+        JLabel recent = new JLabel("Radio");
         recent.setForeground(whiteColor);
         recent.setBounds(100,325,150,30);
         recent.setFont(new Font("Tahoma",Font.PLAIN,18));
@@ -528,12 +531,33 @@ public class Design extends JFrame{
         recent.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                recent.setText("<html><u><font color='#0EF6CC'>Recent</font></u></html>");
+                recent.setText("<html><u><font color='#0EF6CC'>Radio</font></u></html>");
+
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                recent.setText("<html><font color='#F4FEFD'>Recent</font></html>");
+                recent.setText("<html><font color='#F4FEFD'>Radio</font></html>");
+
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(!musicPlayed){
+                    Thread musicThread = new Thread(()->{
+                        try{
+                            String radioStreamUrl = "https://drive.uber.radio/uber/bollywoodlove/icecast.audio";
+                            Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
+                            System.out.println("Playing radio ...");
+                            player.play();
+                        }catch(Exception music){
+                            System.out.println("There was an error:" + music.getMessage());
+                        }
+                    });
+                    musicThread.start();
+                    musicPlayed = true;
+                }
+
             }
         });
 
@@ -1296,9 +1320,6 @@ public class Design extends JFrame{
             artists = true;
         }
     }
-
-
-
 
 
 }
