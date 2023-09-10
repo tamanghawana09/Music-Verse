@@ -85,7 +85,7 @@ public class Design extends JFrame{
     private boolean artists = false;
     private boolean musicPlayed = false;
 
-
+    private Player player;
 
 //    Playlist
 
@@ -793,12 +793,131 @@ public class Design extends JFrame{
         playlistPnl.setLayout(new FlowLayout(FlowLayout.LEFT));
         playlistPnl.setBackground(panelColor);
 
-        JLabel artistLbl = new JLabel();
-        artistLbl.setText("Top Playlists");
-        artistLbl.setFont(pnlfont);
-        artistLbl.setForeground(whiteColor);
-        playlistPnl.add(artistLbl);
+        JPanel BBC = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                Image img = new ImageIcon(this.getClass().getResource("/Images/BBC-Radio.png")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        BBC.setBounds(320,415,100,70);
+        BBC.setVisible(true);
+        container.add(BBC);
+        BBC.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(!musicPlayed){
+                    Thread musicThread = new Thread(()->{
+                        try{
+                            String radioStreamUrl = "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service";
+                            Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
+                            System.out.println("Playing radio ...");
+                            player.play();
+                            musicPlayed = true;
+                        }catch(Exception bbc){
+                            System.out.println("There was an error:" + bbc.getMessage());
+                        }
+                    });
+                    musicThread.start();
+                }
+            }
+        });
+
+        JPanel hits = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                Image img = new ImageIcon(this.getClass().getResource("/Images/hits.jpg")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        hits.setBounds(460,415,100,70);
+        hits.setVisible(true);
+        container.add(hits);
+        hits.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(!musicPlayed){
+                    Thread musicThread = new Thread(()->{
+                        try{
+                            String radioStreamUrl = "https://stream-159.zeno.fm/2w81t82wx3duv?zs=2h_dK16mScCqYkOKFBPppw";
+                            Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
+                            System.out.println("Playing radio ...");
+                            player.play();
+                            musicPlayed = true;
+                        }catch(Exception hits){
+                            System.out.println("There was an error:" + hits.getMessage());
+                        }
+                    });
+                    musicThread.start();
+                }
+            }
+        });
+        JPanel kantipur = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                Image img = new ImageIcon(this.getClass().getResource("/Images/radio-kantipur.jpg")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        kantipur.setBounds(600,415,100,70);
+        kantipur.setVisible(true);
+        container.add(kantipur);
+        kantipur.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(!musicPlayed){
+                    Thread musicThread = new Thread(()->{
+                        try{
+                            String radioStreamUrl = "https://radio-broadcast.ekantipur.com/stream";
+                            Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
+                            System.out.println("Playing radio ...");
+                            player.play();
+                            musicPlayed = true;
+                        }catch(Exception kan){
+                            System.out.println("There was an error:" + kan.getMessage());
+                        }
+                    });
+                    musicThread.start();
+                }
+            }
+        });
+        JPanel mirchi = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                Image img = new ImageIcon(this.getClass().getResource("/Images/mirchi.jpg")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        mirchi.setBounds(740,415,100,70);
+        mirchi.setVisible(true);
+        container.add(mirchi);
+        mirchi.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(!musicPlayed){
+                    Thread musicThread = new Thread(()->{
+                        try{
+                            String radioStreamUrl = "https://drive.uber.radio/uber/bollywoodlove/icecast.audio";
+                            Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
+                            System.out.println("Playing radio ...");
+                            player.play();
+                            musicPlayed = true;
+                        }catch(Exception mirchi){
+                            System.out.println("There was an error:" + mirchi.getMessage());
+                        }
+                    });
+                    musicThread.start();
+                }
+            }
+        });
+
+        JLabel radioStationLbl = new JLabel();
+        radioStationLbl.setText("Radio Stations");
+        radioStationLbl.setFont(pnlfont);
+        radioStationLbl.setForeground(whiteColor);
+        playlistPnl.add(radioStationLbl);
         container.add(playlistPnl);
+
 
         //Player panel  components in dashboard
 
