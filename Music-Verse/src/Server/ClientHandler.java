@@ -133,14 +133,17 @@ public class ClientHandler implements Runnable {
                             System.out.println(filepath);
                             File audioFile = new File(filepath);
 
-                            try (FileInputStream fileInputStream = new FileInputStream(audioFile);
-                                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(clientSocket.getOutputStream())) {
+                            try (InputStream inputStream = new FileInputStream(audioFile);
+                                 OutputStream outputStream = clientSocket.getOutputStream()) {
+
                                 byte[] buffer = new byte[1024];
                                 int bytesRead;
-                                while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-                                    bufferedOutputStream.write(buffer, 0, bytesRead);
+
+                                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                                    outputStream.write(buffer, 0, bytesRead);
                                 }
-                                bufferedOutputStream.flush(); // Ensure all data is sent
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
                         }
                         conn.close();
