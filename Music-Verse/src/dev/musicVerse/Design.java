@@ -4,6 +4,7 @@ import Client.MusicHandler;
 import javazoom.jl.player.Player;
 
 
+
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
@@ -990,38 +991,54 @@ public class Design extends JFrame{
         container.setLayout(null);
         playBtn.setBounds(1070,727,35,35);
         container.add(playBtn);
+
+        JPanel pauseBtn = new JPanel(){
+            protected void paintComponent(Graphics g2){
+                Image img = new ImageIcon(this.getClass().getResource("/Images/pause.png")).getImage();
+                g2.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        container.setLayout(null);
+        pauseBtn.setBounds(1070,727,35,35);
+        pauseBtn.setVisible(false);
+        container.add(pauseBtn);
+
         playBtn.addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent event){
-//                JPanel pauseBtn = new JPanel(){
-//                    protected void paintComponent(Graphics g2){
-//                        Image img = new ImageIcon(this.getClass().getResource("/Images/pause.png")).getImage();
-//                        g2.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
-//                    }
-//                };
-//                container.setLayout(null);
-//                pauseBtn.setBounds(1070,727,35,35);
-//                container.add(pauseBtn);
-
 //                This is for testing of the play button
 //                JOptionPane.showMessageDialog(container, "This is a message dialog!", "Message", JOptionPane.INFORMATION_MESSAGE);
 
-//                System.out.println("Hello");
                     if (!musicHandler.isPlaying) {
-//                        System.out.println("HI");
+                        pauseBtn.setVisible(true);
+                        playBtn.setVisible(false);
+
                         if (musicHandler.clip == null || musicHandler.clipPosition >= musicHandler.clip.getMicrosecondLength()) {
 //                            musicHandler.audioData = musicHandler.fetchDataFromServer();
-//                            System.out.println("playSongAsync function");
                             musicHandler.playSongAsync();
 
                         } else {
                             musicHandler.resumePauseMusic();
                         }
-                    }else{
-                        musicHandler.pauseMusic();
                     }
+//                    else{
+//                        playBtn.setVisible(true);
+//                        pauseBtn.setVisible(false);
+//                        musicHandler.pauseMusic();
+//                    }
             }
 
+        });
+        pauseBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if(musicHandler.isPlaying){
+                    playBtn.setVisible(true);
+                    pauseBtn.setVisible(false);
+                    musicHandler.pauseMusic();
+                }
+            }
         });
 
         //Next Button
