@@ -1034,6 +1034,7 @@ public class Design extends JFrame{
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if(musicHandler.isPlaying){
+                    
                     playBtn.setVisible(true);
                     pauseBtn.setVisible(false);
                     musicHandler.pauseMusic();
@@ -1057,6 +1058,7 @@ public class Design extends JFrame{
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 musicHandler.prevData = musicHandler.audioData;
+                musicHandler.clipPosition = 0;
                 musicHandler.clip.stop();
                 musicHandler.playSongAsync();
 

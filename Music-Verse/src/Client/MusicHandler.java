@@ -151,22 +151,38 @@ public class MusicHandler {
     }
 
     public byte[] fetchAudioData(){
+//        try {
+//            System.out.println("Fetching audio data from the server");
+//            inputStream = socket.getInputStream();
+//            bufferedInputStream = new BufferedInputStream(inputStream); // Initialize the buffered input stream
+//            byteArrayOutputStream = new ByteArrayOutputStream();
+//            byte[] buffer = new byte[1024];
+//            int bytesRead;
+//
+//            while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
+//                byteArrayOutputStream.write(buffer, 0, bytesRead);
+//            }
+//            return byteArrayOutputStream.toByteArray();
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+
         try {
-            System.out.println("Fetching audio data from the server");
             inputStream = socket.getInputStream();
-            bufferedInputStream = new BufferedInputStream(inputStream); // Initialize the buffered input stream
             byteArrayOutputStream = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
             int bytesRead;
 
-            while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
                 byteArrayOutputStream.write(buffer, 0, bytesRead);
             }
-            return byteArrayOutputStream.toByteArray();
 
+            return byteArrayOutputStream.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+        return null;
     }
 
 
