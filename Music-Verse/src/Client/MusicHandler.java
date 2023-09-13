@@ -3,8 +3,12 @@ package Client;
 import dev.musicVerse.Design;
 
 import javax.sound.sampled.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
+import java.util.Timer;
+
 
 public class MusicHandler {
     Socket socket;
@@ -210,34 +214,54 @@ public class MusicHandler {
     public void runmusic() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         if (audioData != null) {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(audioData);
-
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(byteArrayInputStream);
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
 
-            Thread audioThread = new Thread(() -> {
+            design.slider.setMaximum(100);
+            clipPosition = 0;
+
+        // Create a thread to update the slider
+            Thread sliderUpdateThread = new Thread(() -> {
                 isPlaying = true;
-                clip.setMicrosecondPosition(clipPosition);
-                clip.start();
-                try {
-                    Thread.sleep(clip.getMicrosecondLength() / 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                while (isPlaying) {
+                    long microsecondPosition = clip.getMicrosecondPosition();
+                    int sliderValue = (int) ((double) microsecondPosition / clip.getMicrosecondLength() * 100);
+                    design.slider.setValue(sliderValue);
+
+                    try {
+                        Thread.sleep(100); // Adjust the sleep time as needed
+                    }   catch (InterruptedException e) {
+                        e.printStackTrace();
+                        // Continue the loop without stopping
+                    }
                 }
-                clipPosition = clip.getMicrosecondPosition();
-                if (clipPosition >= clip.getMicrosecondLength()) {
-                    isPlaying = false;
-                }
-                clip.close();
-                audioData = null;
             });
 
+            // Start the slider update thread
+            sliderUpdateThread.start();
 
+            // Start playing the music
+            clip.setMicrosecondPosition(clipPosition);
+            clip.start();
+            try {
+                Thread.sleep(clip.getMicrosecondLength() / 1000);
+            }catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+            clipPosition = clip.getMicrosecondPosition();
+            if (clipPosition >= clip.getMicrosecondLength()) {
+                isPlaying = false;
+            }
+            clip.close();
+            audioData = null;
 
-            audioThread.start();
-
+            playSongAsync();
         }
     }
+
+
+
     public void pauseMusic() {
         if (clip != null && clip.isRunning()) {
             clipPosition = clip.getMicrosecondPosition();

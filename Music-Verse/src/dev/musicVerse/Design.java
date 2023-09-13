@@ -44,6 +44,9 @@ public class Design extends JFrame{
     public JLabel stopTime;
     public JLabel startTime;
 
+    //Slider
+    public JSlider slider;
+
 
 
     //Colors and Fonts properties
@@ -994,7 +997,7 @@ public class Design extends JFrame{
         singerName.setBounds(1060,630,300,12);
         container.add(singerName);
 
-        JSlider slider = new JSlider(JSlider.HORIZONTAL,0,100,50);
+        slider = new JSlider(JSlider.HORIZONTAL,0,100,50);
         slider.setMajorTickSpacing(10);
         slider.setMinorTickSpacing(1);
         slider.addChangeListener(new ChangeListener() {
