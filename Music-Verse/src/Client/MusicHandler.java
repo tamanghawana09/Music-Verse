@@ -30,6 +30,8 @@ public class MusicHandler {
     public String reqForPlayMusic;
 
     public int prevReq = -1;
+    public String songTitle,singerTitle;
+    public String songTotalDuration;
 
 
 
@@ -91,7 +93,6 @@ public class MusicHandler {
         printWriter.flush();
 
 
-
 //        prevReq = socketDataReader.read();
 //        System.out.println(prevReq);
 
@@ -99,6 +100,23 @@ public class MusicHandler {
             //sending which music to play
             printWriter.println(musicTitle);  //DefaultMusic
             printWriter.flush();
+
+            songTitle = socketDataReader.readLine();
+            design.songName.setText(songTitle);
+
+//            while (socketDataReader.ready()) {
+//                socketDataReader.readLine();
+//            }
+
+            singerTitle = socketDataReader.readLine();
+            design.singerName.setText(singerTitle);
+
+
+            songTotalDuration = socketDataReader.readLine();
+//            System.out.println(songTotalDuration);
+            design.stopTime.setText(songTotalDuration);
+
+
             try {
                 System.out.println("Fetching audio data from the server");
                 inputStream = socket.getInputStream();
@@ -118,6 +136,8 @@ public class MusicHandler {
 //              prevData = audioData;
                 System.out.println("audio data received");
 //              System.out.println(Arrays.toString(audioData));
+
+
 
                 runmusic();
 

@@ -12,8 +12,7 @@ public class Server extends Thread {
 
     public static void main(String[] args) {
         System.out.println("=======SERVER=======");
-        try {
-            ServerSocket ss = new ServerSocket(12345);
+        try (ServerSocket ss = new ServerSocket(12345)){
             while (isServerRunning) { // Add a flag for gracefully stopping the server
                 Socket socket = ss.accept();
                 clients.add(socket);
