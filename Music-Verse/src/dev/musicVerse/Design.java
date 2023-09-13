@@ -925,7 +925,7 @@ public class Design extends JFrame{
         RoundedPanel coverImgPanel = new RoundedPanel(10){
             protected void paintComponent(Graphics g){
                 super.paintComponents(g);
-                Image image = new ImageIcon(this.getClass().getResource("/Images/R.jpg")).getImage();
+                Image image = new ImageIcon(this.getClass().getResource("/Images/playerImg.jpg")).getImage();
                 g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
             }
 
