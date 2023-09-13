@@ -131,6 +131,7 @@ public class Design extends JFrame{
    public boolean isRunning(){
        return radioThread != null;
    }
+
     public Design(){
         //Server
         musicHandler = new MusicHandler(this);
@@ -1466,22 +1467,13 @@ public class Design extends JFrame{
     }
 
     public void stopPlayer() throws JavaLayerException {
-        Thread radioThread = new Thread(()->{
-            System.out.println("Player in item2: " + player); // Debugging statement
-            if (player != null) {
-                try {
-                    System.out.println("Closing player...");
-                    player.close();
-                    System.out.println("Player closed.");
-                } catch (Exception ex) {
-                    System.err.println("Error while closing player: " + ex.getMessage());
-                }
-            } else {
-                System.out.println("Player is null.");
-            }
-
-        });
-        radioThread.start();
+       if(isRunning()){
+           radioThread.interrupt();
+           radioThread = null;
+           if(player != null){
+               player.close();
+           }
+       }
 
     }
 
