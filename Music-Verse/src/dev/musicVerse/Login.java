@@ -2,10 +2,7 @@ package dev.musicVerse;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 
 public class Login extends JFrame {
@@ -77,11 +74,25 @@ public class Login extends JFrame {
         container.add(usernameTF);
 
 
-        JTextField passwordTF = new JTextField();
+        JPasswordField passwordTF = new JPasswordField();
         passwordTF.setBackground(whiteColor);
         passwordTF.setBorder(null);
         passwordTF.setBounds(610,310,200,20);
+        passwordTF.setEchoChar('*');
         container.add(passwordTF);
+
+
+        JCheckBox showPass = new JCheckBox();
+        showPass.setBounds(820,305,30,30);
+        showPass.setBackground(panelColor);
+        container.add(showPass);
+        showPass.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JCheckBox cb = (JCheckBox) e.getSource();
+                passwordTF.setEchoChar(cb.isSelected() ? '\0':'*');
+            }
+        });
 
         RoundedButton loginBtn = new RoundedButton("Login",40);
         loginBtn.setFont(new Font("Tahoma",Font.PLAIN,20));
@@ -106,6 +117,12 @@ public class Login extends JFrame {
 
         setLayout(null);
         setContentPane(container);
+
+    }
+
+    public static void main(String[] args) {
+        Login lo = new Login();
+        lo.setVisible(true);
 
     }
 
