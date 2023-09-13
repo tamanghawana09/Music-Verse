@@ -35,6 +35,17 @@ public class Design extends JFrame{
     private ImageIcon playerImg;
     private JLabel playerLbl;
 
+
+    //Player song Title and Singer name
+    public JLabel songName;
+    public JLabel singerName;
+
+
+    public JLabel stopTime;
+    public JLabel startTime;
+
+
+
     //Colors and Fonts properties
     Color backgroundColor = Color.decode("#00000");
     Color panelColor = Color.decode("#1b2223");
@@ -971,16 +982,16 @@ public class Design extends JFrame{
         container.add(coverImgPanel);
 
 
-        JLabel songName = new JLabel("Bhanai");
-        songName.setFont(new Font("Tahoma",Font.BOLD,35));
+        songName = new JLabel(" ");
+        songName.setFont(new Font("Tahoma",Font.BOLD,30));
         songName.setForeground(whiteColor);
-        songName.setBounds(1020,590,300,40);
+        songName.setBounds(1020,590,200,40);
         container.add(songName);
 
-        JLabel singerName = new JLabel("The Tribal Rain");
+        singerName = new JLabel(" ");
         singerName.setFont(new Font("Tahoma",Font.PLAIN,12));
         singerName.setForeground(whiteColor);
-        singerName.setBounds(1040,630,300,12);
+        singerName.setBounds(1060,630,300,12);
         container.add(singerName);
 
         JSlider slider = new JSlider(JSlider.HORIZONTAL,0,100,50);
@@ -1001,15 +1012,15 @@ public class Design extends JFrame{
         container.add(slider);
 
         Font text = new Font("Tahoma",Font.PLAIN,12);
-        JLabel startTime = new JLabel();
+        startTime = new JLabel();
         startTime.setText("00:00");
         startTime.setFont(text);
         startTime.setForeground(whiteColor);
         startTime.setBounds(915,660,50,12);
         container.add(startTime);
 
-        JLabel stopTime = new JLabel();
-        stopTime.setText("00:00");
+        stopTime = new JLabel();
+        stopTime.setText(" ");
         stopTime.setFont(text);
         stopTime.setForeground(whiteColor);
         stopTime.setBounds( 1220,660,50,12);

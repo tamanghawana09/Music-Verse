@@ -6,10 +6,11 @@ import java.sql.*;
 import java.util.*;
 
 public class ClientHandler implements Runnable {
-    private Socket clientSocket;
-    private List<Socket> clients;
-    private BufferedReader clientDataReader,clientFetchAudioReader;
-    private PrintWriter printWriter;
+    private final Socket clientSocket;
+    private final List<Socket> clients;
+    private final BufferedReader clientDataReader;
+    private BufferedReader clientFetchAudioReader;
+    private final PrintWriter printWriter;
 
     // Database connection details
     private static final String DATABASE_URL = "jdbc:mysql://localhost/musicplayerdb";
@@ -20,7 +21,7 @@ public class ClientHandler implements Runnable {
 
     private String dataRequest;
     private int rowCount;
-    private Random randomNum = new Random();
+    private final Random randomNum = new Random();
 
 
     public ClientHandler(Socket clientSocket, List<Socket> clients) throws IOException {
@@ -122,14 +123,54 @@ public class ClientHandler implements Runnable {
 //                        printWriter.println(randNum);
 //                        printWriter.flush();
 
+                        try {
+                            String querryForName = "SELECT Title FROM songs WHERE SongID = ?";
+                            PreparedStatement preparedStatement = conn.prepareStatement(querryForName);
+                            preparedStatement.setInt(1,randNum);
+                            ResultSet resultSet = preparedStatement.executeQuery();
+                            if(resultSet.next()){
+                                String songName = resultSet.getString("Title");
+
+                                printWriter.println(songName);
+                                printWriter.flush();
+                            }
+
+                            String querryForSingerName = "SELECT Artist FROM songs WHERE SongID = ?";
+                            PreparedStatement preparedStatement1 = conn.prepareStatement(querryForSingerName);
+                            preparedStatement1.setInt(1,randNum);
+                            ResultSet resultSet1 = preparedStatement1.executeQuery();
+                            if(resultSet1.next()){
+                                String singerName = resultSet1.getString("Artist");
+
+                                printWriter.println(singerName);
+                                printWriter.flush();
+                            }
 
 
-                        String query = "SELECT filepath FROM songs WHERE SongID = ?";
+                            String queryForDuration = "SELECT Duration FROM songs WHERE SongID = ?";
+                            PreparedStatement preparedStatement2 = conn.prepareStatement(queryForDuration);
+                            preparedStatement2.setInt(1, randNum);
+                            ResultSet resultSet2 = preparedStatement2.executeQuery();
+                            if (resultSet2.next()) {
+                                int durationInSeconds = resultSet2.getInt("Duration"); // Use "Duration" here
+                                int minutes = durationInSeconds / 60;
+                                int seconds = durationInSeconds % 60;
+
+                                printWriter.println(minutes + " : " + seconds);
+                                printWriter.flush();
+                            }
+
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+
+
+                        String query = "SELECT FilePath FROM songs WHERE SongID = ?";
                         PreparedStatement preparedStatement = conn.prepareStatement(query);
                         preparedStatement.setInt(1, randNum);
                         ResultSet resultSet = preparedStatement.executeQuery();
                         if (resultSet.next()) {
-                            String filepath = resultSet.getString("filepath");
+                            String filepath = resultSet.getString("FilePath");
                             System.out.println(filepath);
                             File audioFile = new File(filepath);
 
@@ -142,6 +183,7 @@ public class ClientHandler implements Runnable {
                                 while ((bytesRead = inputStream.read(buffer)) != -1) {
                                     outputStream.write(buffer, 0, bytesRead);
                                 }
+                                outputStream.flush();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
