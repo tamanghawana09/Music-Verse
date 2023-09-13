@@ -1,8 +1,9 @@
 package dev.musicVerse;
 
 import Client.MusicHandler;
-import javazoom.jl.player.Player;
 
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.Player;
 
 
 import javax.sound.sampled.LineUnavailableException;
@@ -11,7 +12,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import javax.swing.table.DefaultTableCellRenderer;
+
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
@@ -20,8 +21,6 @@ import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.Objects;
 
 public class Design extends JFrame{
     MusicHandler musicHandler;
@@ -85,6 +84,7 @@ public class Design extends JFrame{
     private boolean albums = false;
     private boolean artists = false;
     private boolean musicPlayed = false;
+    private static volatile boolean stopPlayer = false;
 
     private Player player;
 
@@ -110,7 +110,13 @@ public class Design extends JFrame{
 
    private Point mousePressLocation;
 
+   private Thread radioThread;
 
+
+
+   public boolean isRunning(){
+       return radioThread != null;
+   }
     public Design(){
         //Server
         musicHandler = new MusicHandler(this);
@@ -524,42 +530,73 @@ public class Design extends JFrame{
         recentimg.setBounds(65,330,18,18);
         container.add(recentimg);
 
-        JLabel recent = new JLabel("Radio");
-        recent.setForeground(whiteColor);
-        recent.setBounds(100,325,150,30);
-        recent.setFont(new Font("Tahoma",Font.PLAIN,18));
-        container.add(recent);
-        recent.addMouseListener(new MouseAdapter() {
+        JPopupMenu radioMenu = new JPopupMenu();
+        radioMenu.setBackground(panelColor);
+        radioMenu.setForeground(whiteColor);
+        JMenuItem item1 = new JMenuItem("Play");
+        item1.setFont(new Font("Tahoma",Font.PLAIN,15));
+        item1.setBackground(panelColor);
+        item1.setForeground(whiteColor);
+        JMenuItem item2 = new JMenuItem("Pause");
+        item2.setFont(new Font("Tahoma",Font.PLAIN,15));
+        item2.setBackground(panelColor);
+        item2.setForeground(whiteColor);
+        item1.addActionListener( e -> {
+                    if (!musicPlayed) {
+                        Thread musicThread = new Thread(() -> {
+
+                                try {
+                                    String radioStreamUrl = "https://drive.uber.radio/uber/bollywoodlove/icecast.audio";
+                                    Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
+                                    System.out.println("Playing radio ...");
+                                    player.play();
+                                    musicPlayed = true;
+                                } catch (Exception music) {
+                                    System.out.println("There was an error:" + music.getMessage());
+                                }
+
+                        });
+                        musicThread.start();
+
+                    }
+        });
+        item2.addActionListener( e->{
+//            try {
+//                stopPlayer();
+//                System.out.println("Player close ..");
+//            } catch (JavaLayerException ex) {
+//                throw new RuntimeException(ex);
+//
+//            }
+        });
+
+        radioMenu.add(item1);
+        radioMenu.add(item2);
+
+        JLabel radio = new JLabel("Radio");
+        radio.setForeground(whiteColor);
+        radio.setBounds(100,325,150,30);
+        radio.setFont(new Font("Tahoma",Font.PLAIN,18));
+        container.add(radio);
+        radio.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                recent.setText("<html><u><font color='#0EF6CC'>Radio</font></u></html>");
+                radio.setText("<html><u><font color='#0EF6CC'>Radio</font></u></html>");
 
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                recent.setText("<html><font color='#F4FEFD'>Radio</font></html>");
+                radio.setText("<html><font color='#F4FEFD'>Radio</font></html>");
 
             }
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(!musicPlayed){
-                    Thread musicThread = new Thread(()->{
-                        try{
-                            String radioStreamUrl = "https://drive.uber.radio/uber/bollywoodlove/icecast.audio";
-                            Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
-                            System.out.println("Playing radio ...");
-                            player.play();
-                        }catch(Exception music){
-                            System.out.println("There was an error:" + music.getMessage());
-                        }
-                    });
-                    musicThread.start();
-                    musicPlayed = true;
+                    radioMenu.show(radio,e.getX(),e.getY());
                 }
 
-            }
+
         });
 
 
@@ -1412,6 +1449,26 @@ public class Design extends JFrame{
         setLocationRelativeTo(null);
         setLayout(null);
         setContentPane(container);
+    }
+
+    public void stopPlayer() throws JavaLayerException {
+        Thread radioThread = new Thread(()->{
+            System.out.println("Player in item2: " + player); // Debugging statement
+            if (player != null) {
+                try {
+                    System.out.println("Closing player...");
+                    player.close();
+                    System.out.println("Player closed.");
+                } catch (Exception ex) {
+                    System.err.println("Error while closing player: " + ex.getMessage());
+                }
+            } else {
+                System.out.println("Player is null.");
+            }
+
+        });
+        radioThread.start();
+
     }
 
 
