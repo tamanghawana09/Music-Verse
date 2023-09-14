@@ -184,6 +184,8 @@ public class Design extends JFrame{
                 local.setText("<html><font color='#F4FEFD'>Local</font></html>");
             }
         });
+
+
         //Search panel
         RoundedPanel searchPnl = new RoundedPanel(35);
         searchPnl.setBounds(500,20,400,35);
@@ -220,6 +222,8 @@ public class Design extends JFrame{
                }
             }
         });
+
+
 
         //This is for songs to be search in server or database
 //        searchTf.addKeyListener(new KeyAdapter() {
