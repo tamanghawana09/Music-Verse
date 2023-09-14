@@ -117,13 +117,7 @@ public class Login extends JFrame {
 
         setLayout(null);
         setContentPane(container);
-
-    }
-
-    public static void main(String[] args) {
-        Login lo = new Login();
-        lo.setVisible(true);
-
+        setVisible(true);
     }
 
 }
