@@ -2,8 +2,10 @@ package dev.musicVerse;
 
 import Client.MusicHandler;
 
+import javazoom.jl.decoder.Bitstream;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
+import javazoom.jl.player.advanced.AdvancedPlayer;
 
 
 import javax.sound.sampled.LineUnavailableException;
@@ -21,6 +23,9 @@ import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.BitSet;
 
 public class Design extends JFrame{
     MusicHandler musicHandler;
@@ -100,7 +105,8 @@ public class Design extends JFrame{
     private boolean musicPlayed = false;
     private static volatile boolean stopPlayer = false;
 
-    private Player player;
+    private static AdvancedPlayer player;
+    private static InputStream inputStream;
 
 //    Playlist
 
@@ -562,10 +568,10 @@ public class Design extends JFrame{
 
                                 try {
                                     String radioStreamUrl = "https://drive.uber.radio/uber/bollywoodlove/icecast.audio";
-                                    Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
-                                    System.out.println("Playing radio ...");
+                                    inputStream = new URL(radioStreamUrl).openStream();
+                                    Bitstream bitstream = new Bitstream(inputStream);
+                                    player = new AdvancedPlayer(inputStream);
                                     player.play();
-                                    musicPlayed = true;
                                 } catch (Exception music) {
                                     System.out.println("There was an error:" + music.getMessage());
                                 }
@@ -576,13 +582,7 @@ public class Design extends JFrame{
                     }
         });
         item2.addActionListener( e->{
-//            try {
-//                stopPlayer();
-//                System.out.println("Player close ..");
-//            } catch (JavaLayerException ex) {
-//                throw new RuntimeException(ex);
-//
-//            }
+            stopPlayer();
         });
 
         radioMenu.add(item1);
@@ -783,7 +783,6 @@ public class Design extends JFrame{
         playListPanel.setBackground(panelColor);
         container.add(playListPanel);
         playListPanel.setVisible(false);
-
 
 
         JPanel deviceimg = new JPanel(){
@@ -1466,12 +1465,15 @@ public class Design extends JFrame{
         setContentPane(container);
     }
 
-    public void stopPlayer() throws JavaLayerException {
-       if(isRunning()){
-           radioThread.interrupt();
-           radioThread = null;
-           if(player != null){
-               player.close();
+    public  static void stopPlayer()  {
+       if(player != null ){
+           player.close();
+       }
+       if(inputStream != null){
+           try{
+               inputStream.close();
+           }catch(IOException e){
+               e.printStackTrace();
            }
        }
 
