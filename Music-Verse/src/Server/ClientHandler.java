@@ -63,8 +63,68 @@ public class ClientHandler implements Runnable {
                 System.out.println("Request received to play music");
                 clientRequest = "";
                 handleMusicRequest();
+            } else if(clientRequest.equals("SEARCH_MUSIC")){
+                System.out.println("Request recevied for searching Music data");
+                clientRequest = "";
+                handleSearch();
             }
         }
+    }
+
+    private void handleSearch() throws IOException {
+        String searchedKey = clientDataReader.readLine();
+        System.out.println("Server : Req to find : " + searchedKey);
+
+        List<String> databaseData = retriveSearchedData(DATABASE_URL, searchedKey);
+        for (String data : databaseData){
+            printWriter.println(data);
+            printWriter.flush();
+        }
+
+        databaseData.clear();
+    }
+
+    private List<String> retriveSearchedData(String databaseUrl, String searchedKey) {
+        List<String> data = new ArrayList<>();
+        try {
+            Connection connection = DriverManager.getConnection(databaseUrl, DATABASE_USER, DATABASE_PASSWORD);
+            Statement statement = connection.createStatement();
+
+            String sql = "SELECT Title, Artist, Duration, Name " +
+                    "FROM Songs " +
+                    "INNER JOIN Genres ON Songs.GenreId = Genres.GenreID " +
+                    "WHERE Title = ?";
+//
+//            ResultSet resultSet = statement.executeQuery("SELECT Title, Artist, Duration, Name FROM Songs " +
+//                    "INNER JOIN Genres ON Songs.GenreId = Genres.GenreID");
+
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1,searchedKey);
+
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            int sn = 1;
+            while (resultSet.next()) {
+                String title = resultSet.getString("Title");
+                String artist = resultSet.getString("Artist");
+                int durationInSeconds = resultSet.getInt("Duration");
+                int minutes = durationInSeconds / 60;
+                int seconds = durationInSeconds % 60;
+                String genre = resultSet.getString("Name");
+                String songData = sn + " - " + title + " - " + artist + " - " + minutes + " : " + seconds + " min - " + genre;
+                data.add(songData);
+                sn++;
+            }
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        } catch (SQLException e) {
+            System.err.println("Error retrieving data from database: " + e.getMessage());
+        }
+        return data;
     }
 
     private void handleDataRequest() {
