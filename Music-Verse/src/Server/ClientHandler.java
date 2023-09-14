@@ -23,10 +23,16 @@ public class ClientHandler implements Runnable {
     private int rowCount;
     private final Random randomNum = new Random();
 
+    private Connection connection;
 
-    public ClientHandler(Socket clientSocket, List<Socket> clients) throws IOException {
+
+
+    public ClientHandler(Socket clientSocket, List<Socket> clients) throws IOException, SQLException {
         this.clientSocket = clientSocket;
         this.clients = clients;
+
+        connection = DriverManager.getConnection(DATABASE_URL,DATABASE_USER,DATABASE_PASSWORD);
+//        Statement statement = connection.createStatement();
         this.clientDataReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         this.clientFetchAudioReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         this.printWriter = new PrintWriter(clientSocket.getOutputStream(), true); // Auto-flush enabled
@@ -53,23 +59,150 @@ public class ClientHandler implements Runnable {
         String clientRequest;
         while ((clientRequest = clientDataReader.readLine()) != null) {
             System.out.println("Server : Request received : " + clientRequest);
+
+            switch (clientRequest){
+                case "REQ_TO_RETRIEVE_DATA":
+                    System.out.println("Req received to send Data");
+                    clientRequest = "";
+                    handleDataRequest();
+                    break;
+                case "PLAY_DEFAULT_MUSIC":
+                    System.out.println("Request received to play music");
+                    clientRequest = "";
+                    handleMusicRequest();
+                    break;
+
+                case "SEARCH_MUSIC":
+                    System.out.println("Request recevied for searching Music data");
+                    clientRequest = "";
+                    handleSearch();
+                    break;
+
+                case "REQUEST_FOR_REGISTRATION":
+                    System.out.println("Request received for Registering User");
+                    handleRegisteration();
+                    break;
+                case "REQ_TO_LOGIN":
+                    System.out.println("Request received for Login User");
+                    handleLogin();
+                    break;
+
+            }
 //            System.out.println("Server: Request Received");
 
-            if (clientRequest.equals("REQ_TO_RETRIEVE_DATA")) {
-                System.out.println("Req received to send Data");
-                clientRequest = "";
-                handleDataRequest();
-            } else if (clientRequest.equals("PLAY_DEFAULT_MUSIC")) {
-                System.out.println("Request received to play music");
-                clientRequest = "";
-                handleMusicRequest();
-            } else if(clientRequest.equals("SEARCH_MUSIC")){
-                System.out.println("Request recevied for searching Music data");
-                clientRequest = "";
-                handleSearch();
-            }
+//            if (clientRequest.equals("REQ_TO_RETRIEVE_DATA")) {
+//                System.out.println("Req received to send Data");
+//                clientRequest = "";
+//                handleDataRequest();
+//            } else if (clientRequest.equals("PLAY_DEFAULT_MUSIC")) {
+//
+//            } else if(clientRequest.equals("SEARCH_MUSIC")){
+//                System.out.println("Request recevied for searching Music data");
+//                clientRequest = "";
+//                handleSearch();
+//            }
+
         }
     }
+
+    private void handleLogin() throws IOException {
+        String uName,uPassword;
+
+        uName = clientDataReader.readLine();
+        uPassword = clientDataReader.readLine();
+
+        System.out.println(uName + " " + uPassword);
+
+        if (isUserValid(uName, uPassword)) {
+            // User exists and password matches
+            printWriter.println("Server : Login Successful");
+            printWriter.flush();
+
+            printWriter.println(uName);
+            printWriter.flush();
+        } else {
+            // No user found or password doesn't match
+            printWriter.println("Server : No User Found");
+            printWriter.flush();
+        }
+
+    }
+
+    private boolean isUserValid(String uName, String uPassword) {
+        // Query your database to check if the user exists with the provided username
+        // and if the password matches the stored password for that user.
+
+        // Example SQL query:
+        String query = "SELECT COUNT(*) FROM User WHERE Username = ? AND Password = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, uName);
+            preparedStatement.setString(2, uPassword);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            int count = resultSet.getInt(1);
+            return count > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private void handleRegisteration() throws IOException {
+        String fName, uName, email, password;
+
+        fName = clientDataReader.readLine();
+        uName = clientDataReader.readLine();
+        email = clientDataReader.readLine();
+        password = clientDataReader.readLine();
+
+        System.out.println(fName + " " + uName + " " + email + " " + password + " ");
+
+
+//        boolean userAdreadyExist = isUserExists(uName,email);
+        try {
+            if(isUserExists(uName,email)){
+                printWriter.println("Server : User Already Exists");
+                printWriter.flush();
+            }else {
+                registerUser(fName,uName,email,password);
+                printWriter.println("Server : Registration Successful");
+                printWriter.flush();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    private void registerUser(String fName, String uName, String email, String password) {
+        String query = "INSERT INTO User (FullName, Username, Email, Password) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, fName);
+            preparedStatement.setString(2, uName);
+            preparedStatement.setString(3, email);
+            preparedStatement.setString(4, password);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean isUserExists(String uName, String email) {
+        String query = "SELECT COUNT(*) FROM User WHERE Username = ? OR Email = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, uName);
+            preparedStatement.setString(2, email);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            int count = resultSet.getInt(1);
+            return count > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     private void handleSearch() throws IOException {
         String searchedKey = clientDataReader.readLine();
@@ -87,7 +220,7 @@ public class ClientHandler implements Runnable {
     private List<String> retriveSearchedData(String databaseUrl, String searchedKey) {
         List<String> data = new ArrayList<>();
         try {
-            Connection connection = DriverManager.getConnection(databaseUrl, DATABASE_USER, DATABASE_PASSWORD);
+//            Connection connection = DriverManager.getConnection(databaseUrl, DATABASE_USER, DATABASE_PASSWORD);
             Statement statement = connection.createStatement();
 
             String sql = "SELECT Title, Artist, Duration, Name " +
@@ -163,10 +296,10 @@ public class ClientHandler implements Runnable {
                 case "DefaultMusic":
 
                     try {
-                        Connection conn = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD);
+//                        Connection conn = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD);
                         String query1 = "SELECT COUNT(*) AS row_count FROM songs";
 
-                        try (PreparedStatement preparedStatement = conn.prepareStatement(query1)) {
+                        try (PreparedStatement preparedStatement = connection.prepareStatement(query1)) {
                             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                                 if (resultSet.next()) {
                                     rowCount = resultSet.getInt("row_count");
@@ -185,7 +318,7 @@ public class ClientHandler implements Runnable {
 
                         try {
                             String querryForName = "SELECT Title FROM songs WHERE SongID = ?";
-                            PreparedStatement preparedStatement = conn.prepareStatement(querryForName);
+                            PreparedStatement preparedStatement = connection.prepareStatement(querryForName);
                             preparedStatement.setInt(1,randNum);
                             ResultSet resultSet = preparedStatement.executeQuery();
                             if(resultSet.next()){
@@ -196,7 +329,7 @@ public class ClientHandler implements Runnable {
                             }
 
                             String querryForSingerName = "SELECT Artist FROM songs WHERE SongID = ?";
-                            PreparedStatement preparedStatement1 = conn.prepareStatement(querryForSingerName);
+                            PreparedStatement preparedStatement1 = connection.prepareStatement(querryForSingerName);
                             preparedStatement1.setInt(1,randNum);
                             ResultSet resultSet1 = preparedStatement1.executeQuery();
                             if(resultSet1.next()){
@@ -208,7 +341,7 @@ public class ClientHandler implements Runnable {
 
 
                             String queryForDuration = "SELECT Duration FROM songs WHERE SongID = ?";
-                            PreparedStatement preparedStatement2 = conn.prepareStatement(queryForDuration);
+                            PreparedStatement preparedStatement2 = connection.prepareStatement(queryForDuration);
                             preparedStatement2.setInt(1, randNum);
                             ResultSet resultSet2 = preparedStatement2.executeQuery();
                             if (resultSet2.next()) {
@@ -226,7 +359,7 @@ public class ClientHandler implements Runnable {
 
 
                         String query = "SELECT FilePath FROM songs WHERE SongID = ?";
-                        PreparedStatement preparedStatement = conn.prepareStatement(query);
+                        PreparedStatement preparedStatement = connection.prepareStatement(query);
                         preparedStatement.setInt(1, randNum);
                         ResultSet resultSet = preparedStatement.executeQuery();
                         if (resultSet.next()) {
@@ -248,7 +381,7 @@ public class ClientHandler implements Runnable {
                                 e.printStackTrace();
                             }
                         }
-                        conn.close();
+//                        conn.close();
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }finally {

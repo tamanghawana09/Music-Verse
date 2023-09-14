@@ -8,12 +8,13 @@ public class Main {
     public static void main(String[] args) {
 
         SwingUtilities.invokeLater(() ->{
-        Design dj = new Design();
-        dj.setVisible(true);
+//        Design dj = new Design();
+//        dj.dispose();
+//        dj.setVisible(false);
 //        Local lo = new Local();
-
-//            Login lg = new Login();
-//            lg.setVisible(true);
+//
+            Login lg = new Login();
+            lg.setVisible(true);
         });
 
 

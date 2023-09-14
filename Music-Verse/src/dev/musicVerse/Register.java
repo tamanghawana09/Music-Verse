@@ -1,11 +1,21 @@
 package dev.musicVerse;
 
+import Client.LoginHandler;
+import Client.RegisterHandler;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
+import java.io.IOException;
 
 public class Register extends JFrame {
+    //Login Class
+    private Login login;
+
+    //LoginHandler
+    public RegisterHandler registerHandler;
+
     //Colors and Fonts properties
     Color backgroundColor = Color.decode("#00000");
     Color panelColor = Color.decode("#1b2223");
@@ -14,7 +24,25 @@ public class Register extends JFrame {
     //Color YellowColor = Color.decode("#f9e509");
 
     Container container = new Container();
+
+
+    //Registrarion
+    public char[] passChar;
+    public char[] repassChar;
+    public char[] emailChar;
+
+    public String fName;
+    public String uName;
+    public String email;
+
+    public boolean isRegistered = false;
+
+
     public Register(){
+        super("Register");
+
+        registerHandler = new RegisterHandler(this);
+//        registerHandler.connectServer();
         setBounds(300,150,900,600);
         setBackground(backgroundColor);
         setUndecorated(true);
@@ -159,12 +187,53 @@ public class Register extends JFrame {
         registrationBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                char[] passChar = passwordTF.getPassword();
-                char[] repassChar = repassTF.getPassword();
+                fName = fullnameTF.getText();
+                uName = usernameTF.getText();
+
+                emailChar = emailTF.getText().toCharArray();
+                String email = new String(emailChar);
+
+                boolean isEmailValid = isValidEmail(email);
+                if(isEmailValid){
+                    System.out.println("Valid Email");
+                }else {
+                    System.out.println("Invalid Email");
+                }
+
+                passChar = passwordTF.getPassword();
+                repassChar = repassTF.getPassword();
                 String password = new String(passChar);
                 String repass = new String(repassChar);
                 if(password.equals(repass)){
                     wrongPass.setVisible(false);
+
+                    try {
+                        if(!(fName.isEmpty() || uName.isEmpty() || email.isEmpty() || password.isEmpty() || repass.isEmpty())){
+                            registerHandler.registerAccountAsync(fName, uName, email, password);
+
+                            if (isRegistered) {
+                                // Show a registration success message
+                                JOptionPane.showMessageDialog(null, "Registration Successful", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+                                // Open the login frame (assuming you have a method for it)
+                                login = new Login();
+                                login.setVisible(true);
+                                dispose();
+                            } else {
+                                // Show a registration failure message
+                                JOptionPane.showMessageDialog(null, "Registration Failed!! Please try Again!!", "Failure", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }else{
+                            JOptionPane.showMessageDialog(null,"Please Fill all the Fields");
+                        }
+
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+
+
+
                 } else if (password != repass) {
                     wrongPass.setVisible(true);
                 }else{
@@ -182,6 +251,18 @@ public class Register extends JFrame {
         loginBtn.setBorderPainted(false);
         container.add(loginBtn);
 
+        loginBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                login = new Login();
+                login.setVisible(true);
+
+                dispose();
+
+            }
+        });
+
         RoundedPanel roundedPanel = new RoundedPanel(10);
         roundedPanel.setBounds(475,30,390,540);
         roundedPanel.setBackground(panelColor);
@@ -195,4 +276,15 @@ public class Register extends JFrame {
     public static void main(String[] args) {
         Register re = new Register();
     }
+
+    public static boolean isValidEmail(String email) {
+        // Regular expression for a valid email address
+        String regex = "^[A-Za-z0-9+_.-]+@(.+)$";
+
+        // Use the String.matches method to check the email against the regular expression
+        return email.matches(regex);
+    }
 }
+
+
+
