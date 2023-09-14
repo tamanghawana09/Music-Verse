@@ -36,6 +36,7 @@ public class MusicHandler {
     public int prevReq = -1;
     public String songTitle,singerTitle;
     public String songTotalDuration;
+    public String reqSearch = "SEARCH_MUSIC";
 
 
 
@@ -334,6 +335,55 @@ public class MusicHandler {
             }
         }
     }
+
+    public void searchDataAsync(String reqSearchKey){
+        Thread networkThread = new Thread(() ->{
+            searchData(reqSearchKey);
+        });
+        networkThread.start();
+    }
+
+
+
+
+    public void searchData(String searchedKey){
+        connectServer();
+        if(design.displaySearchData.getRowCount() == 0){
+            try {
+                socketDataReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                outputStream = socket.getOutputStream();
+                printWriter = new PrintWriter(outputStream);
+                printWriter.println("SEARCH_MUSIC");
+                printWriter.flush();
+
+                printWriter.println(searchedKey);
+                printWriter.flush();
+
+                boolean dataFound = false; // Flag to track if data is found
+
+                while ((serverResponse = socketDataReader.readLine()) != null) {
+                    System.out.println(serverResponse);
+                    String[] rowData = serverResponse.split(" - "); // Split server response
+                    design.searchTableModel.addRow(rowData);
+                    dataFound = true; // Data is found
+                }
+
+                if (!dataFound) {
+                    // If no data is found, add a "Data not found" message to the table
+                    String[] noDataMessage = {"Data not found"};
+                    design.searchTableModel.addRow(noDataMessage);
+                }
+                System.out.println("Data received and Displayed on the Table");
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+
+
+    }
+
 
 }
 

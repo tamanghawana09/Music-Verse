@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.BitSet;
 
+import static java.awt.event.KeyEvent.*;
+
 public class Design extends JFrame{
     MusicHandler musicHandler;
 
@@ -53,7 +55,6 @@ public class Design extends JFrame{
     public JSlider slider;
 
 
-
     //Colors and Fonts properties
     Color backgroundColor = Color.decode("#00000");
     Color panelColor = Color.decode("#1b2223");
@@ -75,6 +76,8 @@ public class Design extends JFrame{
     RoundedPanel albumsPnl = new RoundedPanel(10);
     RoundedPanel artistsPnl = new RoundedPanel(10);
 
+
+
 //    Data Table to display data from the database
         public DefaultTableModel tableModel = new DefaultTableModel(
             new String[][]{}, // Initial data (empty)
@@ -94,6 +97,25 @@ public class Design extends JFrame{
     public final String reqForPlayMusic = "PLAY_DEFAULT_MUSIC";
 
     public JScrollPane scrollPane = new JScrollPane(displayData);
+
+
+
+    // For Searching
+    public JTextField searchTf;
+    public RoundedPanel searchPanel = new RoundedPanel(20);
+
+    public DefaultTableModel searchTableModel = new DefaultTableModel(
+            new String[][]{}, // Initial data (empty)
+            new String[]{"S.N", "Title", "Artist", "Duration", "Genre"}
+    );
+
+    public JTable displaySearchData = new JTable(searchTableModel){
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+    public JScrollPane scrollPaneForSearch = new JScrollPane(displaySearchData);
 
 
     //Panel table variable initializations
@@ -131,6 +153,10 @@ public class Design extends JFrame{
    private Point mousePressLocation;
 
    private Thread radioThread;
+
+
+
+
 
 
 
@@ -198,7 +224,7 @@ public class Design extends JFrame{
         searchPnl.setBackground(panelColor);
         container.add(searchPnl);
 
-        JTextField searchTf = new JTextField("Search");
+        searchTf = new JTextField("Search");
         searchTf.setFont(new Font("Tahoma",Font.PLAIN,15));
         searchTf.setForeground(whiteColor);
         searchTf.setBackground(panelColor);
@@ -231,10 +257,43 @@ public class Design extends JFrame{
 
 
 
-        //This is for songs to be search in server or database
-//        searchTf.addKeyListener(new KeyAdapter() {
-//        });
-//
+
+
+
+//        This is for songs to be search in server or database
+        searchTf.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                super.keyTyped(e);
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);
+                if(e.getKeyCode() == VK_ENTER){
+                    searchTableModel.setRowCount(0);
+
+                    scrollPaneForSearch.setVisible(true);
+                    displaySearchData.setBackground(panelColor);
+                    displaySearchData.setForeground(whiteColor);
+                    String searchData = searchTf.getText();
+                    System.out.println(searchData);
+                    musicHandler.searchDataAsync(searchData);
+                }
+            }
+        });
+
+        //SearchMusicData.add(displayData);
+        JTableHeader searchTblHeader = displaySearchData.getTableHeader();
+        searchTblHeader.setBackground(panelColor);
+        searchTblHeader.setForeground(whiteColor);
+        scrollPaneForSearch.setBounds(270,375,615,410);
+        scrollPaneForSearch.getViewport().setBackground(panelColor);
+
+        container.add(scrollPaneForSearch);
+        container.setComponentZOrder(scrollPaneForSearch,0);
+        scrollPaneForSearch.setVisible(false);
 
         //Top label components
 
@@ -359,6 +418,8 @@ public class Design extends JFrame{
         genreScroll.setVisible(true);
         genreScroll.getViewport().setBackground(panelColor);
         gPnl.add(genreScroll,BorderLayout.CENTER);
+
+
 
 
         //Genre image
@@ -642,6 +703,8 @@ public class Design extends JFrame{
         container.add(scrollPane);
         container.setComponentZOrder(scrollPane,0);
         scrollPane.setVisible(false);
+
+
 
 
         //Playlist
@@ -1547,11 +1610,16 @@ public class Design extends JFrame{
                         musicHandler.clip.stop();
                     }
                     musicHandler.playSongAsync();
-
-
-
-
                 }
+            }
+        });
+
+        displaySearchData.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+
             }
         });
 
