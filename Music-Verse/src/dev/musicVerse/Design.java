@@ -570,6 +570,7 @@ public class Design extends JFrame{
         stopradio.setForeground(whiteColor);
 
         playradio.addActionListener( e -> {
+            stopPlayer();
                     if (!musicPlayed) {
                         Thread musicThread = new Thread(() -> {
 
@@ -846,6 +847,8 @@ public class Design extends JFrame{
         container.add(panel);
 
         // Top playlists panel in dashboard
+
+        //BBC Radio
         JPopupMenu bbcMenu = new JPopupMenu();
         bbcMenu.setBackground(panelColor);
         bbcMenu.setForeground(whiteColor);
@@ -857,8 +860,8 @@ public class Design extends JFrame{
         bbcStop.setFont(new Font("Tahoma",Font.PLAIN,15));
         bbcStop.setBackground(panelColor);
         bbcStop.setForeground(whiteColor);
-
         bbcPlay.addActionListener(e->{
+            stopPlayer();
             if(!musicPlayed){
                 Thread musicThread = new Thread(()->{
                     try{
@@ -905,6 +908,40 @@ public class Design extends JFrame{
             }
         });
 
+        //HITS Radio
+        JPopupMenu hitsMenu = new JPopupMenu();
+        hitsMenu.setBackground(panelColor);
+        hitsMenu.setForeground(whiteColor);
+        JMenuItem hitsPlay = new JMenuItem("Play");
+        hitsPlay.setFont(new Font("Tahoma",Font.PLAIN,15));
+        hitsPlay.setBackground(panelColor);
+        hitsPlay.setForeground(whiteColor);
+        JMenuItem hitsStop = new JMenuItem("Stop");
+        hitsStop.setFont(new Font("Tahoma",Font.PLAIN,15));
+        hitsStop.setBackground(panelColor);
+        hitsStop.setForeground(whiteColor);
+        hitsPlay.addActionListener(e->{
+            stopPlayer();
+            if(!musicPlayed){
+                Thread musicThread = new Thread(()->{
+                    try{
+                        String radioStreamUrl = "https://stream-159.zeno.fm/2w81t82wx3duv?zs=2h_dK16mScCqYkOKFBPppw";
+                        inputStream = new URL(radioStreamUrl).openStream();
+                        Bitstream bitstream = new Bitstream(inputStream);
+                        player = new AdvancedPlayer(inputStream);
+                        player.play();
+                    }catch(Exception hits){
+                        System.out.println("There was an error:" + hits.getMessage());
+                    }
+                });
+                musicThread.start();
+            }
+        });
+        hitsStop.addActionListener(e->{
+            stopPlayer();
+        });
+        hitsMenu.add(hitsPlay);
+        hitsMenu.add(hitsStop);
         JPanel hits = new JPanel(){
             @Override
             protected void paintComponent(Graphics g) {
@@ -918,22 +955,45 @@ public class Design extends JFrame{
         hits.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(!musicPlayed){
-                    Thread musicThread = new Thread(()->{
-                        try{
-                            String radioStreamUrl = "https://stream-159.zeno.fm/2w81t82wx3duv?zs=2h_dK16mScCqYkOKFBPppw";
-                            Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
-                            System.out.println("Playing radio ...");
-                            player.play();
-                            musicPlayed = true;
-                        }catch(Exception hits){
-                            System.out.println("There was an error:" + hits.getMessage());
-                        }
-                    });
-                    musicThread.start();
-                }
+                hitsMenu.show(hits,e.getX(),e.getY());
             }
         });
+
+        //Kantipur Radio
+        JPopupMenu kanMenu = new JPopupMenu();
+        kanMenu.setBackground(panelColor);
+        kanMenu.setForeground(whiteColor);
+        JMenuItem kanPlay = new JMenuItem("Play");
+        kanPlay.setFont(new Font("Tahoma",Font.PLAIN,15));
+        kanPlay.setBackground(panelColor);
+        kanPlay.setForeground(whiteColor);
+        JMenuItem kanStop = new JMenuItem("Stop");
+        kanStop.setFont(new Font("Tahoma",Font.PLAIN,15));
+        kanStop.setBackground(panelColor);
+        kanStop.setForeground(whiteColor);
+        kanPlay.addActionListener(e->{
+            stopPlayer();
+            if(!musicPlayed){
+                Thread musicThread = new Thread(()->{
+                    try{
+                        String radioStreamUrl = "https://radio-broadcast.ekantipur.com/stream";
+                        inputStream = new URL(radioStreamUrl).openStream();
+                        Bitstream bitstream = new Bitstream(inputStream);
+                        player = new AdvancedPlayer(inputStream);
+                        player.play();
+                    }catch(Exception kan){
+                        System.out.println("There was an error:" + kan.getMessage());
+                    }
+                });
+                musicThread.start();
+            }
+        });
+        kanStop.addActionListener(e->{
+            stopPlayer();
+        });
+        kanMenu.add(kanPlay);
+        kanMenu.add(kanStop);
+
         JPanel kantipur = new JPanel(){
             @Override
             protected void paintComponent(Graphics g) {
@@ -947,22 +1007,45 @@ public class Design extends JFrame{
         kantipur.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(!musicPlayed){
-                    Thread musicThread = new Thread(()->{
-                        try{
-                            String radioStreamUrl = "https://radio-broadcast.ekantipur.com/stream";
-                            Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
-                            System.out.println("Playing radio ...");
-                            player.play();
-                            musicPlayed = true;
-                        }catch(Exception kan){
-                            System.out.println("There was an error:" + kan.getMessage());
-                        }
-                    });
-                    musicThread.start();
-                }
+                kanMenu.show(kantipur,e.getX(),e.getY());
             }
         });
+
+        // Mirchi Radio
+        JPopupMenu mirchiMenu = new JPopupMenu();
+        mirchiMenu.setBackground(panelColor);
+        mirchiMenu.setForeground(whiteColor);
+        JMenuItem mirchiPlay = new JMenuItem("Play");
+        mirchiPlay.setFont(new Font("Tahoma",Font.PLAIN,15));
+        mirchiPlay.setBackground(panelColor);
+        mirchiPlay.setForeground(whiteColor);
+        JMenuItem mirchiStop = new JMenuItem("Stop");
+        mirchiStop.setFont(new Font("Tahoma",Font.PLAIN,15));
+        mirchiStop.setBackground(panelColor);
+        mirchiStop.setForeground(whiteColor);
+        mirchiPlay.addActionListener(e->{
+            stopPlayer();
+            if(!musicPlayed) {
+                Thread musicThread = new Thread(() -> {
+                    try {
+                        String radioStreamUrl = "https://drive.uber.radio/uber/bollywoodlove/icecast.audio";
+                        inputStream = new URL(radioStreamUrl).openStream();
+                        Bitstream bitstream = new Bitstream(inputStream);
+                        player = new AdvancedPlayer(inputStream);
+                        player.play();
+                    } catch (Exception mirchi) {
+                        System.out.println("There was an error:" + mirchi.getMessage());
+                    }
+                });
+                musicThread.start();
+            }
+        });
+        mirchiStop.addActionListener(e->{
+            stopPlayer();
+        });
+        mirchiMenu.add(mirchiPlay);
+        mirchiMenu.add(mirchiStop);
+
         JPanel mirchi = new JPanel(){
             @Override
             protected void paintComponent(Graphics g) {
@@ -976,21 +1059,9 @@ public class Design extends JFrame{
         mirchi.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(!musicPlayed){
-                    Thread musicThread = new Thread(()->{
-                        try{
-                            String radioStreamUrl = "https://drive.uber.radio/uber/bollywoodlove/icecast.audio";
-                            Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
-                            System.out.println("Playing radio ...");
-                            player.play();
-                            musicPlayed = true;
-                        }catch(Exception mirchi){
-                            System.out.println("There was an error:" + mirchi.getMessage());
-                        }
-                    });
-                    musicThread.start();
+                    mirchiMenu.add(mirchi,e.getX(),e.getY());
                 }
-            }
+
         });
 
         JLabel radioStationLbl = new JLabel();
