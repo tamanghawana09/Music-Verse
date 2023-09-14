@@ -272,7 +272,6 @@ public class Register extends JFrame {
         setContentPane(container);
         setVisible(true);
     }
-
     public static void main(String[] args) {
         Register re = new Register();
     }
