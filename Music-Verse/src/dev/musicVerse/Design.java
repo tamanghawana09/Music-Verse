@@ -558,15 +558,18 @@ public class Design extends JFrame{
         JPopupMenu radioMenu = new JPopupMenu();
         radioMenu.setBackground(panelColor);
         radioMenu.setForeground(whiteColor);
-        JMenuItem item1 = new JMenuItem("Play");
-        item1.setFont(new Font("Tahoma",Font.PLAIN,15));
-        item1.setBackground(panelColor);
-        item1.setForeground(whiteColor);
-        JMenuItem item2 = new JMenuItem("Pause");
-        item2.setFont(new Font("Tahoma",Font.PLAIN,15));
-        item2.setBackground(panelColor);
-        item2.setForeground(whiteColor);
-        item1.addActionListener( e -> {
+
+        JMenuItem playradio = new JMenuItem("Play");
+        playradio.setFont(new Font("Tahoma",Font.PLAIN,15));
+        playradio.setBackground(panelColor);
+        playradio.setForeground(whiteColor);
+
+        JMenuItem stopradio = new JMenuItem("Stop");
+        stopradio.setFont(new Font("Tahoma",Font.PLAIN,15));
+        stopradio.setBackground(panelColor);
+        stopradio.setForeground(whiteColor);
+
+        playradio.addActionListener( e -> {
                     if (!musicPlayed) {
                         Thread musicThread = new Thread(() -> {
 
@@ -585,12 +588,12 @@ public class Design extends JFrame{
 
                     }
         });
-        item2.addActionListener( e->{
+        stopradio.addActionListener( e->{
             stopPlayer();
         });
 
-        radioMenu.add(item1);
-        radioMenu.add(item2);
+        radioMenu.add(playradio);
+        radioMenu.add(stopradio);
 
         JLabel radio = new JLabel("Radio");
         radio.setForeground(whiteColor);
@@ -832,7 +835,6 @@ public class Design extends JFrame{
         frontpnl.setBorder(null);
         container.add(frontpnl);
 
-
         RoundedPanel backpnl = new RoundedPanel(20);
         backpnl.setBounds(25,665,200,105);
         backpnl.setBackground(Color.BLACK);
@@ -844,6 +846,41 @@ public class Design extends JFrame{
         container.add(panel);
 
         // Top playlists panel in dashboard
+        JPopupMenu bbcMenu = new JPopupMenu();
+        bbcMenu.setBackground(panelColor);
+        bbcMenu.setForeground(whiteColor);
+        JMenuItem bbcPlay = new JMenuItem("Play");
+        bbcPlay.setFont(new Font("Tahoma",Font.PLAIN,15));
+        bbcPlay.setBackground(panelColor);
+        bbcPlay.setForeground(whiteColor);
+        JMenuItem bbcStop = new JMenuItem("Stop");
+        bbcStop.setFont(new Font("Tahoma",Font.PLAIN,15));
+        bbcStop.setBackground(panelColor);
+        bbcStop.setForeground(whiteColor);
+
+        bbcPlay.addActionListener(e->{
+            if(!musicPlayed){
+                Thread musicThread = new Thread(()->{
+                    try{
+                        String radioStreamUrl = "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service";
+                        inputStream = new URL(radioStreamUrl).openStream();
+                        Bitstream bitstream = new Bitstream(inputStream);
+                        player = new AdvancedPlayer(inputStream);
+                        player.play();
+
+                    }catch(Exception bbc){
+                        System.out.println("There was an error:" + bbc.getMessage());
+                    }
+                });
+                musicThread.start();
+            }
+        });
+        bbcStop.addActionListener(e->{
+            stopPlayer();
+        });
+        bbcMenu.add(bbcPlay);
+        bbcMenu.add(bbcStop);
+
         RoundedPanel playlistPnl = new RoundedPanel(10);
         playlistPnl.setBounds(265,370,625,130);
         playlistPnl.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -862,20 +899,9 @@ public class Design extends JFrame{
         BBC.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(!musicPlayed){
-                    Thread musicThread = new Thread(()->{
-                        try{
-                            String radioStreamUrl = "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service";
-                            Player player = new Player(new java.io.BufferedInputStream(new java.net.URL(radioStreamUrl).openStream()));
-                            System.out.println("Playing radio ...");
-                            player.play();
-                            musicPlayed = true;
-                        }catch(Exception bbc){
-                            System.out.println("There was an error:" + bbc.getMessage());
-                        }
-                    });
-                    musicThread.start();
-                }
+
+                bbcMenu.show(BBC,e.getX(),getY());
+
             }
         });
 
