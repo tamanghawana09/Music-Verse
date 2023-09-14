@@ -1,11 +1,25 @@
 package dev.musicVerse;
 
+import Client.LoginHandler;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class Login extends JFrame {
+    //LoginHandler Class
+    private LoginHandler loginHandler;
+
+    private Design design;
+
+    //Register Class
+    private Register register;
+
     //Colors and Fonts properties
     Color backgroundColor = Color.decode("#00000");
     Color panelColor = Color.decode("#1b2223");
@@ -14,7 +28,26 @@ public class Login extends JFrame {
     //Color YellowColor = Color.decode("#f9e509");
 
     Container container = new Container();
+
+
+
+    public String uName;
+    public String uPassword;
+
+    public boolean isUserValid = false;
+
+    public String valid_uName;
+
+//    private boolean loginInProgress = false;
+
+
+
     public Login(){
+        super("Login");
+
+        loginHandler = new LoginHandler(this);
+        loginHandler.connectServer();
+
         setBounds(300,150,900,600);
         setBackground(backgroundColor);
         setUndecorated(true);
@@ -102,6 +135,60 @@ public class Login extends JFrame {
         loginBtn.setBorderPainted(false);
         container.add(loginBtn);
 
+        // Create a variable to track whether a login attempt is in progress
+
+        loginBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                uName = usernameTF.getText();
+                uPassword = passwordTF.getText();
+
+                if (!(uName.isEmpty() || uPassword.isEmpty())) {
+                    // Disable the login button to prevent multiple login attempts
+                    loginBtn.setEnabled(false);
+
+                    SwingWorker<Void, Void> loginWorker = new SwingWorker<>() {
+                        @Override
+                        protected Void doInBackground() {
+                            try {
+                                loginHandler.loginAccountAsync(uName, uPassword);
+                                boolean isValid = isUserValid;
+
+                                if (isValid) {
+                                    // This is the time-consuming part - initialize the Design frame
+                                    SwingUtilities.invokeLater(() -> {
+                                        design = new Design();
+                                        design.setVisible(true);
+                                        dispose();
+                                    });
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Login Failed!! Please try Again!!", "Failure", JOptionPane.ERROR_MESSAGE);
+                                }
+                            } catch (Exception ex) {
+                                throw new RuntimeException(ex);
+                            }
+                            return null;
+                        }
+
+                        @Override
+                        protected void done() {
+                            // Re-enable the login button after the login task is done
+                            loginBtn.setEnabled(true);
+                        }
+                    };
+
+                    loginWorker.execute();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please Fill all the Fields");
+                }
+            }
+        });
+
+
+
+
         RoundedButton registrationBtn = new RoundedButton("Register",40);
         registrationBtn.setFont(new Font("Tahoma",Font.PLAIN,20));
         registrationBtn.setForeground(Color.BLACK);
@@ -109,6 +196,17 @@ public class Login extends JFrame {
         registrationBtn.setBounds(545,440,250,40);
         registrationBtn.setBorderPainted(false);
         container.add(registrationBtn);
+
+        registrationBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                register = new Register();
+                register.setVisible(true);
+
+                dispose();
+            }
+        });
 
         RoundedPanel roundedPanel = new RoundedPanel(10);
         roundedPanel.setBounds(475,30,390,540);
