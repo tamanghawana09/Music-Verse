@@ -192,5 +192,4 @@ public class Register extends JFrame {
         setVisible(true);
     }
 
-
 }
