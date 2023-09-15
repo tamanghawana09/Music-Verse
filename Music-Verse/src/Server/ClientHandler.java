@@ -86,22 +86,41 @@ public class ClientHandler implements Runnable {
                     System.out.println("Request received for Login User");
                     handleLogin();
                     break;
+                case "CHECK_FOR_USER_LOGIN":
+                    System.out.println("Request received for Checking User Login");
+                    checkUserLogedin();
+                    break;
 
             }
-//            System.out.println("Server: Request Received");
 
-//            if (clientRequest.equals("REQ_TO_RETRIEVE_DATA")) {
-//                System.out.println("Req received to send Data");
-//                clientRequest = "";
-//                handleDataRequest();
-//            } else if (clientRequest.equals("PLAY_DEFAULT_MUSIC")) {
-//
-//            } else if(clientRequest.equals("SEARCH_MUSIC")){
-//                System.out.println("Request recevied for searching Music data");
-//                clientRequest = "";
-//                handleSearch();
-//            }
+        }
+    }
 
+    private void checkUserLogedin() {
+        // Query your database to get the usernames of users with is_logged_in = true.
+        // Example SQL query:
+        String query = "SELECT Username FROM User WHERE is_logged_in = true";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            boolean hasLoggedInUsers = false;
+
+            while (resultSet.next()) {
+                String username = resultSet.getString("Username");
+                System.out.println(username);
+                // Send each username back to the client
+                printWriter.println(username);
+                printWriter.flush();
+                hasLoggedInUsers = true;
+            }
+
+            if (!hasLoggedInUsers) {
+                // No users are currently logged in
+                printWriter.println("Server : No Users Logged In");
+                printWriter.flush();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -132,7 +151,7 @@ public class ClientHandler implements Runnable {
         // Query your database to check if the user exists with the provided username
         // and if the password matches the stored password for that user.
 
-        // Example SQL query:
+        // Example SQL query with parameterized query:
         String query = "SELECT COUNT(*) FROM User WHERE Username = ? AND Password = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -141,11 +160,22 @@ public class ClientHandler implements Runnable {
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
             int count = resultSet.getInt(1);
+
+            if (count > 0) {
+                // User exists and password matches, update is_logged_in to true
+                String updateQuery = "UPDATE User SET is_logged_in = true WHERE Username = ?";
+                try (PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+                    updateStatement.setString(1, uName);
+                    updateStatement.executeUpdate();
+                }
+            }
+
             return count > 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
 
 
     private void handleRegisteration() throws IOException {
@@ -162,10 +192,12 @@ public class ClientHandler implements Runnable {
 //        boolean userAdreadyExist = isUserExists(uName,email);
         try {
             if(isUserExists(uName,email)){
+                System.out.println("Filed");
                 printWriter.println("Server : User Already Exists");
                 printWriter.flush();
             }else {
                 registerUser(fName,uName,email,password);
+                System.out.println("Registration Successful");
                 printWriter.println("Server : Registration Successful");
                 printWriter.flush();
             }
@@ -174,6 +206,19 @@ public class ClientHandler implements Runnable {
         }
 
 
+    }
+    private boolean isUserExists(String uName, String email) {
+        String query = "SELECT COUNT(*) FROM User WHERE Username = ? OR Email = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, uName);
+            preparedStatement.setString(2, email);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            int count = resultSet.getInt(1);
+            return count > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void registerUser(String fName, String uName, String email, String password) {
@@ -189,19 +234,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private boolean isUserExists(String uName, String email) {
-        String query = "SELECT COUNT(*) FROM User WHERE Username = ? OR Email = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, uName);
-            preparedStatement.setString(2, email);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            int count = resultSet.getInt(1);
-            return count > 0;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
 
 
     private void handleSearch() throws IOException {

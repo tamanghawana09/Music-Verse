@@ -124,16 +124,17 @@ public class MusicHandler {
 
             try {
                 System.out.println("Fetching audio data from the server");
-                inputStream = socket.getInputStream();
-                bufferedInputStream = new BufferedInputStream(inputStream); // Initialize the buffered input stream
-                byteArrayOutputStream = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-
-                while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
-                    byteArrayOutputStream.write(buffer, 0, bytesRead);
-                }
-                audioData = byteArrayOutputStream.toByteArray();
+//                inputStream = socket.getInputStream();
+//                bufferedInputStream = new BufferedInputStream(inputStream); // Initialize the buffered input stream
+//                byteArrayOutputStream = new ByteArrayOutputStream();
+//                byte[] buffer = new byte[1024];
+//                int bytesRead;
+//
+//                while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
+//                    byteArrayOutputStream.write(buffer, 0, bytesRead);
+//                }
+//                audioData = byteArrayOutputStream.toByteArray();
+                audioData = fetchAudioData();
 
                 if(prevData == null){
                     prevData = audioData;
@@ -385,6 +386,40 @@ public class MusicHandler {
     }
 
 
+    public void check_Logged_In_User() throws IOException {
+        socketDataReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        outputStream = socket.getOutputStream();
+        printWriter = new PrintWriter(outputStream);
+
+        //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+        printWriter.println("CHECK_FOR_USER_LOGIN");
+        printWriter.flush();
+        //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+        String userName = socketDataReader.readLine();
+        System.out.println(userName);
+        if(!userName.equals("Server : No Users Logged In")){
+            System.out.println("User looged in");
+            design.userlabel.setText(userName);
+        }else{
+            System.out.println("User not logged in");
+        }
+
+
+
+    }
+
+    public void check_Logged_In_UserAsync() {
+        connectServer();
+        Thread checkLogIn = new Thread(() ->{
+            try {
+                check_Logged_In_User();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        checkLogIn.start();
+    }
 }
 
 

@@ -160,6 +160,9 @@ public class Design extends JFrame{
 
 
 
+//   User Name
+   public JLabel userlabel = new JLabel("User-Name");
+
    public boolean isRunning(){
        return radioThread != null;
    }
@@ -168,6 +171,8 @@ public class Design extends JFrame{
         //Server
         musicHandler = new MusicHandler(this);
 //        musicHandler.connectServer();
+
+        musicHandler.check_Logged_In_UserAsync();
 
 
         //frame properties
@@ -1519,8 +1524,8 @@ public class Design extends JFrame{
         });
         container.add(playlistlbl);
 
-        JLabel userlabel = new JLabel();
-        userlabel.setText("User-Name");
+//        userlabel = ;
+//        userlabel.setText();
         userlabel.setFont(new Font("Tahoma",Font.PLAIN,20));
         userlabel.setForeground(whiteColor);
         userlabel.setBounds(1065,30,100,20);

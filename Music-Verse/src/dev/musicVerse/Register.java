@@ -35,7 +35,7 @@ public class Register extends JFrame {
     public String uName;
     public String email;
 
-    public boolean isRegistered = false;
+    public boolean isRegistered;
 
 
     public Register(){
@@ -210,7 +210,7 @@ public class Register extends JFrame {
                     try {
                         if(!(fName.isEmpty() || uName.isEmpty() || email.isEmpty() || password.isEmpty() || repass.isEmpty())){
                             registerHandler.registerAccountAsync(fName, uName, email, password);
-
+                            System.out.println(isRegistered);
                             if (isRegistered) {
                                 // Show a registration success message
                                 JOptionPane.showMessageDialog(null, "Registration Successful", "Success", JOptionPane.INFORMATION_MESSAGE);

@@ -1,5 +1,7 @@
 package dev.musicVerse;
 
+import Client.MusicHandler;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
@@ -8,6 +10,7 @@ import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 
 public class Logout {
+    //Music Handler
     Container container = new Container();
     public Logout(){
         //properties
