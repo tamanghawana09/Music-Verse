@@ -29,9 +29,20 @@ public class RegisterHandler {
         }
     }
 
+    public void closeSocket() {
+        try {
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+                System.out.println("Socket closed");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void registerAccountAsync(String fName, String uName, String email, String password) throws IOException {
-//        connectServer();
+        connectServer();
         this.fName = fName;
         this.uName = uName;
         this.email = email;
@@ -58,7 +69,7 @@ public class RegisterHandler {
             e.printStackTrace();
         }
 
-
+        closeSocket();
     }
 
     public void registerAccount() throws IOException {
@@ -81,6 +92,9 @@ public class RegisterHandler {
 
         printWriter.println(password);
         printWriter.flush();
+
+//        socketDataReader.close();
+//        printWriter.close();
 
     }
 

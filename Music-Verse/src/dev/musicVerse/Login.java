@@ -46,7 +46,7 @@ public class Login extends JFrame {
         super("Login");
 
         loginHandler = new LoginHandler(this);
-        loginHandler.connectServer();
+//        loginHandler.connectServer();
 
         setBounds(300,150,900,600);
         setBackground(backgroundColor);
@@ -137,10 +137,51 @@ public class Login extends JFrame {
 
         // Create a variable to track whether a login attempt is in progress
 
-        loginBtn.addMouseListener(new MouseAdapter() {
+        loginBtn.addActionListener(new ActionListener() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
+            public void actionPerformed(ActionEvent e) {
+                uName = usernameTF.getText();
+                uPassword = passwordTF.getText();
+
+//                if (!(uName.isEmpty() || uPassword.isEmpty())) {
+//                    // Disable the login button to prevent multiple login attempts
+//                    loginBtn.setEnabled(false);
+//
+//                    SwingWorker<Void, Void> loginWorker = new SwingWorker<>() {
+//                        @Override
+//                        protected Void doInBackground() {
+//                            try {
+//                                loginHandler.loginAccountAsync(uName, uPassword);
+//
+//                                boolean isValid = isUserValid;
+//
+//                                if (isValid) {
+//                                    // This is the time-consuming part - initialize the Design frame
+//                                    SwingUtilities.invokeLater(() -> {
+//                                        openDesignFrame();
+//                                        dispose();
+//                                    });
+//                                } else {
+//                                    JOptionPane.showMessageDialog(null, "Login Failed!! Please try Again!!", "Failure", JOptionPane.ERROR_MESSAGE);
+//                                }
+//                            } catch (Exception ex) {
+//                                throw new RuntimeException(ex);
+//                            }
+//                            return null;
+//                        }
+//
+//                        @Override
+//                        protected void done() {
+//                            // Re-enable the login button after the login task is done
+//                            loginBtn.setEnabled(true);
+//                        }
+//                    };
+//
+//                    loginWorker.execute();
+//                } else {
+//                    JOptionPane.showMessageDialog(null, "Please Fill all the Fields");
+//                }
+
 
                 uName = usernameTF.getText();
                 uPassword = passwordTF.getText();
@@ -149,40 +190,28 @@ public class Login extends JFrame {
                     // Disable the login button to prevent multiple login attempts
                     loginBtn.setEnabled(false);
 
-                    SwingWorker<Void, Void> loginWorker = new SwingWorker<>() {
-                        @Override
-                        protected Void doInBackground() {
-                            try {
-                                loginHandler.loginAccountAsync(uName, uPassword);
-                                boolean isValid = isUserValid;
+                    try {
+                        // Perform the login operation directly
+                        loginHandler.loginAccountAsync(uName, uPassword);
+                        boolean isValid = isUserValid;
 
-                                if (isValid) {
-                                    // This is the time-consuming part - initialize the Design frame
-                                    SwingUtilities.invokeLater(() -> {
-                                        design = new Design();
-                                        design.setVisible(true);
-                                        dispose();
-                                    });
-                                } else {
-                                    JOptionPane.showMessageDialog(null, "Login Failed!! Please try Again!!", "Failure", JOptionPane.ERROR_MESSAGE);
-                                }
-                            } catch (Exception ex) {
-                                throw new RuntimeException(ex);
-                            }
-                            return null;
+                        if (isValid) {
+                            // Open the design frame if login is successful
+                            openDesignFrame();
+                            dispose();
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Login Failed!! Please try Again!!", "Failure", JOptionPane.ERROR_MESSAGE);
                         }
-
-                        @Override
-                        protected void done() {
-                            // Re-enable the login button after the login task is done
-                            loginBtn.setEnabled(true);
-                        }
-                    };
-
-                    loginWorker.execute();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    } finally {
+                        // Re-enable the login button
+                        loginBtn.setEnabled(true);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(null, "Please Fill all the Fields");
                 }
+
             }
         });
 
@@ -217,5 +246,14 @@ public class Login extends JFrame {
         setContentPane(container);
         setVisible(true);
     }
+
+
+
+    public void openDesignFrame() {
+        design = new Design();
+        design.setVisible(true);
+//        dispose(); // Close the login frame
+    }
+
 
 }

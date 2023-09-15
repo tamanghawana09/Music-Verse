@@ -9,8 +9,7 @@ public class Main {
 
         SwingUtilities.invokeLater(() ->{
 //        Design dj = new Design();
-//        dj.dispose();
-//        dj.setVisible(false);
+//        dj.setVisible(true);
 //        Local lo = new Local();
 //
             Login lg = new Login();
