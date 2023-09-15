@@ -1,5 +1,7 @@
 package dev.musicVerse;
 
+
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -9,22 +11,38 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 
 public class Local {
     Container container = new Container();
     ImageIcon playIcon, stopIcon, nextIcon, prevIcon;
     Image playImage, stopImage, nextImage, prevImage;
+    private JTable songsTbl;
+    private DefaultTableModel model;
+    private JFrame frame;
+
+
+
     public Local(){
         Color panelColor = Color.decode("#1b2223");
         Color greenColor = Color.decode("#0EF6CC");
         Color whiteColor = Color.decode("#F4FEFD");
-        Color userPnlColor = Color.decode("#3A4F50");
+
 
        JDialog local = new JDialog();
        local.setBounds(390,360,1005,445);
        local.setBackground(Color.BLACK);
        local.setUndecorated(true);
        local.setLayout(null);
+
 
         // Local player components
         JSlider localSlider = new JSlider(JSlider.HORIZONTAL,0,100,50);
@@ -119,6 +137,24 @@ public class Local {
         nextBtn.setVisible(true);
         container.add(nextBtn);
 
+        JPanel pauseBtn = new JPanel(){
+            @Override
+            protected void paintComponent(Graphics g) {
+                Image image = new ImageIcon(this.getClass().getResource("/Images/pause.png")).getImage();
+                g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
+
+        };
+        pauseBtn.setBounds(495,382,15,15);
+        pauseBtn.setVisible(false);
+        container.add(pauseBtn);
+        pauseBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+        });
+
         JPanel playBtn = new JPanel(){
             @Override
             protected void paintComponent(Graphics g) {
@@ -128,6 +164,14 @@ public class Local {
         };
         playBtn.setBounds(495,382,15,15);
         container.add(playBtn);
+        playBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                playBtn.setVisible(false);
+                pauseBtn.setVisible(true);
+            }
+        });
+
 
         RoundedPanel playPnl = new RoundedPanel(10);
         playPnl.setBounds(475,370,50,40);
@@ -149,12 +193,12 @@ public class Local {
         addbtn.setBorderPainted(false);
         addbtn.setForeground(Color.BLACK);
         container.add(addbtn);
-//        addbtn.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//
-//            }
-//        });
+        addbtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                    playMusic();
+            }
+        });
 
         RoundedPanel lowerplaypnl = new RoundedPanel(10);
         lowerplaypnl.setBackground(panelColor);
@@ -176,16 +220,15 @@ public class Local {
                 {3,"Chinta","4:20"}
 
         };
-        String[] columnNames = {"S.N.","Title","Duration"};
-        DefaultTableModel model = new DefaultTableModel(data,columnNames);
-        JTable songsTbl = new JTable(model);
+        model = new DefaultTableModel(new Object[]{"Song Name"},0);
+        songsTbl = new JTable(model);
         songsTbl.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         songsTbl.setBackground(panelColor);
         songsTbl.setForeground(whiteColor);
         songsTbl.setRowHeight(rows);
-        JTableHeader header = songsTbl.getTableHeader();
-        header.setBackground(panelColor);
-        header.setForeground(whiteColor);
+//        JTableHeader header = songsTbl.getTableHeader();
+//        header.setBackground(panelColor);
+//        header.setForeground(whiteColor);
 
         JScrollPane scrollPane = new JScrollPane(songsTbl);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -194,8 +237,44 @@ public class Local {
         scrollPane.setBorder(null);
         musicPnl.add(scrollPane,BorderLayout.CENTER);
 
-        local.setVisible(true);
+
         local.setContentPane(container);
+        local.setVisible(true);
+    }
+    public void playMusic(){
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int returnValue = fileChooser.showOpenDialog(null);
+        if(returnValue == JFileChooser.APPROVE_OPTION){
+            File file = fileChooser.getSelectedFile();
+//            File[] songFiles = file.listFiles((dir, name) -> name.endsWith(".mp3"));
+                uploadMusic(file);
+//            if(songFiles != null){
+//                model.setRowCount(0);
+//                for(File songFile : songFiles){
+//                    model.addRow(new Object[]{songFile.getName()});
+//                }
+            }
+        }
+
+    private void uploadMusic(File file){
+//        try(Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:database","root","root")){
+//            String insertQuery = "INSERT INTO songs (file_data) VALUES (?)";
+//            try(PreparedStatement preparedStatement = con.prepareStatement(insertQuery)){
+//                FileInputStream fis = new FileInputStream(file);
+//                preparedStatement.setBinaryStream(1, fis,(int) file.length());
+//                preparedStatement.executeUpdate();
+//                JOptionPane.showMessageDialog(frame,"File uploaded to database");
+//            }catch (SQLException | IOException e){
+//                e.printStackTrace();
+//            }
+//            }catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+    }
+    public static void main(String[] args) {
+        Local lo = new Local();
+
     }
 
 

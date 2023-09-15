@@ -215,7 +215,7 @@ public class Design extends JFrame{
         local.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-               Local lo =  new Local();
+               //Local lo =  new Local();
             }
             @Override
             public void mouseEntered(MouseEvent e) {
