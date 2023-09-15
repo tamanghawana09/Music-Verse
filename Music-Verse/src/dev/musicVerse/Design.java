@@ -30,6 +30,10 @@ import java.util.BitSet;
 import static java.awt.event.KeyEvent.*;
 
 public class Design extends JFrame{
+
+    //Logout class
+//    Logout lo;
+
     MusicHandler musicHandler;
 
     private static  final Container container = new Container();
@@ -168,6 +172,8 @@ public class Design extends JFrame{
    }
 
     public Design(){
+//       lo = new Logout();
+
         //Server
         musicHandler = new MusicHandler(this);
 //        musicHandler.connectServer();
@@ -1565,7 +1571,7 @@ public class Design extends JFrame{
         exitBtn.addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent event){
-                   Logout lo = new Logout();
+                Logout lo = new Logout();
             }
         });
 

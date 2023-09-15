@@ -1,5 +1,6 @@
 package dev.musicVerse;
 
+import Client.Logouthandler;
 import Client.MusicHandler;
 
 import javax.swing.*;
@@ -10,9 +11,12 @@ import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 
 public class Logout {
-    //Music Handler
+    //logout Handler
+    Logouthandler logouthandler;
     Container container = new Container();
     public Logout(){
+        logouthandler = new Logouthandler(this);
+
         //properties
         Font font = new Font("Tahoma",Font.BOLD,15);
         Color backgroundColor = Color.decode("#00000");
@@ -53,6 +57,7 @@ public class Logout {
         logBtn2.addMouseListener(new MouseAdapter(){
             public void mouseClicked(MouseEvent event){
                 if(event.getSource() == logBtn2){
+                    logouthandler.logoutAccountAsunc();
                     System.exit(0);
                 }
             }

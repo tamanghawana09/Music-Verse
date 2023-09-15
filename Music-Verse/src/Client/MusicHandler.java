@@ -1,16 +1,15 @@
 package Client;
 
 import dev.musicVerse.Design;
+import dev.musicVerse.Logout;
 
 import javax.sound.sampled.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
-import java.util.Timer;
 
 
 public class MusicHandler {
+//    private Logout lo;
     Socket socket;
     public Clip clip;
     public long clipPosition = 0;
@@ -42,6 +41,7 @@ public class MusicHandler {
 
     public MusicHandler(Design design) {
         this.design = design;
+//        this.lo = lo;
     }
 
 

@@ -90,9 +90,23 @@ public class ClientHandler implements Runnable {
                     System.out.println("Request received for Checking User Login");
                     checkUserLogedin();
                     break;
+                case "REQ_TO_LOGOUT":
+                    System.out.println("Request received for  User Logout");
+                    handleLogout();
+                    break;
 
             }
 
+        }
+    }
+
+    private void handleLogout() {
+        String updateQuery = "UPDATE User SET is_logged_in = false";
+
+        try (PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+            updateStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
