@@ -1,30 +1,21 @@
 package dev.musicVerse;
 
-
-
-import javazoom.jl.decoder.Bitstream;
-import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.Player;
 import javazoom.jl.player.advanced.AdvancedPlayer;
-import javazoom.jl.player.advanced.PlaybackEvent;
 
 import javax.sound.sampled.*;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+
 
 
 public class Local {
@@ -33,19 +24,20 @@ public class Local {
     Image playImage, stopImage, nextImage, prevImage;
     private JTable songsTbl;
     private DefaultTableModel model;
-    private JFrame frame;
 
-    FilenameFilter filter;
-    int playstatus=0, filepathresponse,trackNo=0;
-    File[] selectedFile;
+    int filepathresponse;
 
-   private JSlider localSlider;
-    private AdvancedPlayer player;
+    private JSlider localSlider;
+
     private Thread playerThread;
     private File selectedDirectory;
     private JPanel playBtn, pauseBtn, nextBtn, prevBtn,shuffleBtn,loopBtn;
     private int currentSongIndex = -1;
+    private boolean isPlaying = false;
 
+    private File currentFile;
+    private Clip clip;
+    private int selectedRow;
 
 
 
@@ -55,25 +47,17 @@ public class Local {
         Color whiteColor = Color.decode("#F4FEFD");
 
 
-       JDialog local = new JDialog();
-       local.setBounds(390,360,1005,445);
-       local.setBackground(Color.BLACK);
-       local.setUndecorated(true);
-       local.setLayout(null);
+        JDialog local = new JDialog();
+        local.setBounds(390,360,1005,445);
+        local.setBackground(Color.BLACK);
+        local.setUndecorated(true);
+        local.setLayout(null);
 
 
         // Local player components
         localSlider = new JSlider(JSlider.HORIZONTAL,0,100,50);
-        localSlider.setMinimum(0);
-        localSlider.setMaximum(100);
-        localSlider.setValue(0);
-        localSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                JSlider source =(JSlider) e.getSource();
-
-            }
-        });
+        localSlider.setMajorTickSpacing(100);
+        localSlider.setMinorTickSpacing(1);
         localSlider.setBackground(panelColor);
         localSlider.setBorder(null);
         localSlider.setVisible(true);
@@ -119,6 +103,7 @@ public class Local {
         };
         container.setLayout(null);
         shuffleBtn.setBounds(640,382,18,18);
+        shuffleBtn.setVisible(false);
         container.add(shuffleBtn);
 
         //Previous Button
@@ -134,12 +119,8 @@ public class Local {
         prevBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-//                stopPlayer();
-//                if(currentSongIndex >0){
-//                    currentSongIndex--;
-//                    File selectedSong = new File(selectedDirectory,(String) model.getValueAt(currentSongIndex,0));
-//                    playSong(selectedSong);
-//                }
+                System.out.println("Previous clicked");
+                prev();
             }
         });
 
@@ -152,6 +133,7 @@ public class Local {
         };
         container.setLayout(null);
         loopBtn.setBounds(330,382,20,20);
+        loopBtn.setVisible(false);
         container.add(loopBtn);
 
 
@@ -169,12 +151,8 @@ public class Local {
         nextBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-//                stopPlayer();
-//                if(currentSongIndex>=0 && currentSongIndex < model.getRowCount() -1){
-//                    currentSongIndex++;
-//                    File selectedSong = new File(selectedDirectory,(String) model.getValueAt(currentSongIndex,0));
-//                    playSong(selectedSong);
-//                }
+                System.out.println("Next button clicked");
+              next();
             }
         });
 
@@ -195,15 +173,12 @@ public class Local {
             public void mouseClicked(MouseEvent e) {
                 pauseBtn.setVisible(false);
                 playBtn.setVisible(true);
-                if(player != null) {
-                    if (playerThread.isAlive()) {
-                        player.close();
-                    }
-                }
+                stop();
+
             }
         });
 
-       playBtn = new JPanel(){
+        playBtn = new JPanel(){
             @Override
             protected void paintComponent(Graphics g) {
                 Image image = new ImageIcon(this.getClass().getResource("/Images/playButton.png")).getImage();
@@ -244,7 +219,7 @@ public class Local {
         addbtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                    playMusic();
+                playMusic();
             }
         });
 
@@ -274,103 +249,112 @@ public class Local {
 
         JScrollPane scrollPane = new JScrollPane(songsTbl);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-       // scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        // scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.getViewport().setBackground(panelColor);
         scrollPane.setBorder(null);
         musicPnl.add(scrollPane,BorderLayout.CENTER);
 
-
         local.setContentPane(container);
         local.setVisible(true);
+
+        try{
+            clip = AudioSystem.getClip();
+        }catch(LineUnavailableException e){
+            e.printStackTrace();
+        }
     }
     public void playMusic(){
 
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        // fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-            filepathresponse = fileChooser.showOpenDialog(null);
-            if(filepathresponse == JFileChooser.APPROVE_OPTION){
-                selectedDirectory = fileChooser.getSelectedFile();
-                File[] songsFiles = selectedDirectory.listFiles(((dir, name) -> name.endsWith(".mp3")));
-                if(songsFiles != null){
-                    model.setRowCount(0);
-                    for(File songFile: songsFiles){
-                        model.addRow(new Object[]{songFile.getName()});
-                    }
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setFileFilter(new FileNameExtensionFilter("WAV Files","wav"));
+        filepathresponse = fileChooser.showOpenDialog(null);
+        if(filepathresponse == JFileChooser.APPROVE_OPTION){
+            selectedDirectory = fileChooser.getSelectedFile();
+            File[] songsFiles = selectedDirectory.listFiles(((dir, name) -> name.endsWith(".wav")));
+            if(songsFiles != null){
+                model.setRowCount(0);
+                for(File songFile: songsFiles){
+                    model.addRow(new Object[]{songFile.getName()});
                 }
-//                uploadMusic(file);
             }
-            songsTbl.getSelectionModel().addListSelectionListener(e->{
-                if(!e.getValueIsAdjusting()){
-                    int selectedRow = songsTbl.getSelectedRow();
-                    if(selectedRow>=0){
-                        File selectedSong = new File(selectedDirectory,(String) model.getValueAt(selectedRow,0));
-                        playBtn.setVisible(false);
-                        pauseBtn.setVisible(true);
-                        playSong(selectedSong);
-                    }
+
+
+        }
+        songsTbl.getSelectionModel().addListSelectionListener(e->{
+            if(!e.getValueIsAdjusting()){
+                currentSongIndex = songsTbl.getSelectedRow();
+                if(currentSongIndex>=0){
+                    stop();
+                    File selectedSong = new File(selectedDirectory,(String) model.getValueAt(currentSongIndex,0));
+                    playBtn.setVisible(false);
+                    pauseBtn.setVisible(true);
+                    currentFile = selectedSong;
+                    play(currentFile);
                 }
-            });
-
-
+            }
+        });
 
     }
 
-//    private void uploadMusic(File file){
-//        try(Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/music","root","0911")){
-//            String insertQuery = "INSERT INTO music_list VALUES (?)";
-//            try(PreparedStatement preparedStatement = con.prepareStatement(insertQuery)){
-//                FileInputStream fis = new FileInputStream(file);
-//                preparedStatement.setBinaryStream(1, fis,(int) file.length());
-//                preparedStatement.executeUpdate();
-//                JOptionPane.showMessageDialog(frame,"File uploaded to database");
-//            }catch (SQLException | IOException e){
-//                e.printStackTrace();
-//            }
-//            }catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public void play(File file){
+        if(file != null){
+            if(!isPlaying){
+                playerThread = new Thread(()->{
+                    try{
+                        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
+                        clip.open(audioInputStream);
+                        clip.start();
+                        isPlaying = true;
+                        localSlider.setEnabled(true);
+                        Thread sliderUpdateThread = new Thread(() -> {
+                            while (isPlaying) {
+                                int currentFrame = clip.getFramePosition();
+                                int totalFrames = clip.getFrameLength();
+                                int percentage = (int) (((double) currentFrame / totalFrames) * 100);
+                                localSlider.setValue(percentage);
+                                try {
+                                    Thread.sleep(60000); // Update the slider every 100 milliseconds
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        sliderUpdateThread.start();
 
-    private void playSong(File songFile){
-        try {
-            FileInputStream fileInputStream = new FileInputStream(songFile);
-            Bitstream bitstream = new Bitstream(fileInputStream);
-
-            player = new AdvancedPlayer(fileInputStream);
-
-            // Start playing the song in a new thread
-            playerThread = new Thread(() -> {
-                try {
-                    int totalFrames = bitstream.readFrame().max_number_of_frames(0);
-                    player.play();
-                    for(int i=0;i<totalFrames;i++){
-                        int progress =(int)(((float)i/totalFrames)*100);
-                        localSlider.setValue(progress);
-                       bitstream.readFrame();
+                    }catch (LineUnavailableException | IOException | UnsupportedAudioFileException e){
+                        e.printStackTrace();
                     }
-                    if(currentSongIndex < model.getRowCount() - 1){
-                        currentSongIndex++;
-                        File nextSong = new File(selectedDirectory,(String)model.getValueAt(currentSongIndex,0));
-                        playSong(nextSong);
-                    }
-                } catch (JavaLayerException e) {
-                    e.printStackTrace();
-                }
-            });
-            playerThread.start();
-        } catch (Exception e) {
-            e.printStackTrace();
+                });
+                playerThread.start();
+            }
+
         }
 
-
     }
 
 
-
-    public void stopPlayer(){
-        if(playerThread.isAlive()){
-            player.close();
+    public void stop(){
+        if(isPlaying){
+            clip.stop();
+            clip.close();
+            isPlaying= false;
+        }
+    }
+    public void prev(){
+        stop();
+        if(currentSongIndex >0){
+            currentSongIndex--;
+            File selectedSong = new File(selectedDirectory,(String) model.getValueAt(currentSongIndex,0));
+            play(selectedSong);
+        }
+    }
+    public void next(){
+        stop();
+        if( currentSongIndex< model.getRowCount() -1){
+            currentSongIndex++;
+            File next = new File(selectedDirectory,(String) model.getValueAt(currentSongIndex,0));
+            play(next);
         }
     }
 
