@@ -175,10 +175,10 @@ public class Design extends JFrame{
 //       lo = new Logout();
 
         //Server
-        musicHandler = new MusicHandler(this);
+       // musicHandler = new MusicHandler(this);
 //        musicHandler.connectServer();
 
-        musicHandler.check_Logged_In_UserAsync();
+        //musicHandler.check_Logged_In_UserAsync();
 
 
         //frame properties
