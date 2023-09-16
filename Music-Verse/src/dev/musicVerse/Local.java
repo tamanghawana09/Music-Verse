@@ -56,16 +56,8 @@ public class Local {
 
         // Local player components
         localSlider = new JSlider(JSlider.HORIZONTAL,0,100,50);
-        localSlider.setMinimum(0);
-        localSlider.setMaximum(100);
-        localSlider.setValue(0);
-        localSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                JSlider source =(JSlider) e.getSource();
-
-            }
-        });
+        localSlider.setMajorTickSpacing(100);
+        localSlider.setMinorTickSpacing(1);
         localSlider.setBackground(panelColor);
         localSlider.setBorder(null);
         localSlider.setVisible(true);
@@ -314,6 +306,21 @@ public class Local {
                         clip.open(audioInputStream);
                         clip.start();
                         isPlaying = true;
+                        localSlider.setEnabled(true);
+                        Thread sliderUpdateThread = new Thread(() -> {
+                            while (isPlaying) {
+                                int currentFrame = clip.getFramePosition();
+                                int totalFrames = clip.getFrameLength();
+                                int percentage = (int) (((double) currentFrame / totalFrames) * 100);
+                                localSlider.setValue(percentage);
+                                try {
+                                    Thread.sleep(60000); // Update the slider every 100 milliseconds
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        sliderUpdateThread.start();
 
                     }catch (LineUnavailableException | IOException | UnsupportedAudioFileException e){
                         e.printStackTrace();
