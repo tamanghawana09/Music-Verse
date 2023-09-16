@@ -85,7 +85,7 @@ public class Design extends JFrame{
 //    Data Table to display data from the database
         public DefaultTableModel tableModel = new DefaultTableModel(
             new String[][]{}, // Initial data (empty)
-            new String[]{"S.N", "Title", "Artist", "Duration", "Genre"}
+            new String[]{"S.N", "Title", "Artist", "Duration", "Genre", "More"}
         );
 
     public JTable displayData = new JTable(tableModel){
@@ -110,7 +110,7 @@ public class Design extends JFrame{
 
     public DefaultTableModel searchTableModel = new DefaultTableModel(
             new String[][]{}, // Initial data (empty)
-            new String[]{"S.N", "Title", "Artist", "Duration", "Genre"}
+            new String[]{"S.N", "Title", "Artist", "Duration", "Genre", "More"}
     );
 
     public JTable displaySearchData = new JTable(searchTableModel){
@@ -157,6 +157,14 @@ public class Design extends JFrame{
    private Point mousePressLocation;
 
    private Thread radioThread;
+
+
+
+
+   //Playlist using table
+   public DefaultListModel<String> playlistListModel = new DefaultListModel<>();
+   public JList<String> playlistList = new JList<>(playlistListModel);
+   public JScrollPane playlistScrollPane = new JScrollPane(playlistList);
 
 
 
@@ -344,7 +352,7 @@ public class Design extends JFrame{
 
 
         //left panel components
-        JLabel nameLbl = new JLabel("Music-Verse");
+        JLabel nameLbl = new JLabel("musicVerse");
         nameLbl.setBounds(90,15,150,30);
         nameLbl.setFont(new Font("Tahoma",Font.PLAIN,25));
         nameLbl.setForeground(greenColor);
@@ -833,6 +841,17 @@ public class Design extends JFrame{
         container.setComponentZOrder(addPlaylist,0);
 
         addPlaylist.setVisible(false);
+
+
+        addPlaylist.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String newPlaylist =  playlistName.getText();
+//                System.out.println(nameofPlaylist);
+
+                musicHandler.createPlaylistAsync(newPlaylist);
+            }
+        });
 
 
 //        addPlaylist.addMouseListener(new MouseAdapter() {
@@ -1607,20 +1626,27 @@ public class Design extends JFrame{
         displayData.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int selectedRow = displayData.getSelectedRow();
-                int titleColumnIndex = 1; // Assuming Title column is at index 1
-                Object selectedTitle = tableModel.getValueAt(selectedRow, titleColumnIndex);
+                int btnClicked = e.getButton();
+                if(btnClicked == MouseEvent.BUTTON1){
+                    int selectedRow = displayData.getSelectedRow();
+                    int titleColumnIndex = 1; // Assuming Title column is at index 1
+                    Object selectedTitle = tableModel.getValueAt(selectedRow, titleColumnIndex);
 
-                if (selectedTitle != null) {
+                    if (selectedTitle != null) {
 //                    playBtn
-                    musicTitle = selectedTitle.toString();
+                        musicTitle = selectedTitle.toString();
 
-                    System.out.println("Selected title : " + musicTitle);
+                        System.out.println("Selected title : " + musicTitle);
 
-                    if(musicHandler.clip != null){
-                        musicHandler.clip.stop();
+                        if(musicHandler.clip != null){
+                            musicHandler.clip.stop();
+                        }
+                        musicHandler.playSongAsync();
                     }
-                    musicHandler.playSongAsync();
+                }
+                if(btnClicked == MouseEvent.BUTTON3){
+                    System.out.println("Right Button clicked");
+
                 }
             }
         });
@@ -1633,6 +1659,8 @@ public class Design extends JFrame{
 
             }
         });
+
+
 
 
 

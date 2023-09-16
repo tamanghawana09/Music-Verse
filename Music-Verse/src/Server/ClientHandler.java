@@ -94,10 +94,21 @@ public class ClientHandler implements Runnable {
                     System.out.println("Request received for  User Logout");
                     handleLogout();
                     break;
+                case "CREATE_NEW_PLAYLIST":
+                    System.out.println("Request receivet for creating a new Playlist");
+                    handelPlaylist();
+                    break;
 
             }
 
         }
+    }
+
+    private void handelPlaylist() throws IOException {
+        String newPlaylist = clientDataReader.readLine();
+
+        
+
     }
 
     private void handleLogout() {
@@ -286,6 +297,7 @@ public class ClientHandler implements Runnable {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             int sn = 1;
+            String more = " . ";
             while (resultSet.next()) {
                 String title = resultSet.getString("Title");
                 String artist = resultSet.getString("Artist");
@@ -293,7 +305,7 @@ public class ClientHandler implements Runnable {
                 int minutes = durationInSeconds / 60;
                 int seconds = durationInSeconds % 60;
                 String genre = resultSet.getString("Name");
-                String songData = sn + " - " + title + " - " + artist + " - " + minutes + " : " + seconds + " min - " + genre;
+                String songData = sn + " - " + title + " - " + artist + " - " + minutes + " : " + seconds + " min - " + genre + " - " + more;
                 data.add(songData);
                 sn++;
             }
@@ -506,7 +518,7 @@ public class ClientHandler implements Runnable {
                 int minutes = durationInSeconds / 60;
                 int seconds = durationInSeconds % 60;
                 String genre = resultSet.getString("Name");
-                String songData = sn + " - " + title + " - " + artist + " - " + minutes + " : " + seconds + " min - " + genre;
+                String songData = sn + " - " + title + " - " + artist + " - " + minutes + " : " + seconds + " min - " + genre + " - " + " . ";
                 data.add(songData);
                 sn++;
             }

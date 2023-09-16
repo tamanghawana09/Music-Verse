@@ -1,7 +1,6 @@
 package Client;
 
 import dev.musicVerse.Design;
-import dev.musicVerse.Logout;
 
 import javax.sound.sampled.*;
 import java.io.*;
@@ -36,6 +35,9 @@ public class MusicHandler {
     public String songTitle,singerTitle;
     public String songTotalDuration;
     public String reqSearch = "SEARCH_MUSIC";
+
+    //Playlist
+    String newPlaylist;
 
 
 
@@ -420,7 +422,38 @@ public class MusicHandler {
         });
         checkLogIn.start();
     }
+
+
+
+    public void createPlaylistAsync(String newPlaylist){
+        this.newPlaylist = newPlaylist;
+        Thread addPlaylist = new Thread(()->{
+            try {
+                createPlaylist();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private void createPlaylist() throws IOException {
+        socketDataReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        outputStream = socket.getOutputStream();
+        printWriter = new PrintWriter(outputStream);
+
+        //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+        printWriter.println("CREATE_NEW_PLAYLIST");
+        printWriter.flush();
+        //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+        printWriter.println(newPlaylist);
+        printWriter.flush();
+
+    }
+
 }
+
+
 
 
 //public void playMusicAsync(String music) {
