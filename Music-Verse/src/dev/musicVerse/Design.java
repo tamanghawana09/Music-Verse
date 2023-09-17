@@ -290,7 +290,7 @@ public class Design extends JFrame{
         local.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-               //Local lo =  new Local();
+               Local lo =  new Local();
             }
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -421,11 +421,29 @@ public class Design extends JFrame{
 
 
         //left panel components
-        JLabel nameLbl = new JLabel("musicVerse");
-        nameLbl.setBounds(90,15,150,30);
-        nameLbl.setFont(new Font("Tahoma",Font.PLAIN,25));
-        nameLbl.setForeground(greenColor);
-        container.add(nameLbl);
+        JPanel logoimg = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image img = new ImageIcon(this.getClass().getResource("/Images/logo.png")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        logoimg.setBounds(10,5,50,50);
+        container.add(logoimg);
+
+//        JLabel nameLbl = new JLabel("musicVerse");
+//        nameLbl.setBounds(80,15,150,30);
+//        nameLbl.setFont(new Font("Helvetica",Font.PLAIN,25));
+//        nameLbl.setForeground(greenColor);
+//        container.add(nameLbl);
+        JPanel fontimg = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image img = new ImageIcon(this.getClass().getResource("/Images/font.png")).getImage();
+                g.drawImage(img,0,0,this.getWidth(),this.getHeight(),this);
+            }
+        };
+        fontimg.setBounds(70,7,170,45);
+        container.add(fontimg);
+
 
         JPanel designPnl = new JPanel();
         designPnl.setBounds(0,60,250,2);
@@ -1998,7 +2016,7 @@ public class Design extends JFrame{
 
 
 
-        musicHandler.check_playlist_In_UserAsync();
+        //musicHandler.check_playlist_In_UserAsync();
 
 
         setLocationRelativeTo(null);
