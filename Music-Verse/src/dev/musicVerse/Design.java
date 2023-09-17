@@ -1207,7 +1207,7 @@ public class Design extends JFrame{
         mirchi.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                    mirchiMenu.add(mirchi,e.getX(),e.getY());
+                    mirchiMenu.show(mirchi,e.getX(),e.getY());
                 }
 
         });
