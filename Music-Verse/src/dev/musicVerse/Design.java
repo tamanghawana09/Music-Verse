@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.BitSet;
+import java.util.Random;
+import java.util.Stack;
 
 import static java.awt.event.KeyEvent.*;
 
@@ -83,10 +85,10 @@ public class Design extends JFrame{
 
 
 //    Data Table to display data from the database
-        public DefaultTableModel tableModel = new DefaultTableModel(
+    public DefaultTableModel tableModel = new DefaultTableModel(
             new String[][]{}, // Initial data (empty)
-            new String[]{"S.N", "Title", "Artist", "Duration", "Genre"}
-        );
+        new String[]{"S.N", "Title", "Artist", "Duration", "Genre", "More"}
+    );
 
     public JTable displayData = new JTable(tableModel){
         @Override
@@ -96,8 +98,28 @@ public class Design extends JFrame{
         }
     };
 
+    public RoundedPanel playlistPanel = new RoundedPanel(20);
+    public DefaultTableModel playlistTableModel = new DefaultTableModel(
+            new String[][]{},
+            new String[]{"S.N","Title","Artist","Duration","Genre"}
+    );
+
+    public JTable displayPlayListSongs = new JTable(playlistTableModel){
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+    public JScrollPane scrollPaneForPlaylist = new JScrollPane(displayPlayListSongs);
+
+
+
+
 
     public String musicTitle = "DefaultMusic";
+    public String musicName = "Default";
+
+
     public final String reqForPlayMusic = "PLAY_DEFAULT_MUSIC";
 
     public JScrollPane scrollPane = new JScrollPane(displayData);
@@ -110,7 +132,7 @@ public class Design extends JFrame{
 
     public DefaultTableModel searchTableModel = new DefaultTableModel(
             new String[][]{}, // Initial data (empty)
-            new String[]{"S.N", "Title", "Artist", "Duration", "Genre"}
+            new String[]{"S.N", "Title", "Artist", "Duration", "Genre", "More"}
     );
 
     public JTable displaySearchData = new JTable(searchTableModel){
@@ -122,8 +144,13 @@ public class Design extends JFrame{
     public JScrollPane scrollPaneForSearch = new JScrollPane(displaySearchData);
 
 
+    public JPanel playBtnForPlayList;
+
+
+
     //Panel table variable initializations
     private boolean isDisplayPanelVisible = false;
+    private boolean isPlaylistPanelVisible = false;
     private final boolean local = false;
     private boolean genre = false;
     private boolean albums = false;
@@ -159,6 +186,30 @@ public class Design extends JFrame{
    private Thread radioThread;
 
 
+   public String playlistSong = "";
+   public String songtitle = "";
+
+
+
+
+   //Playlist using table
+   private final RoundedPanel playListPanel1 = new RoundedPanel(10);
+
+   public DefaultListModel<String> playlistListModel = new DefaultListModel<>();
+   public JList<String> playlistList = new JList<>(playlistListModel);
+   public JScrollPane playlistScrollPane = new JScrollPane(playlistList);
+
+
+   //To add songs to Playlist
+   public RoundedPanel playlistPanel2 = new RoundedPanel(10);
+
+    public DefaultListModel<String> playlistListModel1 = new DefaultListModel<>();
+    public JList<String> playlistList1 = new JList<>(playlistListModel1);
+    public JScrollPane playlistScrollPane1 = new JScrollPane(playlistList1);
+
+
+    public DefaultListCellRenderer centerRenderer = new DefaultListCellRenderer();
+
 
 
 
@@ -167,9 +218,33 @@ public class Design extends JFrame{
 //   User Name
    public JLabel userlabel = new JLabel("User-Name");
 
+    // Create another JScrollPane with the same JList
+//    public JScrollPane anotherScrollPane = new JScrollPane(playlistList);
+    ;
+
    public boolean isRunning(){
        return radioThread != null;
    }
+
+
+
+//   pause and Play btn visibility
+    public boolean isPlayBtnVisible = false;
+    public boolean isPauseBtnVisible = false;
+    public RoundedPanel roundPlayBtnPanel = new RoundedPanel(70);
+
+    public RoundedPanel roundPlayBtnForSearchPanel = new RoundedPanel(70);
+    public JPanel playBtnForSearch;
+
+    //        Rounded play btn and panel for Searching
+    public RoundedPanel roundPlayBtnForDefaultPanel = new RoundedPanel(70);
+//    public JPanel playBtnForDefault;
+    public JPanel defaultPlayBtn;
+
+
+
+    public String getPlaylistName ="";
+
 
     public Design(){
 //       lo = new Logout();
@@ -291,6 +366,8 @@ public class Design extends JFrame{
                     String searchData = searchTf.getText();
                     System.out.println(searchData);
                     musicHandler.searchDataAsync(searchData);
+                    roundPlayBtnForSearchPanel.setVisible(true);
+                    playBtnForSearch.setVisible(true);
                 }
             }
         });
@@ -344,7 +421,7 @@ public class Design extends JFrame{
 
 
         //left panel components
-        JLabel nameLbl = new JLabel("Music-Verse");
+        JLabel nameLbl = new JLabel("musicVerse");
         nameLbl.setBounds(90,15,150,30);
         nameLbl.setFont(new Font("Tahoma",Font.PLAIN,25));
         nameLbl.setForeground(greenColor);
@@ -780,18 +857,7 @@ public class Design extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if(!isCreatePlaylistPanelVisible){
-                    addPlaylistPanel.setVisible(true);
-                    playlistName.setVisible(true);
-                    addPlaylist.setVisible(true);
-                    isCreatePlaylistPanelVisible = true;
-
-                }else{
-                    addPlaylistPanel.setVisible(false);
-                    playlistName.setVisible(false);
-                    addPlaylist.setVisible(false);
-                    isCreatePlaylistPanelVisible = false;
-                }
+                setPlaylistBtnVisible();
             }
         });
 
@@ -835,28 +901,18 @@ public class Design extends JFrame{
         addPlaylist.setVisible(false);
 
 
-//        addPlaylist.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                super.mouseClicked(e);
-//                if(playlistName.getText().isEmpty() || playlistName.getText().equals("Name of Playlist")){
-//
-//                }else{
-//                    String playlistName = playlist.getName();
-//                    if(Objects.equals(demoPlaylistOne.getText(), "Domiee") || demoPlaylistOne.getText().isEmpty()){
-//                        demoPlaylistOne.setText(playlistName);
-//                        demoPlaylistOne.setVisible(true);
-//                    } else if (Objects.equals(demoPlaylistTwo.getText(), "Domiee") || demoPlaylistTwo.getText().isEmpty()) {
-//                        demoPlaylistTwo.setText(playlistName);
-//                        demoPlaylistTwo.setVisible(true);
-//                    }
-//                }
-//            }
-//        });
+        addPlaylist.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String newPlaylist =  playlistName.getText();
+                System.out.println(newPlaylist);
 
+                musicHandler.createPlaylistAsync(newPlaylist);
+//                musicHandler.check_Logged_In_UserAsync();
 
-
-
+                setPlaylistBtnVisible();
+            }
+        });
 
 
 
@@ -1238,6 +1294,8 @@ public class Design extends JFrame{
                     if (!musicHandler.isPlaying) {
                         pauseBtn.setVisible(true);
                         playBtn.setVisible(false);
+                        isPauseBtnVisible = true;
+                        isPlayBtnVisible = false;
 
                         if (musicHandler.clip == null || musicHandler.clipPosition >= musicHandler.clip.getMicrosecondLength()) {
 //                            musicHandler.audioData = musicHandler.fetchDataFromServer();
@@ -1246,12 +1304,13 @@ public class Design extends JFrame{
                         } else {
                             musicHandler.resumePauseMusic();
                         }
+                    } else{
+                        playBtn.setVisible(true);
+                        pauseBtn.setVisible(false);
+                        isPlayBtnVisible = true;
+                        isPauseBtnVisible = false;
+                        musicHandler.pauseMusic();
                     }
-//                    else{
-//                        playBtn.setVisible(true);
-//                        pauseBtn.setVisible(false);
-//                        musicHandler.pauseMusic();
-//                    }
             }
 
         });
@@ -1260,9 +1319,10 @@ public class Design extends JFrame{
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if(musicHandler.isPlaying){
-                    
                     playBtn.setVisible(true);
                     pauseBtn.setVisible(false);
+                    isPlayBtnVisible = true;
+                    isPauseBtnVisible = false;
                     musicHandler.pauseMusic();
                 }
             }
@@ -1286,7 +1346,21 @@ public class Design extends JFrame{
                 musicHandler.prevData = musicHandler.audioData;
                 musicHandler.clipPosition = 0;
                 musicHandler.clip.stop();
-                musicHandler.playSongAsync();
+                if(musicTitle == "DefaultMusic"){
+                    musicHandler.playSongAsync();
+                }else{
+                    musicHandler.playPlaylistMusicAsync(songtitle);
+                }
+
+                if(isPlayBtnVisible){
+                    pauseBtn.setVisible(true);
+                    playBtn.setVisible(false);
+
+//                    isPauseBtnVisible = true;
+                }
+                if(isPauseBtnVisible){
+                    pauseBtn.setVisible(true);
+                }
 
             }
         });
@@ -1321,6 +1395,14 @@ public class Design extends JFrame{
                 try {
                     musicHandler.audioData = musicHandler.prevData;
                     musicHandler.runmusic();
+
+                    if(isPlayBtnVisible){
+                        pauseBtn.setVisible(true);
+                        playBtn.setVisible(false);
+                    }
+                    if(isPauseBtnVisible){
+                        pauseBtn.setVisible(true);
+                    }
                 } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -1527,6 +1609,11 @@ public class Design extends JFrame{
                 playlistlbl.setText("<html><font color='#F4FEFD'>Playlist</font></html>");
             }
 
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                musicHandler.check_playlist_In_UserAsync();
+            }
         });
         container.add(playlistlbl);
 
@@ -1603,34 +1690,304 @@ public class Design extends JFrame{
         container.add(imgLbl);
 
 
-        //        Handeling Table...
-        displayData.addMouseListener(new MouseAdapter() {
+
+
+
+
+
+
+//        public DefaultListModel<String> playlistListModel = new DefaultListModel<>();
+//        public JList<String> playlistList = new JList<>(playlistListModel);
+//        public JScrollPane playlistScrollPane = new JScrollPane(playlistList);
+
+
+
+        playListPanel1.setBounds(30, 440, 210, 150);
+        playListPanel1.setBackground(panelColor);
+
+        int visibleRowCount = 10; // Increase this value to adjust the width
+        int newWidth = 300;
+
+
+        // Set the background and foreground color for the JList
+        playlistList.setPreferredSize(new Dimension(newWidth, playlistList.getPreferredSize().height));
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        playlistList.setCellRenderer(centerRenderer);
+        playlistList.setBackground(panelColor);
+        playlistList.setForeground(Color.WHITE);
+        playlistList.setFont(font);
+
+        // Set the visible row count to adjust the width
+        playlistList.setVisibleRowCount(visibleRowCount);
+
+        // Add the JList and JScrollPane to playListPanel1
+        playlistScrollPane.setSize(210, 150);
+        playlistScrollPane.getViewport().setBackground(panelColor); // Set the viewport background color
+        playlistScrollPane.getViewport().setBorder(null);
+        playListPanel1.add(playlistScrollPane);
+
+
+        container.add(playListPanel1);
+        container.setComponentZOrder(playListPanel1, 0);
+
+
+        //Small Right click panel
+        playlistPanel2.setBounds(50, 50, 210, 150);
+        playlistPanel2.setBackground(panelColor);
+
+        playlistList1.setPreferredSize(new Dimension(newWidth, playlistList1.getPreferredSize().height));
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        playlistList1.setCellRenderer(centerRenderer);
+        playlistList1.setBackground(panelColor);
+        playlistList1.setForeground(Color.WHITE);
+        playlistList1.setFont(font);
+
+        // Set the visible row count to adjust the width
+        playlistList1.setVisibleRowCount(visibleRowCount);
+
+        // Add the JList and JScrollPane to playListPanel1
+        playlistScrollPane1.setSize(210, 150);
+        playlistScrollPane1.getViewport().setBackground(panelColor); // Set the viewport background color
+        playlistScrollPane1.getViewport().setBorder(null);
+        playlistPanel2.add(playlistScrollPane1);
+
+        container.add(playlistPanel2);
+        container.setComponentZOrder(playlistPanel2, 0);
+        playlistPanel2.setVisible(false);
+
+//        playlistListModel1.addElement("Hello");
+
+        playlistList1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int selectedRow = displayData.getSelectedRow();
-                int titleColumnIndex = 1; // Assuming Title column is at index 1
-                Object selectedTitle = tableModel.getValueAt(selectedRow, titleColumnIndex);
+                super.mouseClicked(e);
+                String selectedData = playlistList1.getSelectedValue();
+                System.out.println(selectedData + " " + playlistSong);
 
-                if (selectedTitle != null) {
-//                    playBtn
-                    musicTitle = selectedTitle.toString();
-
-                    System.out.println("Selected title : " + musicTitle);
-
-                    if(musicHandler.clip != null){
-                        musicHandler.clip.stop();
-                    }
-                    musicHandler.playSongAsync();
-                }
+                musicHandler.addToPlaylistAsync(playlistSong,selectedData);
             }
         });
+
+        playlistList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                getPlaylistName = playlistList.getSelectedValue();
+                System.out.println(getPlaylistName);
+
+                musicHandler.getPlaylistDataAsync(getPlaylistName);
+                setPlaylistPanelVisible();
+            }
+        });
+
+
+
+        //RoundedPanel to create table which display Songs.
+        //Table should consist Name, Artist, duration Genre.
+        playlistPanel.setBackground(panelColor);
+        playlistPanel.setBounds(265,370,625,420);
+        container.add(playlistPanel);
+        playlistPanel.setVisible(false);
+
+//      Table to retrieve songs data form database and store it
+
+//        displaySongsPanel.add(displayData);
+        JTableHeader playlistTableHeader = displayPlayListSongs.getTableHeader();
+        playlistTableHeader.setBackground(panelColor);
+        playlistTableHeader.setForeground(whiteColor);
+        scrollPaneForPlaylist.setBounds(270,375,615,410);
+        scrollPaneForPlaylist.getViewport().setBackground(panelColor);
+
+        container.add(scrollPaneForPlaylist);
+        container.setComponentZOrder(scrollPaneForPlaylist,0);
+        scrollPaneForPlaylist.setVisible(false);
+
+
+
+
+        //Rounded panel for Playlist
+        roundPlayBtnPanel.setBounds(248,330,70,70);
+        roundPlayBtnPanel.setBackground(panelColor);
+        container.add(roundPlayBtnPanel);
+        container.setComponentZOrder(roundPlayBtnPanel,0);
+        roundPlayBtnPanel.setVisible(false);
+
+        //play Button
+        playBtnForPlayList = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image image = new ImageIcon(this.getClass().getResource("/Images/playButton.png")).getImage();
+                g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
+
+        };
+        container.setLayout(null);
+        playBtnForPlayList.setBounds(267,346,35,35);
+        container.add(playBtnForPlayList);
+        container.setComponentZOrder(playBtnForPlayList,0);
+        playBtnForPlayList.setVisible(false);
+
+        playBtnForPlayList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                System.out.println(getPlaylistName);
+                musicTitle = getPlaylistName;
+                System.out.println();
+                if(musicHandler.clip != null){
+                    musicHandler.clip.stop();
+                }
+                songtitle = "";
+                musicHandler.playPlaylistMusicAsync(songtitle);
+
+
+            }
+        });
+
+        displayPlayListSongs.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                //                int clickedBtn = e.getButton();
+                if(e.getButton() == MouseEvent.BUTTON1){
+                    int selectedRow = displayPlayListSongs.getSelectedRow();
+                    if(selectedRow != -1){
+                        musicTitle = getPlaylistName;
+                        String name = (String) displayPlayListSongs.getValueAt(selectedRow,1);
+                        System.out.println(name);
+                        songtitle = name;
+
+                        if(musicHandler.clip != null){
+                            musicHandler.clip.stop();
+                        }
+                        musicHandler.playPlaylistMusicAsync(songtitle);
+                        songtitle ="";
+                    }
+                }
+
+
+            }
+        });
+
+
+//        Rounded play btn and panel for Searching
+//        public RoundedPanel roundPlayBtnForSearchPanel = new RoundedPanel(70);
+//    public JPanel playBtnForSearch;
+        roundPlayBtnForSearchPanel.setBounds(248,330,70,70);
+        roundPlayBtnForSearchPanel.setBackground(panelColor);
+        container.add(roundPlayBtnForSearchPanel);
+        container.setComponentZOrder(roundPlayBtnForSearchPanel,0);
+        roundPlayBtnForSearchPanel.setVisible(false);
+
+        //play Button
+        playBtnForSearch = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image image = new ImageIcon(this.getClass().getResource("/Images/playButton.png")).getImage();
+                g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
+
+        };
+        container.setLayout(null);
+        playBtnForSearch.setBounds(267,346,35,35);
+        container.add(playBtnForSearch);
+        container.setComponentZOrder(playBtnForSearch,0);
+        playBtnForSearch.setVisible(false);
+
+        playBtnForSearch.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+//                searchTableModel.setRowCount();
+            }
+        });
+
 
         displaySearchData.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
+            }
+        });
 
+
+
+
+        //        Handeling Table...
+
+//        //        Rounded play btn and panel for Searching
+//        public RoundedPanel roundPlayBtnForDefaultpanel = new RoundedPanel(70);
+//        public JPanel playBtnForDefault;
+
+        roundPlayBtnForDefaultPanel.setBounds(248,330,70,70);
+        roundPlayBtnForDefaultPanel.setBackground(panelColor);
+        container.add(roundPlayBtnForDefaultPanel);
+        container.setComponentZOrder(roundPlayBtnForDefaultPanel,0);
+        roundPlayBtnForDefaultPanel.setVisible(false);
+
+        //play Button
+        defaultPlayBtn = new JPanel(){
+            protected void paintComponent(Graphics g){
+                Image image = new ImageIcon(this.getClass().getResource("/Images/playButton.png")).getImage();
+                g.drawImage(image,0,0,this.getWidth(),this.getHeight(),this);
+            }
+
+        };
+        container.setLayout(null);
+        defaultPlayBtn.setBounds(267,346,35,35);
+        container.add(defaultPlayBtn);
+        container.setComponentZOrder(defaultPlayBtn,0);
+        defaultPlayBtn.setVisible(false);
+
+        defaultPlayBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+//                System.out.println(getPlaylistName);
+//                musicTitle = getPlaylistName;
+//                musicTitle = "Default_Music";
+//                System.out.println(musicTitle);
+                if(musicHandler.clip != null){
+                    musicHandler.clip.stop();
+                }
+                songtitle = "";
+                musicHandler.playFromDefaultMusicListAsync(songtitle);
+
+            }
+        });
+
+
+        displayData.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int selectedRow = displayData.getSelectedRow();
+                if (selectedRow != -1) { // Check if a row is selected
+                    int titleColumnIndex = 1; // Assuming Title column is at index 1
+                    Object selectedTitle = tableModel.getValueAt(selectedRow, titleColumnIndex);
+                    if (selectedTitle != null) {
+                        songtitle = selectedTitle.toString(); // Set the value of musicTitle
+                        playlistSong = musicName;
+                        System.out.println("Selected title : " + musicName);
+
+                        int btnClicked = e.getButton(); // Move this inside the common block
+
+                        if (btnClicked == MouseEvent.BUTTON1) {
+                            System.out.println(songtitle);
+                            if(musicHandler.clip != null){
+                                musicHandler.clip.stop();
+                            }
+                            musicHandler.playFromDefaultMusicListAsync(songtitle);
+
+                            System.out.println("Left Button clicked");
+                        } else if (btnClicked == MouseEvent.BUTTON3) {
+                            // Handle right button click
+                            System.out.println("Right Button clicked");
+                            playlistPanel2.setBounds(890, 375, 210, 150);
+                            playlistPanel2.setVisible(true);
+                        } else {
+                            System.out.println("Unknown Button clicked: " + btnClicked);
+                        }
+                    }
+                }
             }
         });
 
@@ -1640,9 +1997,48 @@ public class Design extends JFrame{
 
 
 
+
+        musicHandler.check_playlist_In_UserAsync();
+
+
         setLocationRelativeTo(null);
         setLayout(null);
         setContentPane(container);
+    }
+
+    private void setPlaylistBtnVisible() {
+        if(!isCreatePlaylistPanelVisible){
+            addPlaylistPanel.setVisible(true);
+            playlistName.setVisible(true);
+            addPlaylist.setVisible(true);
+            isCreatePlaylistPanelVisible = true;
+
+
+        }else{
+            addPlaylistPanel.setVisible(false);
+            playlistName.setVisible(false);
+            addPlaylist.setVisible(false);
+            isCreatePlaylistPanelVisible = false;
+
+        }
+    }
+
+    private void setPlaylistPanelVisible(){
+        if(isPlaylistPanelVisible){
+            playlistPanel.setVisible(false);
+            scrollPaneForPlaylist.setVisible(false);
+            isPlaylistPanelVisible = false;
+            playlistPanel2.setVisible(false);
+            roundPlayBtnPanel.setVisible(false);
+            playBtnForPlayList.setVisible(false);
+        }else{
+            playlistPanel.setVisible(true);
+            isPlaylistPanelVisible = true;
+            scrollPaneForPlaylist.setVisible(true);
+            roundPlayBtnPanel.setVisible(true);
+            playBtnForPlayList.setVisible(true);
+            playlistTableModel.setRowCount(0);
+        }
     }
 
     public  static void stopPlayer()  {
@@ -1665,11 +2061,17 @@ public class Design extends JFrame{
             displaySongsPanel.setVisible(false);
             scrollPane.setVisible(false);
             isDisplayPanelVisible = false;
+            playlistPanel2.setVisible(false);
+            roundPlayBtnForDefaultPanel.setVisible(false);
+            defaultPlayBtn.setVisible(false);
         }else{
             displaySongsPanel.setVisible(true);
             isDisplayPanelVisible = true;
             scrollPane.setVisible(true);
             tableModel.setRowCount(0);
+            roundPlayBtnForDefaultPanel.setVisible(false);
+            defaultPlayBtn.setVisible(true);
+
         }
     }
 

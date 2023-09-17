@@ -42,7 +42,6 @@ public class Register extends JFrame {
         super("Register");
 
         registerHandler = new RegisterHandler(this);
-//        registerHandler.connectServer();
         setBounds(300,150,900,600);
         setBackground(backgroundColor);
         setUndecorated(true);

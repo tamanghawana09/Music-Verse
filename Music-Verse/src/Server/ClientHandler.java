@@ -25,6 +25,8 @@ public class ClientHandler implements Runnable {
 
     private Connection connection;
 
+    private String newPlaylist;
+
 
 
     public ClientHandler(Socket clientSocket, List<Socket> clients) throws IOException, SQLException {
@@ -94,10 +96,374 @@ public class ClientHandler implements Runnable {
                     System.out.println("Request received for  User Logout");
                     handleLogout();
                     break;
-
+                case "CREATE_NEW_PLAYLIST":
+                    System.out.println("Request received for creating a new Playlist");
+                    handelPlaylist();
+                    break;
+                case "CHECK_FOR_PLAYLIST":
+                    System.out.println("Request received for checking Playlist");
+                    checkForPlaylist();
+                    break;
+                case "REQ_TO_ADD_SONG_TO_PLAYLIST":
+                    System.out.println("Request received for storing Data in playlist");
+                    addSongToPLaylist();
+                    break;
+                case "REQ_TO_GET_PLAYLIST_DATA":
+                    System.out.println("Request received to get Playlist data");
+                    sendClientPlaylistData();
+                    break;
+                case "PLAY_PLAYLIST_MUSIC":
+                    handelPlaylistMusicPlay();
+                    break;
+                case "PLAY_DEFAULT_LISTED_MUSIC":
+                    handleDefaultListedMusic();
+                    break;
+                default:
+                    break;
             }
 
         }
+    }
+
+
+
+
+    private void sendClientPlaylistData() throws IOException {
+        String playlistName = clientDataReader.readLine();
+
+        // Step 1: Find Playlist ID
+        int playlistId = findPlaylistId(playlistName);
+
+        // Step 3: Retrieve Song IDs
+        List<Integer> songIds = retrieveSongIds(playlistId);
+
+        // Step 4: Retrieve Song Details
+        List<String> songs = retrieveSongDetails(songIds);
+
+        // Step 4: Send Song Details to the Client
+        sendSongDetailsToClient(songs);
+
+    }
+
+    private void sendSongDetailsToClient(List<String> songs) {
+        try {
+            // Send the song details to the client
+            for (String songDetail : songs) {
+                printWriter.println(songDetail);
+                printWriter.flush();
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+//        if (dataRequest.equals("Music")) {
+//            List<String> databaseData = retrieveDataFromDatabase(DATABASE_URL);
+//            for (String data : databaseData) {
+//                printWriter.println(data);
+//                printWriter.flush();
+//            }
+//            // Clear the list after sending data
+//            databaseData.clear();
+//
+//        }
+    }
+
+    private List<String> retrieveSongDetails(List<Integer> songIds) {
+        List<String> songDetails = new ArrayList<>();
+
+        // Define your database query
+//        String query = "SELECT Title, Genre, Duration, Artist FROM songs WHERE song_id = ?";
+        String query = "SELECT s.Title, g.Name, s.Duration, s.Artist " +
+                "FROM songs s " +
+                "JOIN genres g ON s.GenreId = g.GenreID " +
+                "WHERE s.SongID = ?";
+
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            for (int songId : songIds) {
+                // Set the songId as a parameter in the prepared statement
+                preparedStatement.setInt(1, songId);
+
+                // Execute the query and get the result set
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                // Check if a row exists for the given songId
+                int sn = 1;
+                if (resultSet.next()) {
+                    // Retrieve song details as strings
+                    String title = resultSet.getString("Title");
+                    String genre = resultSet.getString("Name");
+                    int durationInSeconds = resultSet.getInt("Duration");
+                    int minutes = durationInSeconds / 60;
+                    int seconds = durationInSeconds % 60;                    String artist = resultSet.getString("Artist");
+
+                    // Concatenate song details into a single string
+//                    String songDetail =sn +"Title: " + title + ", Genre: " + genre + ", Duration: " + duration + ", Artist: " + artist;
+                    String songDetail1 = sn + " - " + title + " - " + artist + " - " + minutes + " : " + seconds + " min - " + genre;
+                    sn++;
+                    // Add the song detail string to the list
+                    songDetails.add(songDetail1);
+                }
+            }
+        } catch (SQLException e) {
+            // Handle any database-related exceptions here
+            e.printStackTrace();
+        }
+
+        return songDetails;
+    }
+
+    private List<Integer> retrieveSongIds(int playlistId) {
+        List<Integer> songIds = new ArrayList<>();
+
+        // Define your database query
+        String query = "SELECT song_id FROM playlist_song WHERE playlist_id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            // Set the playlistId as a parameter in the prepared statement
+            preparedStatement.setInt(1, playlistId);
+
+            // Execute the query and get the result set
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Iterate through the result set and add song_id values to the list
+            while (resultSet.next()) {
+                int songId = resultSet.getInt("song_id");
+                songIds.add(songId);
+            }
+        } catch (SQLException e) {
+            // Handle any database-related exceptions here
+            e.printStackTrace();
+        }
+
+        return songIds;
+    }
+
+    private int findPlaylistId(String playlistName) {
+        int playlistId = -1; // Initialize with an invalid value
+
+        // Define your database query
+        String query = "SELECT playlist_id FROM playlist WHERE playlist_Name = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            // Set the playlistName as a parameter in the prepared statement
+            preparedStatement.setString(1, playlistName);
+
+            // Execute the query and get the result set
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Check if a result was found
+            if (resultSet.next()) {
+                // Retrieve the playlist ID from the result set
+                playlistId = resultSet.getInt("playlist_id");
+            }
+        } catch (SQLException e) {
+            // Handle any database-related exceptions here
+            e.printStackTrace();
+        }
+
+        return playlistId;
+    }
+
+    private void addSongToPLaylist() throws IOException {
+        String playlistName = clientDataReader.readLine();
+        String musicToAdd = clientDataReader.readLine();
+
+        String getPlaylistIdQuery = "SELECT playlist_id FROM playlist WHERE playlist_Name = ?";
+        String playlistId = null;
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getPlaylistIdQuery)) {
+            preparedStatement.setString(1, playlistName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                playlistId = resultSet.getString("playlist_id");
+            } else {
+                throw new SQLException("Playlist not found: " + playlistName);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Step 2: Retrieve the song_id based on musicToAdd
+        String getSongIdQuery = "SELECT SongID FROM songs WHERE Title = ?";
+        String songId = null;
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSongIdQuery)) {
+            preparedStatement.setString(1, musicToAdd);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                songId = resultSet.getString("SongID");
+            } else {
+                throw new SQLException("Song not found: " + musicToAdd);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Step 3: Check if the record already exists in playlist_song
+        String checkExistingQuery = "SELECT COUNT(*) FROM playlist_song WHERE playlist_id = ? AND song_id = ?";
+        int existingRecordCount = 0;
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(checkExistingQuery)) {
+            preparedStatement.setString(1, playlistId);
+            preparedStatement.setString(2, songId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                existingRecordCount = resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (existingRecordCount == 0) {
+            // Step 4: Insert a new record into playlist_song
+            String insertQuery = "INSERT INTO playlist_song (playlist_id, song_id) VALUES (?, ?)";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
+                preparedStatement.setString(1, playlistId);
+                preparedStatement.setString(2, songId);
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            System.out.println("Record already exists in playlist_song.");
+        }
+    }
+
+
+    private void checkForPlaylist() {
+        String userID = String.valueOf(getUserId());
+        List<String> playlistNames = new ArrayList<>();
+
+        System.out.println(userID);
+
+        String query = "SELECT playlist_id FROM user_playlist WHERE user_id = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, userID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String playlistID = resultSet.getString("playlist_id");
+                String playlistName = getPlaylistName(playlistID); // Call a method to get the playlist name
+                playlistNames.add(playlistName);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Send the list of playlist names to the client
+        sendPlaylistNamesToClient(playlistNames);
+    }
+
+    private String getPlaylistName(String playlistID) {
+        String playlistName = "";
+
+        String getPlaylistNameQuery = "SELECT playlist_Name FROM playlist WHERE playlist_id = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getPlaylistNameQuery)) {
+            preparedStatement.setString(1, playlistID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                playlistName = resultSet.getString("playlist_Name");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return playlistName;
+    }
+
+    // Send the list of playlist names to the client
+    private void sendPlaylistNamesToClient(List<String> playlistNames) {
+        try {
+            // Send each playlist name to the client
+            for (String playlistName : playlistNames) {
+                printWriter.println(playlistName);
+                printWriter.flush();
+            }
+
+            // Send an "END_OF_PLAYLIST" marker to indicate the end of the list
+            printWriter.println("END_OF_PLAYLIST");
+            printWriter.flush();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getUserId(){
+        String query = "SELECT userID FROM User WHERE is_logged_in = true";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String userID = resultSet.getString("userID");
+                System.out.println(userID);
+                return userID;
+
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return query;
+    }
+
+
+    private void handelPlaylist() throws IOException {
+        String newPlaylist = clientDataReader.readLine();
+        String playlistID = "";
+        String userID = "";
+        String insertQuery = "INSERT INTO playlist (playlist_Name) VALUES (?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
+            preparedStatement.setString(1, newPlaylist);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        String getPlaylistId = "SELECT playlist_id FROM playlist where playlist_Name = ?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(getPlaylistId)){
+            preparedStatement.setString(1,newPlaylist);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+                playlistID = resultSet.getString("playlist_id");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        String getUserID = "SELECT userID FROM User WHERE is_logged_in = true";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(getUserID)){
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()){
+                userID = resultSet.getString("userID");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("Playlist ID : " + playlistID);
+        System.out.println("User ID : " + userID);
+
+        String insertIntoUserPlaylist = "INSERT INTO User_Playlist (user_id, playlist_id) VALUES (?,?)";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(insertIntoUserPlaylist)){
+            preparedStatement.setString(1,userID);
+            preparedStatement.setString(2,playlistID);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+//        sendPlaylistNamesOfLoggedInUsers();
     }
 
     private void handleLogout() {
@@ -286,6 +652,7 @@ public class ClientHandler implements Runnable {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             int sn = 1;
+            String more = " . ";
             while (resultSet.next()) {
                 String title = resultSet.getString("Title");
                 String artist = resultSet.getString("Artist");
@@ -293,7 +660,7 @@ public class ClientHandler implements Runnable {
                 int minutes = durationInSeconds / 60;
                 int seconds = durationInSeconds % 60;
                 String genre = resultSet.getString("Name");
-                String songData = sn + " - " + title + " - " + artist + " - " + minutes + " : " + seconds + " min - " + genre;
+                String songData = sn + " - " + title + " - " + artist + " - " + minutes + " : " + seconds + " min - " + genre + " - " + more;
                 data.add(songData);
                 sn++;
             }
@@ -440,7 +807,7 @@ public class ClientHandler implements Runnable {
                         }
                     }
                     break;
-                case "PLAY_ANOTHER":
+                case "Default_List":
                     System.out.println("Hello ");
                     String selectedMusic = clientDataReader.readLine();
                     try {
@@ -489,6 +856,151 @@ public class ClientHandler implements Runnable {
         return randomNumber;
     }
 
+    private void handelPlaylistMusicPlay() throws IOException {
+        String music = clientDataReader.readLine();
+        int songId = 0;
+
+        String query = "SELECT SongID FROM songs WHERE Title = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, music);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                songId = resultSet.getInt("SongID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(songId);
+
+        String getFilePath = "SELECT FilePath FROM songs WHERE SongID = ?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(getFilePath);) {
+            preparedStatement.setInt(1, songId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                String filepath = resultSet.getString("FilePath");
+                System.out.println(filepath);
+                File audioFile = new File(filepath);
+
+                try (InputStream inputStream = new FileInputStream(audioFile);
+                     OutputStream outputStream = clientSocket.getOutputStream()) {
+
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+                    outputStream.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    private void handleDefaultListedMusic() throws IOException {
+        String songName = clientDataReader.readLine();
+        int songId = 0;
+
+
+
+        String query = "SELECT SongID FROM songs WHERE Title = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, songName);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                songId = resultSet.getInt("SongID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println( "Server : " + songId);
+        try {
+            String querryForName = "SELECT Title FROM songs WHERE SongID = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(querryForName);
+            preparedStatement.setInt(1,songId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                String nameSong = resultSet.getString("Title");
+
+                printWriter.println(nameSong);
+                printWriter.flush();
+            }
+
+            String querryForSingerName = "SELECT Artist FROM songs WHERE SongID = ?";
+            PreparedStatement preparedStatement1 = connection.prepareStatement(querryForSingerName);
+            preparedStatement1.setInt(1,songId);
+            ResultSet resultSet1 = preparedStatement1.executeQuery();
+            if(resultSet1.next()){
+                String singerName = resultSet1.getString("Artist");
+
+                printWriter.println(singerName);
+                printWriter.flush();
+            }
+
+
+            String queryForDuration = "SELECT Duration FROM songs WHERE SongID = ?";
+            PreparedStatement preparedStatement2 = connection.prepareStatement(queryForDuration);
+            preparedStatement2.setInt(1, songId);
+            ResultSet resultSet2 = preparedStatement2.executeQuery();
+            if (resultSet2.next()) {
+                int durationInSeconds = resultSet2.getInt("Duration"); // Use "Duration" here
+                int minutes = durationInSeconds / 60;
+                int seconds = durationInSeconds % 60;
+
+                printWriter.println(minutes + " : " + seconds);
+                printWriter.flush();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
+
+        String getFilePath = "SELECT FilePath FROM songs WHERE SongID = ?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(getFilePath);) {
+            preparedStatement.setInt(1, songId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                String filepath = resultSet.getString("FilePath");
+                System.out.println(filepath);
+                File audioFile = new File(filepath);
+
+                try (InputStream inputStream = new FileInputStream(audioFile);
+                     OutputStream outputStream = clientSocket.getOutputStream()) {
+
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+                    outputStream.flush();
+                    System.out.println("SERVER: DATA SENT SUCCESSFUlY!!");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     private List<String> retrieveDataFromDatabase(String databaseUrl) {
         List<String> data = new ArrayList<>();
         try {
@@ -506,7 +1018,7 @@ public class ClientHandler implements Runnable {
                 int minutes = durationInSeconds / 60;
                 int seconds = durationInSeconds % 60;
                 String genre = resultSet.getString("Name");
-                String songData = sn + " - " + title + " - " + artist + " - " + minutes + " : " + seconds + " min - " + genre;
+                String songData = sn + " - " + title + " - " + artist + " - " + minutes + " : " + seconds + " min - " + genre + " - " + " . ";
                 data.add(songData);
                 sn++;
             }

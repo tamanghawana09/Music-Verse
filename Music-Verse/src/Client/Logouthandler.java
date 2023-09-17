@@ -29,6 +29,7 @@ public class Logouthandler {
     }
 
     public void closeSocket() {
+        System.out.println("Closing Socket");
         try {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
@@ -46,10 +47,9 @@ public class Logouthandler {
                 logoutAccount();
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            }finally {
-                closeSocket();
             }
         });
+//        closeSocket();
         networkThread.start();
     }
 
