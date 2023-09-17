@@ -117,7 +117,7 @@ public class Design extends JFrame{
 
 
     public String musicTitle = "DefaultMusic";
-    public String musicName = "Default";
+    public String musicName = "";
 
 
     public final String reqForPlayMusic = "PLAY_DEFAULT_MUSIC";
@@ -250,10 +250,10 @@ public class Design extends JFrame{
 //       lo = new Logout();
 
         //Server
-       // musicHandler = new MusicHandler(this);
+        musicHandler = new MusicHandler(this);
 //        musicHandler.connectServer();
 
-        //musicHandler.check_Logged_In_UserAsync();
+        musicHandler.check_Logged_In_UserAsync();
 
 
         //frame properties
@@ -1765,6 +1765,7 @@ public class Design extends JFrame{
                 System.out.println(selectedData + " " + playlistSong);
 
                 musicHandler.addToPlaylistAsync(playlistSong,selectedData);
+                playlistPanel2.setVisible(true);
             }
         });
 
@@ -1965,8 +1966,8 @@ public class Design extends JFrame{
                     Object selectedTitle = tableModel.getValueAt(selectedRow, titleColumnIndex);
                     if (selectedTitle != null) {
                         songtitle = selectedTitle.toString(); // Set the value of musicTitle
-                        playlistSong = musicName;
-                        System.out.println("Selected title : " + musicName);
+                        playlistSong = songtitle;
+                        System.out.println("Selected title : " + songtitle);
 
                         int btnClicked = e.getButton(); // Move this inside the common block
 
@@ -1990,11 +1991,6 @@ public class Design extends JFrame{
                 }
             }
         });
-
-
-
-
-
 
 
 
