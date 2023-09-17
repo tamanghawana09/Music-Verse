@@ -291,7 +291,7 @@ public class Local {
                     playBtn.setVisible(false);
                     pauseBtn.setVisible(true);
                     currentFile = selectedSong;
-                    songsTbl.setEnabled(false);
+                    play(currentFile);
                 }
             }
         });
