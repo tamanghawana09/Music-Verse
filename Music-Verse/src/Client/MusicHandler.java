@@ -595,6 +595,7 @@ public class MusicHandler {
     }
 
     private void addPlaylist() throws IOException {
+        connectServer();
         socketDataReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         outputStream = socket.getOutputStream();
         printWriter = new PrintWriter(outputStream);
