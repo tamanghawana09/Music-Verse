@@ -46,7 +46,7 @@ public class Login extends JFrame {
         super("Login");
 
         loginHandler = new LoginHandler(this);
-//        loginHandler.connectServer();
+
 
         setBounds(300,150,900,600);
         setBackground(backgroundColor);
