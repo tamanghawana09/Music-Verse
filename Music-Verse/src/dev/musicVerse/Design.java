@@ -3,8 +3,6 @@ package dev.musicVerse;
 import Client.MusicHandler;
 
 import javazoom.jl.decoder.Bitstream;
-import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.Player;
 import javazoom.jl.player.advanced.AdvancedPlayer;
 
 
@@ -45,8 +43,6 @@ public class Design extends JFrame{
 
     private final ImageIcon image1;
     private final JLabel imgLbl;
-    private ImageIcon playerImg;
-    private JLabel playerLbl;
 
 
     //Player song Title and Singer name
@@ -75,7 +71,7 @@ public class Design extends JFrame{
 
     //Panel to store table and songs data
     RoundedPanel displaySongsPanel = new RoundedPanel(10);
-    RoundedPanel localPnl = new RoundedPanel(10);
+
 
     RoundedPanel genrePnl = new RoundedPanel(10);
 
@@ -151,12 +147,11 @@ public class Design extends JFrame{
     //Panel table variable initializations
     private boolean isDisplayPanelVisible = false;
     private boolean isPlaylistPanelVisible = false;
-    private final boolean local = false;
+
     private boolean genre = false;
     private boolean albums = false;
     private boolean artists = false;
     private boolean musicPlayed = false;
-    private static volatile boolean stopPlayer = false;
 
     private static AdvancedPlayer player;
     private static InputStream inputStream;
@@ -222,9 +217,6 @@ public class Design extends JFrame{
 //    public JScrollPane anotherScrollPane = new JScrollPane(playlistList);
     ;
 
-   public boolean isRunning(){
-       return radioThread != null;
-   }
 
 
 
